@@ -5,10 +5,10 @@
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
 
-        <ImageView
+        <ru.skillbranch.skillarticles.ui.custom.CheckableImageView
             android:id="@+id/btn_like"
             style="@style/BottombarIcon"
-            android:src="@drawable/ic_bookmark_black_24dp"
+            android:src="@drawable/like_states"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btn_bookmark"
             app:layout_constraintHorizontal_bias="0.5"
@@ -16,10 +16,10 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
+        <ru.skillbranch.skillarticles.ui.custom.CheckableImageView
             android:id="@+id/btn_bookmark"
             style="@style/BottombarIcon"
-            android:src="@drawable/ic_bookmark_black_24dp"
+            android:src="@drawable/bookmark_states"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btn_share"
             app:layout_constraintHorizontal_bias="0.5"
@@ -29,15 +29,15 @@
         <ImageView
             android:id="@+id/btn_share"
             style="@style/BottombarIcon"
-            android:src="@drawable/ic_bookmark_black_24dp"
+            android:src="@drawable/ic_share_black_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/btn_bookmark"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
+        <ru.skillbranch.skillarticles.ui.custom.CheckableImageView
             android:id="@+id/btn_settings"
             style="@style/BottombarIcon"
-            android:src="@drawable/ic_bookmark_black_24dp"
+            android:src="@drawable/ic_format_size_black_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
