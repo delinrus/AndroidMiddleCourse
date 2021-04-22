@@ -5,28 +5,35 @@ import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_root.*
 import kotlinx.android.synthetic.main.layout_bottombar.*
 import kotlinx.android.synthetic.main.layout_submenu.*
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
+import ru.skillbranch.skillarticles.viewmodels.ArticleState
+import ru.skillbranch.skillarticles.viewmodels.ArticleViewModel
+import ru.skillbranch.skillarticles.viewmodels.ViewModelFactory
 
 class RootActivity : AppCompatActivity() {
+    private lateinit var viewModel: ArticleViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_root)
         setupToolbar()
 
-        btn_like.setOnClickListener{
-            Snackbar.make(coordinator_container, "test", Snackbar.LENGTH_LONG)
-                .setAnchorView(bottombar)
-                .show()
+        val vmFactory = ViewModelFactory("0")
+        viewModel = ViewModelProviders.of(this, vmFactory).get(ArticleViewModel::class.java)
+        viewModel.observeState(this) {
+            renderUi(it)
         }
 
-        switch_mode.setOnClickListener{
-            delegate.localNightMode = if(switch_mode.isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-        }
+    }
+
+    private fun renderUi(data: ArticleState) {
     }
 
     private fun setupToolbar() {
