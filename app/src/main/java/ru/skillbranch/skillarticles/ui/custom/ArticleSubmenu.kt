@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.android.material.shape.MaterialShapeDrawable
 import ru.skillbranch.skillarticles.R
 
 class ArticleSubmenu @JvmOverloads constructor(
@@ -12,6 +13,9 @@ class ArticleSubmenu @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
     init {
-        val view = View.inflate(context, R.layout.layout_submenu, this)
+        View.inflate(context, R.layout.layout_submenu, this)
+        val materialBg = MaterialShapeDrawable.createWithElevationOverlay(context)
+        materialBg.elevation = elevation
+        background = materialBg
     }
 }

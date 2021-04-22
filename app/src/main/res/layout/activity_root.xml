@@ -52,7 +52,7 @@
     <ru.skillbranch.skillarticles.ui.custom.BottomBar
         android:id="@+id/bottombar"
         android:layout_width="match_parent"
-        android:layout_height="20dp"
+        android:layout_height="?attr/actionBarSize"
         android:layout_gravity="bottom"
         android:theme="@style/ArticleBarsTheme"
         android:elevation="4dp"
