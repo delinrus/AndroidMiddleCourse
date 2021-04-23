@@ -68,3 +68,15 @@ class Event<out E>(private val content:E){
         }
     }
 }
+
+class EventObserver<E>(private val onEventUnhandledContent: (E) -> Unit):Observer<Event<E>>{
+    //в качестве аргумента принимает лямбда выражение обработчик в которую передается необработанное
+    //ранее событие получаемое в реализации метода Observer'a onChanged
+    override fun onChanged(event: Event<E>?) {
+        //если есть необработанное событие (контент) передай в качестве аргумента в лямбду
+        // onEventUnhandledContent
+        event?.getContentIfNotHandled()?.let {
+            onEventUnhandledContent(it)
+        }
+    }
+}
