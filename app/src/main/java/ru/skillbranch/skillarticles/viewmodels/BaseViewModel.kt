@@ -4,6 +4,8 @@ import androidx.annotation.UiThread
 import androidx.lifecycle.*
 
 abstract class BaseViewModel<T>(initState: T) : ViewModel() {
+    protected val notifications : MutableLiveData<Event<Notify>>
+
     protected val state: MediatorLiveData<T> = MediatorLiveData<T>().apply {
         value = initState
     }
@@ -51,5 +53,18 @@ class ViewModelFactory(private val params: String) : ViewModelProvider.Factory {
             return ArticleViewModel(params) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
+    }
+}
+
+class Event<out E>(private val content:E){
+    var hasBeenHandled = false
+
+    //возвращает контент который еще не был обработан иначе null
+    fun getContentIfNotHandled():E?{
+        return if(hasBeenHandled) null
+        else{
+            hasBeenHandled = true
+            content
+        }
     }
 }
