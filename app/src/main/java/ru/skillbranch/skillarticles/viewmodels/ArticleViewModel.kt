@@ -2,6 +2,48 @@ package ru.skillbranch.skillarticles.viewmodels
 
 class ArticleViewModel(articleId: String) : BaseViewModel<ArticleState>(ArticleState()) {
 
+    init {
+        //TODO
+    }
+
+    //personal article info
+    fun handleBookmark() {
+        //TODO implement me
+    }
+
+    fun handleLike() {
+        //TODO implement me
+    }
+
+    //not implemented
+    fun handleShare() {
+        //TODO implement me
+    }
+
+    //session state
+    fun handleToggleMenu() {
+       updateState { it.copy(isShowMenu = !it.isShowMenu) }
+    }
+
+    fun handleSearchMode(isSearch: Boolean) {
+        //TODO implement me
+    }
+
+    fun handleSearc(query: String?) {
+        //TODO implement me
+    }
+
+    fun handleNightMode() {
+        //TODO implement me
+    }
+
+    fun handleDownText() {
+        //TODO implement me
+    }
+
+    fun handleUpText() {
+        //TODO implement me
+    }
 }
 
 data class ArticleState(

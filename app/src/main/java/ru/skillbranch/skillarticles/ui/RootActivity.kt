@@ -49,6 +49,9 @@ class RootActivity : AppCompatActivity() {
     }
 
     private fun renderUi(data: ArticleState) {
+        //bind submenu state
+        btn_settings.isChecked = data.isShowMenu
+        if(data.isShowMenu) submenu.open() else submenu.close()
     }
 
     private fun setupToolbar() {
