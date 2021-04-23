@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import ru.skillbranch.skillarticles.data.ArticleData
 import ru.skillbranch.skillarticles.data.ArticlePersonalInfo
 import ru.skillbranch.skillarticles.data.repositories.ArticleRepository
+import ru.skillbranch.skillarticles.extensions.data.toAppSettings
 import ru.skillbranch.skillarticles.extensions.format
 
 class ArticleViewModel(private val articleId: String) : BaseViewModel<ArticleState>(ArticleState()) {
@@ -61,16 +62,18 @@ class ArticleViewModel(private val articleId: String) : BaseViewModel<ArticleSta
         return repository.loadArticlePersonalInfo(articleId)
     }
 
+    //app settings
     fun handleNightMode() {
-        //TODO implement me
+        val settings = currentState.toAppSettings()
+        repository.updateSettings(settings.copy(isDarkMode = !settings.isDarkMode))
     }
 
     fun handleUpText() {
-        //TODO implement me
+        repository.updateSettings(currentState.toAppSettings().copy(isBigText = true))
     }
 
     fun handleDownText() {
-        //TODO implement me
+        repository.updateSettings(currentState.toAppSettings().copy(isBigText = false))
     }
 
     //personal article info
