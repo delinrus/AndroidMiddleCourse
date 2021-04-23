@@ -24,6 +24,11 @@ abstract class BaseViewModel<T>(initState: T) : ViewModel() {
         state.value = updateState
     }
 
+    @UiThread
+    protected fun notify(content: Notify){
+        notifications.value = Event(content)
+    }
+
     /***
      * более компактная форма записи observe принимает последним аргументом лямбда выражение обрабатывающее
      * изменение текущего состояния
