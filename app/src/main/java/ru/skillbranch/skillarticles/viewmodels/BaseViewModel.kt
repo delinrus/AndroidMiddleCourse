@@ -33,6 +33,14 @@ abstract class BaseViewModel<T>(initState: T) : ViewModel() {
     }
 
     /***
+     * более компактная фома записи observe вызывает лямбда выражение обработчик только в том случае
+     * если сообщение не было уже обработанно, реализует данное поведение благодоря EventObserver
+     */
+    fun observeNotifications(owner: LifecycleOwner, onNotify: (notification: Notify) -> Unit) {
+        notifications.observe(owner, EventObserver {onNotify(it) })
+    }
+
+    /***
      * функция принимает источник даных и лямбда выажение обрабатывающее поступающие данные
      * лямбда принимает новые данные и текущее состояние, изменяет его и возвращает
      * модифицированное состояние устанавливается как текущее
