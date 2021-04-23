@@ -9,7 +9,7 @@ abstract class BaseViewModel<T>(initState: T) : ViewModel() {
     }
 
     //not null current state
-    protected val currentstate
+    protected val currentState
         get() = state.value!!
 
     /***
@@ -18,16 +18,30 @@ abstract class BaseViewModel<T>(initState: T) : ViewModel() {
      */
     @UiThread
     protected inline fun updateState(update: (currentState: T) -> T) {
-        val updateState: T = update(currentstate)
+        val updateState: T = update(currentState)
         state.value = updateState
     }
 
     /***
-     *более компактная форма записи observe принимает последним аргументом лямбда выражение обрабатывающее
-     *изменение текущего состояния
+     * более компактная форма записи observe принимает последним аргументом лямбда выражение обрабатывающее
+     * изменение текущего состояния
      */
     fun observeState(owner: LifecycleOwner, onChanged: (newState: T) -> Unit) {
         state.observe(owner, Observer { onChanged(it!!) })
+    }
+
+    /***
+     * функция принимает источник даных и лямбда выажение обрабатывающее поступающие данные
+     * лямбда принимает новые данные и текущее состояние, изменяет его и возвращает
+     * модифицированное состояние устанавливается как текущее
+     */
+    protected fun<S> subscribeOnDataSource(
+        source: LiveData<S>,
+        onChanged: (newValue : S, currentState:T) -> T?
+    ) {
+        state.addSource(source){
+            state.value = onChanged(it, currentState) ?: return@addSource
+        }
     }
 }
 
