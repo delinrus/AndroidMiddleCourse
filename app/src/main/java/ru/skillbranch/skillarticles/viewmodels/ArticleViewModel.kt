@@ -1,9 +1,24 @@
 package ru.skillbranch.skillarticles.viewmodels
 
+import ru.skillbranch.skillarticles.data.repositories.ArticleRepository
+
 class ArticleViewModel(articleId: String) : BaseViewModel<ArticleState>(ArticleState()) {
+    private val repository = ArticleRepository
 
     init {
-        //TODO
+        //TODO subs
+    }
+
+    fun handleNightMode() {
+        //TODO implement me
+    }
+
+    fun handleUpText() {
+        //TODO implement me
+    }
+
+    fun handleDownText() {
+        //TODO implement me
     }
 
     //personal article info
@@ -30,18 +45,6 @@ class ArticleViewModel(articleId: String) : BaseViewModel<ArticleState>(ArticleS
     }
 
     fun handleSearc(query: String?) {
-        //TODO implement me
-    }
-
-    fun handleNightMode() {
-        //TODO implement me
-    }
-
-    fun handleDownText() {
-        //TODO implement me
-    }
-
-    fun handleUpText() {
         //TODO implement me
     }
 }
