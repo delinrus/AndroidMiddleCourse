@@ -51,7 +51,34 @@ class RootActivity : AppCompatActivity() {
     private fun renderUi(data: ArticleState) {
         //bind submenu state
         btn_settings.isChecked = data.isShowMenu
-        if(data.isShowMenu) submenu.open() else submenu.close()
+        if (data.isShowMenu) submenu.open() else submenu.close()
+
+        //bind article person data
+        btn_like.isChecked = data.isLike
+        btn_bookmark.isChecked = data.isBookmark
+
+        //bind submenu views
+        switch_mode.isChecked = data.isDarkMode
+        delegate.localNightMode =
+            if (data.isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+
+        if (data.isBigText) {
+            tv_text_content.textSize = 18f
+            btn_text_up.isChecked = true
+            btn_text_down.isChecked = false
+        } else {
+            tv_text_content.textSize = 14f
+            btn_text_up.isChecked = false
+            btn_text_down.isChecked = true
+        }
+
+        //bind content
+        tv_text_content.text = if (data.isLoadingContent) "loading" else data.content.first() as String
+
+        //bind toolbar
+        toolbar.title = data.title ?: "loading"
+        toolbar.subtitle = data.category ?: "loading"
+        if (data.categoryIcon != null) toolbar.logo = getDrawable(data.categoryIcon as Int)
     }
 
     private fun setupToolbar() {
