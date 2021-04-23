@@ -4,7 +4,7 @@ import androidx.annotation.UiThread
 import androidx.lifecycle.*
 
 abstract class BaseViewModel<T>(initState: T) : ViewModel() {
-    protected val notifications : MutableLiveData<Event<Notify>>
+    protected val notifications = MutableLiveData<Event<Notify>>()
 
     protected val state: MediatorLiveData<T> = MediatorLiveData<T>().apply {
         value = initState
@@ -79,4 +79,20 @@ class EventObserver<E>(private val onEventUnhandledContent: (E) -> Unit):Observe
             onEventUnhandledContent(it)
         }
     }
+}
+
+sealed class Notify(val message: String){
+    data class TextMessage(val msg:String) : Notify(msg)
+
+    data class ActionMessage(
+        val msg: String,
+        val actionLabel: String,
+        val actionHandler: (() -> Unit)?
+    ) : Notify(msg)
+
+    data class ErrorMessage(
+        val msg: String,
+        val errLabel: String,
+        val errHandler: (() -> Unit)?
+    ) : Notify(msg)
 }
