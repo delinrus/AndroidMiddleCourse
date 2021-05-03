@@ -1,11 +1,14 @@
 package ru.skillbranch.skillarticles.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.KeyEvent
+import android.view.Menu
+import android.view.View
 import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_root.*
@@ -112,6 +115,50 @@ class RootActivity : AppCompatActivity() {
         toolbar.title = data.title ?: "loading"
         toolbar.subtitle = data.category ?: "loading"
         if (data.categoryIcon != null) toolbar.logo = getDrawable(data.categoryIcon as Int)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val menuInflater = menuInflater
+        menuInflater.inflate(R.menu.menu_search, menu)
+        val searchView = menu?.findItem(R.id.action_search)?.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                viewModel.handleSearch(newText)
+                return true
+            }
+        })
+
+        val logo = if (toolbar.childCount > 2) toolbar.getChildAt(2) as ImageView else null
+        searchView.setOnSearchClickListener {
+            viewModel.handleSearchMode(true)
+            logo?.visibility = View.GONE
+        }
+
+        searchView.setOnCloseListener {
+            viewModel.handleSearchMode(false)
+            logo?.visibility = View.VISIBLE
+            return@setOnCloseListener false
+        }
+
+        toolbar.setNavigationOnClickListener {
+            if (!searchView.isIconified()) {
+                searchView.setIconified(true);
+            }
+        }
+
+        searchView.isIconified = !viewModel.state.value?.isSearch!!;
+        searchView.setQuery(viewModel.state.value?.searchQuery, false)
+        searchView.clearFocus()
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean {
+        return super.onKeyUp(keyCode, event)
     }
 
     private fun setupToolbar() {
