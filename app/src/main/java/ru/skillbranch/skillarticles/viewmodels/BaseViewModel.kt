@@ -26,7 +26,7 @@ abstract class BaseViewModel<T>(initState: T) : ViewModel() {
         get() = state.value!!
 
 
-    /***
+     /***
      * лямбда выражение принимает в качестве аргумента текущее состояние и возвращает
      * модифицированное состояние, которое присваивается текущему состоянию
      */
@@ -41,9 +41,8 @@ abstract class BaseViewModel<T>(initState: T) : ViewModel() {
      * соответсвенно при изменении конфигурации и пересоздании Activity уведомление не будет вызвано
      * повторно
      */
-    @UiThread
     protected fun notify(content: Notify) {
-        notifications.value = Event(content)
+        notifications.postValue(Event(content))
     }
 
     /***
@@ -120,18 +119,19 @@ class EventObserver<E>(private val onEventUnhandledContent: (E) -> Unit) : Obser
     }
 }
 
-sealed class Notify(val message: String) {
-    data class TextMessage(val msg: String) : Notify(msg)
+sealed class Notify() {
+    abstract val message: String
+    data class TextMessage(override val message: String) : Notify()
 
     data class ActionMessage(
-        val msg: String,
+        override val message: String,
         val actionLabel: String,
         val actionHandler: (() -> Unit)
-    ) : Notify(msg)
+    ) : Notify()
 
     data class ErrorMessage(
-        val msg: String,
+        override val message: String,
         val errLabel: String?,
         val errHandler: (() -> Unit)?
-    ) : Notify(msg)
+    ) : Notify()
 }

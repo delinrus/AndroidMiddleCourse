@@ -20,8 +20,8 @@ class ArticleSubmenu @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : ConstraintLayout(context, attrs, defStyleAttr), CoordinatorLayout.AttachedBehavior {
-    override fun getBehavior(): CoordinatorLayout.Behavior<*> {
+) : ConstraintLayout(context, attrs, defStyleAttr) , CoordinatorLayout.AttachedBehavior {
+    override fun getBehavior(): CoordinatorLayout.Behavior<ArticleSubmenu> {
         return SubmenuBehavior()
     }
     var isOpen = false
@@ -37,18 +37,18 @@ class ArticleSubmenu @JvmOverloads constructor(
     }
 
     fun open() {
-        if(isOpen || !isAttachedToWindow) return
+        if (isOpen || !isAttachedToWindow) return
         isOpen = true
-        animateShow()
+        animatedShow()
     }
 
     fun close() {
-        if(!isOpen || !isAttachedToWindow) return
+        if (!isOpen || !isAttachedToWindow) return
         isOpen = false
-        animateHide()
+        animatedHide()
     }
 
-    private fun animateShow() {
+    private fun animatedShow() {
         val endRadius = hypot(centerX, centerY).toInt()
         val anim = ViewAnimationUtils.createCircularReveal(
             this,
@@ -63,7 +63,7 @@ class ArticleSubmenu @JvmOverloads constructor(
         anim.start()
     }
 
-    private fun animateHide() {
+    private fun animatedHide() {
         val endRadius = hypot(centerX, centerY).toInt()
         val anim = ViewAnimationUtils.createCircularReveal(
             this,
@@ -115,4 +115,5 @@ class ArticleSubmenu @JvmOverloads constructor(
             override fun newArray(size: Int): Array<SavedState?> = arrayOfNulls(size)
         }
     }
+
 }
