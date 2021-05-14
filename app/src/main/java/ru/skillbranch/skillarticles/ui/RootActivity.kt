@@ -16,12 +16,9 @@ import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.databinding.ActivityRootBinding
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
 import ru.skillbranch.skillarticles.ui.custom.delegates.viewBinding
-import ru.skillbranch.skillarticles.viewmodels.ArticleState
-import ru.skillbranch.skillarticles.viewmodels.ArticleViewModel
-import ru.skillbranch.skillarticles.viewmodels.Notify
-import ru.skillbranch.skillarticles.viewmodels.ViewModelFactory
+import ru.skillbranch.skillarticles.viewmodels.*
 
-class RootActivity : AppCompatActivity() {
+class RootActivity : AppCompatActivity(), IArticleView {
 
     private val viewModel: ArticleViewModel by viewModels { ViewModelFactory("0") }
     private val vb: ActivityRootBinding by viewBinding(ActivityRootBinding::inflate)
@@ -120,20 +117,28 @@ class RootActivity : AppCompatActivity() {
         snackbar.show()
     }
 
-    private fun setupSubmenu() {
+    override fun setupSubmenu() {
         vbSubmenu.btnTextUp.setOnClickListener { viewModel.handleUpText() }
         vbSubmenu.btnTextDown.setOnClickListener { viewModel.handleDownText() }
         vbSubmenu.switchMode.setOnClickListener { viewModel.handleNightMode() }
     }
 
-    private fun setupBottombar() {
+    override fun setupBottombar() {
         vbBottombar.btnLike.setOnClickListener { viewModel.handleLike() }
         vbBottombar.btnBookmark.setOnClickListener { viewModel.handleBookmark() }
         vbBottombar.btnShare.setOnClickListener { viewModel.handleShare() }
         vbBottombar.btnSettings.setOnClickListener { viewModel.handleToggleMenu() }
     }
 
-    private fun renderUi(data: ArticleState) {
+    override fun renderBotombar(data: BottombarData) {
+        TODO("Not yet implemented")
+    }
+
+    override fun renderSubmenu(data: SubmenuData) {
+        TODO("Not yet implemented")
+    }
+
+    override fun renderUi(data: ArticleState) {
         //bind submenu state
         vbBottombar.btnSettings.isChecked = data.isShowMenu
         if (data.isShowMenu) vb.submenu.open() else vb.submenu.close()
@@ -167,7 +172,7 @@ class RootActivity : AppCompatActivity() {
         if (data.categoryIcon != null) vb.toolbar.logo = getDrawable(data.categoryIcon as Int)
     }
 
-    fun setupToolbar() {
+    override fun setupToolbar() {
         setSupportActionBar(vb.toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         val logo = vb.toolbar.children.find { it is AppCompatImageView } as? ImageView
@@ -181,5 +186,25 @@ class RootActivity : AppCompatActivity() {
             logo.layoutParams = it
         }
 
+    }
+
+    override fun renderSearchResult(searchResult: List<Pair<Int, Int>>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun renderSearchPosition(searchPosition: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun clearSearchResult() {
+        TODO("Not yet implemented")
+    }
+
+    override fun showSearchBar(resultsCount: Int, searchPosition: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun hideSearchBar() {
+        TODO("Not yet implemented")
     }
 }

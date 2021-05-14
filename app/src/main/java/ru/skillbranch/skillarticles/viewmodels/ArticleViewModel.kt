@@ -159,3 +159,21 @@ data class ArticleState(
     val content: List<String> = emptyList(), //контент
     val reviews: List<Any> = emptyList() //комментарии
 )
+
+data class BottombarData(
+    val isLike: Boolean = false, //отмечено как Like
+    val isBookmark: Boolean = false, //в закладках
+    val isShowMenu: Boolean = false, //отображается меню
+    val isSearch: Boolean = false, //режим поиска
+    val resultsCount: Int = 0, //колличество найденных вхождений
+    val searchPosition: Int = 0 //текущая позиция поиска
+)
+
+data class SubmenuData(
+    val isShowMenu: Boolean = false, //отображается меню
+    val isBigText: Boolean = false, //шрифт увеличен
+    val isDarkMode: Boolean = false, //темный режим
+)
+
+fun ArticleState.toBottombarData() = BottombarData(isLike, isBookmark, isShowMenu, isSearch, searchResults.size, searchPosition)
+fun ArticleState.toSubmenuData() = SubmenuData(isShowMenu, isBigText, isDarkMode)
