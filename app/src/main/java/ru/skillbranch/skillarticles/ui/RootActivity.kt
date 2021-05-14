@@ -1,10 +1,13 @@
 package ru.skillbranch.skillarticles.ui
 
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -17,18 +20,23 @@ import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.databinding.ActivityRootBinding
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
 import ru.skillbranch.skillarticles.extensions.setMarginOptionally
-import ru.skillbranch.skillarticles.ui.custom.delegates.viewBinding
+import ru.skillbranch.skillarticles.ui.custom.SearchSpan
+import ru.skillbranch.skillarticles.ui.delegates.AttrValue
+import ru.skillbranch.skillarticles.ui.delegates.viewBinding
 import ru.skillbranch.skillarticles.viewmodels.*
 
 class RootActivity : AppCompatActivity(), IArticleView {
-
     private val viewModel: ArticleViewModel by viewModels { ViewModelFactory("0") }
     private val vb: ActivityRootBinding by viewBinding(ActivityRootBinding::inflate)
+
     private val vbBottombar
         get() = vb.bottombar.binding
     private val vbSubmenu
         get() = vb.submenu.binding
+    private lateinit var searchView: SearchView
 
+    private val bgColor by AttrValue(R.attr.colorSecondary)
+    private val fgColor by AttrValue(R.attr.colorOnSecondary)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +56,7 @@ class RootActivity : AppCompatActivity(), IArticleView {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_search, menu)
         val menuItem = menu.findItem(R.id.action_search)
-        val searchView = (menuItem.actionView as SearchView)
+        searchView = (menuItem.actionView as SearchView)
         searchView.queryHint = getString(R.string.article_search_placeholder)
 
         //restore SearchView
@@ -136,12 +144,12 @@ class RootActivity : AppCompatActivity(), IArticleView {
             btnSettings.setOnClickListener { viewModel.handleToggleMenu() }
 
             btnResultUp.setOnClickListener{
-                //TODO clear focus
+                searchView.clearFocus()
                 viewModel.handleUpResult()
             }
 
             btnResultDown.setOnClickListener {
-                //TODO clear focus
+                searchView.clearFocus()
                 viewModel.handleDownResult()
             }
 
@@ -183,14 +191,20 @@ class RootActivity : AppCompatActivity(), IArticleView {
 
         with(vb.tvTextContent) {
             textSize = if(data.isBigText) 18f else 14f
-            text = if(data.isLoadingContent) "loading" else data.content.first()
-            //TODO set content as spannable
+            setText(if (data.isLoadingContent) "loading" else data.content.first(), TextView.BufferType.SPANNABLE)
         }
 
         //bind toolbar
         vb.toolbar.title = data.title ?: "loading"
         vb.toolbar.subtitle = data.category ?: "loading"
         if (data.categoryIcon != null) vb.toolbar.logo = getDrawable(data.categoryIcon as Int)
+
+        if(data.isLoadingContent) return
+
+        if(data.isSearch) {
+            renderSearchResult(data.searchResults)
+            renderSearchPosition(data.searchPosition)
+        } else clearSearchResult()
     }
 
     override fun setupToolbar() {
@@ -210,15 +224,26 @@ class RootActivity : AppCompatActivity(), IArticleView {
     }
 
     override fun renderSearchResult(searchResult: List<Pair<Int, Int>>) {
-        TODO("Not yet implemented")
+        val content = vb.tvTextContent.text as Spannable
+
+        clearSearchResult()
+
+        searchResult.forEach { (start, end) ->
+            content.setSpan(
+                SearchSpan(bgColor, fgColor),
+                start,
+                end,
+                SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
     }
 
     override fun renderSearchPosition(searchPosition: Int) {
-        TODO("Not yet implemented")
+    //    TODO("Not yet implemented")
     }
 
     override fun clearSearchResult() {
-        TODO("Not yet implemented")
+    //    TODO("Not yet implemented")
     }
 
     override fun showSearchBar(resultsCount: Int, searchPosition: Int) {
