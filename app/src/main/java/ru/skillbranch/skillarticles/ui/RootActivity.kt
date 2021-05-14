@@ -14,12 +14,14 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.text.getSpans
 import androidx.core.view.children
 import com.google.android.material.snackbar.Snackbar
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.databinding.ActivityRootBinding
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
 import ru.skillbranch.skillarticles.extensions.setMarginOptionally
+import ru.skillbranch.skillarticles.ui.custom.SearchFocusSpan
 import ru.skillbranch.skillarticles.ui.custom.SearchSpan
 import ru.skillbranch.skillarticles.ui.delegates.AttrValue
 import ru.skillbranch.skillarticles.ui.delegates.viewBinding
@@ -195,9 +197,11 @@ class RootActivity : AppCompatActivity(), IArticleView {
         }
 
         //bind toolbar
-        vb.toolbar.title = data.title ?: "loading"
-        vb.toolbar.subtitle = data.category ?: "loading"
-        if (data.categoryIcon != null) vb.toolbar.logo = getDrawable(data.categoryIcon as Int)
+        with(vb.toolbar) {
+            title = data.title ?: "loading"
+            subtitle = data.category ?: "loading"
+            if (data.categoryIcon != null) logo = getDrawable(data.categoryIcon as Int)
+        }
 
         if(data.isLoadingContent) return
 
@@ -239,11 +243,30 @@ class RootActivity : AppCompatActivity(), IArticleView {
     }
 
     override fun renderSearchPosition(searchPosition: Int) {
-    //    TODO("Not yet implemented")
+        val content = vb.tvTextContent.text as Spannable
+
+        val spans = content.getSpans<SearchSpan>()
+
+        content.getSpans<SearchFocusSpan>()
+            .forEach { content.removeSpan(it) }
+
+        if(spans.isNotEmpty()){
+            //find position span
+            val result = spans[searchPosition]
+            //TODO selection
+            content.setSpan(
+                SearchFocusSpan(bgColor, fgColor),
+                content.getSpanStart(result),
+                content.getSpanEnd(result),
+                SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
     }
 
     override fun clearSearchResult() {
-    //    TODO("Not yet implemented")
+        val content = vb.tvTextContent.text as Spannable
+        content.getSpans<SearchSpan>()
+            .forEach { content.removeSpan(it) }
     }
 
     override fun showSearchBar(resultsCount: Int, searchPosition: Int) {
