@@ -118,53 +118,49 @@ class RootActivity : AppCompatActivity(), IArticleView {
     }
 
     override fun setupSubmenu() {
-        vbSubmenu.btnTextUp.setOnClickListener { viewModel.handleUpText() }
-        vbSubmenu.btnTextDown.setOnClickListener { viewModel.handleDownText() }
-        vbSubmenu.switchMode.setOnClickListener { viewModel.handleNightMode() }
+        with(vbSubmenu) {
+            btnTextUp.setOnClickListener { viewModel.handleUpText() }
+            btnTextDown.setOnClickListener { viewModel.handleDownText() }
+            switchMode.setOnClickListener { viewModel.handleNightMode() }
+        }
     }
 
     override fun setupBottombar() {
-        vbBottombar.btnLike.setOnClickListener { viewModel.handleLike() }
-        vbBottombar.btnBookmark.setOnClickListener { viewModel.handleBookmark() }
-        vbBottombar.btnShare.setOnClickListener { viewModel.handleShare() }
-        vbBottombar.btnSettings.setOnClickListener { viewModel.handleToggleMenu() }
+        with(vbBottombar) {
+            btnLike.setOnClickListener { viewModel.handleLike() }
+            btnBookmark.setOnClickListener { viewModel.handleBookmark() }
+            btnShare.setOnClickListener { viewModel.handleShare() }
+            btnSettings.setOnClickListener { viewModel.handleToggleMenu() }
+        }
     }
 
     override fun renderBotombar(data: BottombarData) {
-        TODO("Not yet implemented")
+        with(vbBottombar) {
+            btnSettings.isChecked = data.isShowMenu
+            btnLike.isChecked = data.isLike
+            btnBookmark.isChecked = data.isBookmark
+        }
     }
 
     override fun renderSubmenu(data: SubmenuData) {
-        TODO("Not yet implemented")
+        with(vbSubmenu) {
+            switchMode.isChecked = data.isDarkMode
+            btnTextDown.isChecked = !data.isBigText
+            btnTextUp.isChecked = data.isBigText
+        }
+
+        if(data.isShowMenu) vb.submenu.open() else vb.submenu.close()
     }
 
     override fun renderUi(data: ArticleState) {
-        //bind submenu state
-        vbBottombar.btnSettings.isChecked = data.isShowMenu
-        if (data.isShowMenu) vb.submenu.open() else vb.submenu.close()
-
-        //bind article person data
-        vbBottombar.btnLike.isChecked = data.isLike
-        vbBottombar.btnBookmark.isChecked = data.isBookmark
-
-        //bind submenu views
-        vbSubmenu.switchMode.isChecked = data.isDarkMode
         delegate.localNightMode =
             if (data.isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
 
-        if (data.isBigText) {
-            vb.tvTextContent.textSize = 18f
-            vbSubmenu.btnTextUp.isChecked = true
-            vbSubmenu.btnTextDown.isChecked = false
-        } else {
-            vb.tvTextContent.textSize = 14f
-            vbSubmenu.btnTextUp.isChecked = false
-            vbSubmenu.btnTextDown.isChecked = true
+        with(vb.tvTextContent) {
+            textSize = if(data.isBigText) 18f else 14f
+            text = if(data.isLoadingContent) "loading" else data.content.first()
+            //TODO set content as spannable
         }
-
-        //bind content
-        vb.tvTextContent.text =
-            if (data.isLoadingContent) "loading" else data.content.first() as String
 
         //bind toolbar
         vb.toolbar.title = data.title ?: "loading"
