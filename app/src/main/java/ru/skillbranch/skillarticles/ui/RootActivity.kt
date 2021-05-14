@@ -16,6 +16,7 @@ import com.google.android.material.snackbar.Snackbar
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.databinding.ActivityRootBinding
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
+import ru.skillbranch.skillarticles.extensions.setMarginOptionally
 import ru.skillbranch.skillarticles.ui.custom.delegates.viewBinding
 import ru.skillbranch.skillarticles.viewmodels.*
 
@@ -206,10 +207,17 @@ class RootActivity : AppCompatActivity(), IArticleView {
     }
 
     override fun showSearchBar(resultsCount: Int, searchPosition: Int) {
-        TODO("Not yet implemented")
+        with(vb.bottombar) {
+            setSearchState(true)
+            setSearchInfo(resultsCount, searchPosition)
+        }
+        vb.scroll.setMarginOptionally(bottom = dpToIntPx(56))
     }
 
     override fun hideSearchBar() {
-        TODO("Not yet implemented")
+        with(vb.bottombar) {
+            setSearchState(false)
+        }
+        vb.scroll.setMarginOptionally(bottom = dpToIntPx(0))
     }
 }
