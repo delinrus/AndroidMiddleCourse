@@ -1,8 +1,10 @@
 package ru.skillbranch.skillarticles.ui
 
 import android.os.Bundle
+import android.text.Selection
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -193,7 +195,11 @@ class RootActivity : AppCompatActivity(), IArticleView {
 
         with(vb.tvTextContent) {
             textSize = if(data.isBigText) 18f else 14f
-            setText(if (data.isLoadingContent) "loading" else data.content.first(), TextView.BufferType.SPANNABLE)
+            setText(
+                if (data.isLoadingContent) "loading" else data.content.first(),
+                TextView.BufferType.SPANNABLE
+            )
+            movementMethod = ScrollingMovementMethod()
         }
 
         //bind toolbar
@@ -247,13 +253,16 @@ class RootActivity : AppCompatActivity(), IArticleView {
 
         val spans = content.getSpans<SearchSpan>()
 
+        //remove old search focus span
         content.getSpans<SearchFocusSpan>()
             .forEach { content.removeSpan(it) }
 
         if(spans.isNotEmpty()){
             //find position span
             val result = spans[searchPosition]
-            //TODO selection
+            //move to selection
+            Selection.setSelection(content, content.getSpanStart(result))
+            //set new search focus span
             content.setSpan(
                 SearchFocusSpan(bgColor, fgColor),
                 content.getSpanStart(result),
