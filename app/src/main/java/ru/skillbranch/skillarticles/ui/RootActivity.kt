@@ -145,7 +145,8 @@ class RootActivity : AppCompatActivity(), IArticleView {
             btnBookmark.isChecked = data.isBookmark
         }
 
-        //TODO show/hide search mode
+        if(data.isSearch) showSearchBar(data.resultsCount, data.searchPosition)
+        else hideSearchBar()
     }
 
     override fun renderSubmenu(data: SubmenuData) {
