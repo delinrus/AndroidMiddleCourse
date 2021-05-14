@@ -1,6 +1,7 @@
 package ru.skillbranch.skillarticles.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
@@ -34,9 +35,10 @@ class RootActivity : AppCompatActivity(), IArticleView {
         setupBottombar()
         setupSubmenu()
 
-        viewModel.observeState(this) {
-            renderUi(it)
-        }
+        viewModel.observeState(this, ::renderUi)
+        viewModel.observeSubState(this, ArticleState::toBottombarData, ::renderBotombar)
+        viewModel.observeSubState(this, ArticleState::toSubmenuData, ::renderSubmenu)
+
         viewModel.observeNotifications(this) {
             renderNotification(it)
         }
@@ -135,14 +137,19 @@ class RootActivity : AppCompatActivity(), IArticleView {
     }
 
     override fun renderBotombar(data: BottombarData) {
+        Log.e("RootActivity", "renderBotombar $data")
+
         with(vbBottombar) {
             btnSettings.isChecked = data.isShowMenu
             btnLike.isChecked = data.isLike
             btnBookmark.isChecked = data.isBookmark
         }
+
+        //TODO show/hide search mode
     }
 
     override fun renderSubmenu(data: SubmenuData) {
+        Log.e("RootActivity", "renderSubmenu $data")
         with(vbSubmenu) {
             switchMode.isChecked = data.isDarkMode
             btnTextDown.isChecked = !data.isBigText
@@ -153,6 +160,7 @@ class RootActivity : AppCompatActivity(), IArticleView {
     }
 
     override fun renderUi(data: ArticleState) {
+        Log.e("RootActivity", "renderUi")
         delegate.localNightMode =
             if (data.isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
 
