@@ -12,6 +12,7 @@ import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.viewModels
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.AppCompatImageView
@@ -19,6 +20,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.text.getSpans
 import androidx.core.view.children
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.databinding.ActivityRootBinding
@@ -31,7 +33,9 @@ import ru.skillbranch.skillarticles.ui.delegates.viewBinding
 import ru.skillbranch.skillarticles.viewmodels.*
 
 class RootActivity : AppCompatActivity(), IArticleView {
-    private val viewModel: ArticleViewModel by viewModels { ViewModelFactory(this,"0") }
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    var viewModelFactory: ViewModelProvider.Factory = ViewModelFactory(this,"0")
+    private val viewModel: ArticleViewModel by viewModels { viewModelFactory }
     private val vb: ActivityRootBinding by viewBinding(ActivityRootBinding::inflate)
 
     private val vbBottombar
@@ -40,8 +44,10 @@ class RootActivity : AppCompatActivity(), IArticleView {
         get() = vb.submenu.binding
     private lateinit var searchView: SearchView
 
-    private val bgColor by AttrValue(R.attr.colorSecondary)
-    private val fgColor by AttrValue(R.attr.colorOnSecondary)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    val bgColor by AttrValue(R.attr.colorSecondary)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    val fgColor by AttrValue(R.attr.colorOnSecondary)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
