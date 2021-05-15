@@ -2,6 +2,7 @@ package ru.skillbranch.skillarticles.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.SavedStateHandle
 import ru.skillbranch.skillarticles.data.ArticleData
 import ru.skillbranch.skillarticles.data.ArticlePersonalInfo
 import ru.skillbranch.skillarticles.data.repositories.ArticleRepository
@@ -9,9 +10,10 @@ import ru.skillbranch.skillarticles.extensions.toAppSettings
 import ru.skillbranch.skillarticles.extensions.toArticlePersonalInfo
 import ru.skillbranch.skillarticles.extensions.format
 import ru.skillbranch.skillarticles.extensions.indexesOf
+import java.io.Serializable
 
-class ArticleViewModel(private val articleId: String) :
-    BaseViewModel<ArticleState>(ArticleState()), IArticleViewModel {
+class ArticleViewModel(private val articleId: String, savedStateHandle: SavedStateHandle) :
+    BaseViewModel<ArticleState>(ArticleState(), savedStateHandle), IArticleViewModel {
     private val repository = ArticleRepository()
 
     init {
@@ -171,7 +173,7 @@ data class ArticleState(
     val poster: String? = null, //обложка статьи
     val content: List<String> = emptyList(), //контент
     val reviews: List<Any> = emptyList() //комментарии
-)
+) : Serializable
 
 data class BottombarData(
     val isLike: Boolean = false, //отмечено как Like

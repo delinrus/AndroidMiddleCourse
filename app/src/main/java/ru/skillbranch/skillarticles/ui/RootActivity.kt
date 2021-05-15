@@ -1,6 +1,7 @@
 package ru.skillbranch.skillarticles.ui
 
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.text.Selection
 import android.text.Spannable
 import android.text.SpannableString
@@ -30,7 +31,7 @@ import ru.skillbranch.skillarticles.ui.delegates.viewBinding
 import ru.skillbranch.skillarticles.viewmodels.*
 
 class RootActivity : AppCompatActivity(), IArticleView {
-    private val viewModel: ArticleViewModel by viewModels { ViewModelFactory("0") }
+    private val viewModel: ArticleViewModel by viewModels { ViewModelFactory(this,"0") }
     private val vb: ActivityRootBinding by viewBinding(ActivityRootBinding::inflate)
 
     private val vbBottombar
@@ -100,6 +101,16 @@ class RootActivity : AppCompatActivity(), IArticleView {
         return super.onCreateOptionsMenu(menu)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        viewModel.saveState()
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        viewModel.restoreState()
+        super.onRestoreInstanceState(savedInstanceState)
+    }
+
     private fun renderNotification(notify: Notify) {
         val snackbar = Snackbar.make(vb.coordinatorContainer, notify.message, Snackbar.LENGTH_LONG)
             .setAnchorView(vb.bottombar)
@@ -165,8 +176,6 @@ class RootActivity : AppCompatActivity(), IArticleView {
     }
 
     override fun renderBotombar(data: BottombarData) {
-        Log.e("RootActivity", "renderBotombar $data")
-
         with(vbBottombar) {
             btnSettings.isChecked = data.isShowMenu
             btnLike.isChecked = data.isLike
@@ -178,7 +187,6 @@ class RootActivity : AppCompatActivity(), IArticleView {
     }
 
     override fun renderSubmenu(data: SubmenuData) {
-        Log.e("RootActivity", "renderSubmenu $data")
         with(vbSubmenu) {
             switchMode.isChecked = data.isDarkMode
             btnTextDown.isChecked = !data.isBigText
@@ -189,7 +197,6 @@ class RootActivity : AppCompatActivity(), IArticleView {
     }
 
     override fun renderUi(data: ArticleState) {
-        Log.e("RootActivity", "renderUi")
         delegate.localNightMode =
             if (data.isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
 

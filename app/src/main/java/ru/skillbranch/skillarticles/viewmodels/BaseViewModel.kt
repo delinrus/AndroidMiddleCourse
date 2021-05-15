@@ -1,10 +1,14 @@
 package ru.skillbranch.skillarticles.viewmodels
 
+import android.util.Log
 import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
+import androidx.core.os.bundleOf
 import androidx.lifecycle.*
+import androidx.savedstate.SavedStateRegistryOwner
+import java.lang.IllegalArgumentException
 
-abstract class BaseViewModel<T>(initState: T) : ViewModel() {
+abstract class BaseViewModel<T>(initState: T, private val savedStateHandle: SavedStateHandle) : ViewModel() {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     val notifications = MutableLiveData<Event<Notify>>()
 
@@ -86,12 +90,34 @@ abstract class BaseViewModel<T>(initState: T) : ViewModel() {
         }
     }
 
+    /***
+     * сохранение стейта в bundle
+     */
+    fun saveState() {
+        Log.e("BaseViewModel", "save state $currentState")
+        savedStateHandle.set("state", currentState)
+    }
+
+    /***
+     * востановление стейта из bundle после смерти процесса
+     */
+    fun restoreState() {
+        val restoredState = savedStateHandle.get<T>("state")
+        Log.e("BaseViewModel", "restore state $restoredState")
+        restoredState ?: return
+        state.value = restoredState
+    }
+
 }
 
-class ViewModelFactory(private val params: String) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+class ViewModelFactory(owner : SavedStateRegistryOwner, private val params: String) : AbstractSavedStateViewModelFactory(owner, bundleOf()) {
+    override fun <T : ViewModel?> create(
+        key: String,
+        modelClass: Class<T>,
+        handle: SavedStateHandle
+    ): T {
         if (modelClass.isAssignableFrom(ArticleViewModel::class.java)) {
-            return ArticleViewModel(params) as T
+            return ArticleViewModel(params, handle) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
