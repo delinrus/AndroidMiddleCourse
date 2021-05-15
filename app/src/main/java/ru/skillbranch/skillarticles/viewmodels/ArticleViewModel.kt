@@ -15,6 +15,11 @@ class ArticleViewModel(private val articleId: String, savedStateHandle: SavedSta
     private val repository = ArticleRepository()
 
     init {
+        //set custom saved state provider for non serializable or custom states
+        savedStateHandle.setSavedStateProvider("state") {
+            currentState.toBundle()
+        }
+
         //subscribe on mutable data
         subscribeOnDataSource(getArticleData()) { article, state ->
             article ?: return@subscribeOnDataSource null
