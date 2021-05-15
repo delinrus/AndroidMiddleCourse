@@ -106,11 +106,6 @@ class RootActivity : AppCompatActivity(), IArticleView {
         super.onSaveInstanceState(outState)
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        viewModel.restoreState()
-        super.onRestoreInstanceState(savedInstanceState)
-    }
-
     private fun renderNotification(notify: Notify) {
         val snackbar = Snackbar.make(vb.coordinatorContainer, notify.message, Snackbar.LENGTH_LONG)
             .setAnchorView(vb.bottombar)
@@ -202,11 +197,10 @@ class RootActivity : AppCompatActivity(), IArticleView {
 
         with(vb.tvTextContent) {
             textSize = if(data.isBigText) 18f else 14f
-            setText(
-                if (data.isLoadingContent) "loading" else data.content.first(),
-                TextView.BufferType.SPANNABLE
-            )
             movementMethod = ScrollingMovementMethod()
+            val content = if (data.isLoadingContent) "loading" else data.content.first()
+            if(text.toString() == content) return@with
+            setText(content, TextView.BufferType.SPANNABLE)
         }
 
         //bind toolbar

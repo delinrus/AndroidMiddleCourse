@@ -1,14 +1,16 @@
 package ru.skillbranch.skillarticles.viewmodels
 
+import android.os.Bundle
 import android.util.Log
 import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
 import androidx.core.os.bundleOf
 import androidx.lifecycle.*
 import androidx.savedstate.SavedStateRegistryOwner
+import java.io.Serializable
 import java.lang.IllegalArgumentException
 
-abstract class BaseViewModel<T>(initState: T, private val savedStateHandle: SavedStateHandle) : ViewModel() {
+abstract class BaseViewModel<T>(initState: T, private val savedStateHandle: SavedStateHandle) : ViewModel() where T : VMState {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     val notifications = MutableLiveData<Event<Notify>>()
 
@@ -19,7 +21,12 @@ abstract class BaseViewModel<T>(initState: T, private val savedStateHandle: Save
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     val state: MediatorLiveData<T> = MediatorLiveData<T>().apply {
-        value = initState
+        val restoredState = savedStateHandle.get<Any>("state")?.let {
+            if(it is Bundle) initState.fromBundle(it) as? T
+            else it as T
+        }
+        Log.e("BaseViewModel", "handle restore state $restoredState")
+        value = restoredState ?: initState
     }
 
     /***
@@ -101,12 +108,12 @@ abstract class BaseViewModel<T>(initState: T, private val savedStateHandle: Save
     /***
      * востановление стейта из bundle после смерти процесса
      */
-    fun restoreState() {
+   /* fun restoreState() {
         val restoredState = savedStateHandle.get<T>("state")
         Log.e("BaseViewModel", "restore state $restoredState")
         restoredState ?: return
         state.value = restoredState
-    }
+    }*/
 
 }
 
@@ -170,4 +177,9 @@ sealed class Notify() {
         val errLabel: String?,
         val errHandler: (() -> Unit)?
     ) : Notify()
+}
+
+public interface VMState : Serializable {
+    fun toBundle(): Bundle
+    fun fromBundle(bundle: Bundle): VMState?
 }
