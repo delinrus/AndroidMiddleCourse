@@ -42,4 +42,11 @@ class PrefManager(context: Context = App.applicationContext()) {
                 .distinctUntilChanged()
                 .asLiveData()
         }
+
+    var testInt: Int by PrefDelegate(Int.MAX_VALUE)
+    var testLong: Long by PrefDelegate(Long.MAX_VALUE)
+    var testDouble: Double by PrefDelegate(Double.MAX_VALUE)
+    var testFloat: Float by PrefDelegate(Float.MAX_VALUE)
+    var testString: String by PrefDelegate("test")
+    var testBoolean: Boolean by PrefDelegate(false)
 }
