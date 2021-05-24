@@ -3,6 +3,7 @@ package ru.skillbranch.skillarticles
 import org.junit.Test
 
 import org.junit.Assert.*
+import ru.skillbranch.skillarticles.data.adapters.UserJsonAdapter
 
 /**
  * Example local unit test, which will execute on the development machine (host).
