@@ -2,6 +2,7 @@ package ru.skillbranch.skillarticles.viewmodels
 
 import android.os.Bundle
 import android.util.Log
+import androidx.annotation.VisibleForTesting
 import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
@@ -16,7 +17,7 @@ class ArticleViewModel(private val articleId: String, savedStateHandle: SavedSta
 
     init {
         //set custom saved state provider for non serializable or custom states
-        savedStateHandle.setSavedStateProvider("state") {
+        savedStateHandle.setSavedStateProvider("state"){
             currentState.toBundle()
         }
 
@@ -139,7 +140,7 @@ class ArticleViewModel(private val articleId: String, savedStateHandle: SavedSta
     override fun handleSearch(query: String?) {
         query ?: return
 
-        var result = (currentState.content.firstOrNull().indexesOf(query))
+        val result = currentState.content.firstOrNull().indexesOf(query)
             .map { it to it + query.length }
 
         updateState { it.copy(searchQuery = query, searchResults = result) }
@@ -182,10 +183,12 @@ data class ArticleState(
             .asMap()
             .toList()
             .toTypedArray()
+
         return bundleOf(*map)
     }
 
     override fun fromBundle(bundle: Bundle): ArticleState? {
+
         val map = bundle.keySet().associateWith { bundle[it] }
         return copy(
             isAuth = map["isAuth"] as Boolean,
@@ -218,7 +221,7 @@ data class BottombarData(
     val isBookmark: Boolean = false, //в закладках
     val isShowMenu: Boolean = false, //отображается меню
     val isSearch: Boolean = false, //режим поиска
-    val resultsCount: Int = 0, //колличество найденных вхождений
+    val resultsCount: Int = 0, //количество найденных вхождений
     val searchPosition: Int = 0 //текущая позиция поиска
 )
 

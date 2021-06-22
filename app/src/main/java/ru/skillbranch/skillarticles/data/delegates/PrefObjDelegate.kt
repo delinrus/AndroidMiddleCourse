@@ -1,8 +1,8 @@
 package ru.skillbranch.skillarticles.data.delegates
 
+import android.util.Log
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -20,37 +20,37 @@ class PrefObjDelegate<T>(
         thisRef: PrefManager,
         prop: KProperty<*>
     ): ReadWriteProperty<PrefManager, T?> {
-
-        val key = stringPreferencesKey(customKey ?: prop.name)
         return object : ReadWriteProperty<PrefManager, T?> {
-            private var _storedValue: T? = null
+            var storedValue: T? = null
 
-            override fun setValue(thisRef: PrefManager, property: KProperty<*>, value: T?) {
-                _storedValue = value
-                //set non blocking on coroutine
-                val jsonStr = adapter.toJson(value)
-
-                thisRef.scope.launch {
-                    thisRef.dataStore.edit { prefs ->
-                        prefs[key] = jsonStr
-                    }
-                }
-            }
+            val key = stringPreferencesKey(customKey ?: prop.name)
 
             override fun getValue(thisRef: PrefManager, property: KProperty<*>): T? {
-                if (_storedValue == null) {
-                    val flowValue = thisRef.dataStore.data
-                        .map { prefs ->
-                            prefs[key]
-                        }
-                    //sync read (on IO Dispatcher and returns result on call thread)
-                    val jsonStr = runBlocking(Dispatchers.IO) { flowValue.first() }
-                    if (jsonStr != null) {
-                        _storedValue = adapter.fromJson(jsonStr)
+                if (storedValue == null) {
+                    val flowValue = thisRef.dataStore.data.map { preferences ->
+                        preferences[key] ?: ""
+                    }
+                    storedValue = runBlocking {
+                        flowValue
+                            .map { adapter.fromJson(it) }
+                            .first()
                     }
                 }
-                return _storedValue
+                return storedValue
+            }
+
+            override fun setValue(thisRef: PrefManager, property: KProperty<*>, value: T?) {
+                storedValue = value
+                @Suppress("UNCHECKED_CAST")
+                thisRef.scope.launch {
+                    thisRef.dataStore.edit { settings ->
+                        settings[key] = adapter.toJson(value)
+                        Log.e("PrefManager", "set value ${adapter.toJson(value)}")
+                    }
+                }
             }
         }
     }
+
+
 }

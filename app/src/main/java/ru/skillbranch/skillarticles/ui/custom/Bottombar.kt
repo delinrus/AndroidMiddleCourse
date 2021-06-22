@@ -36,14 +36,14 @@ class Bottombar @JvmOverloads constructor(
     }
 
     override fun onSaveInstanceState(): Parcelable {
-        val savedState = SavedState(super.onSaveInstanceState())
-        savedState.ssIsSearchMode = isSearchMode
-        return savedState
+       val saveState = SavedState(super.onSaveInstanceState())
+        saveState.ssIsSearchMode = isSearchMode
+        return saveState
     }
 
     override fun onRestoreInstanceState(state: Parcelable?) {
         super.onRestoreInstanceState(state)
-        if(state is SavedState) {
+        if(state is SavedState){
             isSearchMode = state.ssIsSearchMode
             binding.reveal.isVisible = isSearchMode
             binding.bottomGroup.isVisible = !isSearchMode
@@ -125,8 +125,9 @@ class Bottombar @JvmOverloads constructor(
         }
 
         companion object CREATOR : Parcelable.Creator<SavedState> {
-            override fun createFromParcel(parcel: Parcel): SavedState = SavedState(parcel)
+            override fun createFromParcel(parcel: Parcel)= SavedState(parcel)
             override fun newArray(size: Int): Array<SavedState?> = arrayOfNulls(size)
         }
+
     }
 }

@@ -30,7 +30,7 @@ class ArticleRepository(
         return local.findArticlePersonalInfo(articleId) //1s delay from db
     }
 
-    override fun getAppSettings(): LiveData<AppSettings> = prefs.settings//from preferences
+    override fun getAppSettings(): LiveData<AppSettings> = prefs.settings //from preferences
 
     override fun updateSettings(appSettings: AppSettings) {
         prefs.isBigText = appSettings.isBigText

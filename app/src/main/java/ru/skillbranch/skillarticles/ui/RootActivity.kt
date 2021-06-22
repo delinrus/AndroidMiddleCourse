@@ -34,13 +34,13 @@ import ru.skillbranch.skillarticles.viewmodels.*
 
 class RootActivity : AppCompatActivity(), IArticleView {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    var viewModelFactory: ViewModelProvider.Factory = ViewModelFactory(this,"0")
+    var viewModelFactory: ViewModelProvider.Factory  = ViewModelFactory(this, "0")
     private val viewModel: ArticleViewModel by viewModels { viewModelFactory }
-    private val vb: ActivityRootBinding by viewBinding(ActivityRootBinding::inflate)
+    val vb: ActivityRootBinding by viewBinding(ActivityRootBinding::inflate)
 
-    private val vbBottombar
+    val vbBottombar
         get() = vb.bottombar.binding
-    private val vbSubmenu
+    val vbSubmenu
         get() = vb.submenu.binding
     private lateinit var searchView: SearchView
 
@@ -51,6 +51,7 @@ class RootActivity : AppCompatActivity(), IArticleView {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setupToolbar()
         setupBottombar()
         setupSubmenu()
@@ -91,7 +92,7 @@ class RootActivity : AppCompatActivity(), IArticleView {
             }
 
         })
-        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 viewModel.handleSearch(query)
                 return true
@@ -108,7 +109,7 @@ class RootActivity : AppCompatActivity(), IArticleView {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        viewModel.saveState()
+        viewModel.saveSate()
         super.onSaveInstanceState(outState)
     }
 
@@ -150,16 +151,19 @@ class RootActivity : AppCompatActivity(), IArticleView {
             btnTextDown.setOnClickListener { viewModel.handleDownText() }
             switchMode.setOnClickListener { viewModel.handleNightMode() }
         }
+
     }
 
     override fun setupBottombar() {
         with(vbBottombar) {
+            val vbr = vb
+
             btnLike.setOnClickListener { viewModel.handleLike() }
             btnBookmark.setOnClickListener { viewModel.handleBookmark() }
             btnShare.setOnClickListener { viewModel.handleShare() }
             btnSettings.setOnClickListener { viewModel.handleToggleMenu() }
 
-            btnResultUp.setOnClickListener{
+            btnResultUp.setOnClickListener {
                 searchView.clearFocus()
                 viewModel.handleUpResult()
             }
@@ -183,8 +187,9 @@ class RootActivity : AppCompatActivity(), IArticleView {
             btnBookmark.isChecked = data.isBookmark
         }
 
-        if(data.isSearch) showSearchBar(data.resultsCount, data.searchPosition)
+        if (data.isSearch) showSearchBar(data.resultsCount, data.searchPosition)
         else hideSearchBar()
+
     }
 
     override fun renderSubmenu(data: SubmenuData) {
@@ -194,7 +199,7 @@ class RootActivity : AppCompatActivity(), IArticleView {
             btnTextUp.isChecked = data.isBigText
         }
 
-        if(data.isShowMenu) vb.submenu.open() else vb.submenu.close()
+        if (data.isShowMenu) vb.submenu.open() else vb.submenu.close()
     }
 
     override fun renderUi(data: ArticleState) {
@@ -202,10 +207,10 @@ class RootActivity : AppCompatActivity(), IArticleView {
             if (data.isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
 
         with(vb.tvTextContent) {
-            textSize = if(data.isBigText) 18f else 14f
+            textSize = if (data.isBigText) 18f else 14f
             movementMethod = ScrollingMovementMethod()
             val content = if (data.isLoadingContent) "loading" else data.content.first()
-            if(text.toString() == content) return@with
+            if (text.toString() == content) return@with
             setText(content, TextView.BufferType.SPANNABLE)
         }
 
@@ -216,9 +221,9 @@ class RootActivity : AppCompatActivity(), IArticleView {
             if (data.categoryIcon != null) logo = getDrawable(data.categoryIcon as Int)
         }
 
-        if(data.isLoadingContent) return
+        if (data.isLoadingContent) return
 
-        if(data.isSearch) {
+        if (data.isSearch) {
             renderSearchResult(data.searchResults)
             renderSearchPosition(data.searchPosition)
         } else clearSearchResult()
@@ -241,6 +246,7 @@ class RootActivity : AppCompatActivity(), IArticleView {
     }
 
     override fun renderSearchResult(searchResult: List<Pair<Int, Int>>) {
+
         val content = vb.tvTextContent.text as Spannable
 
         clearSearchResult()
@@ -253,6 +259,7 @@ class RootActivity : AppCompatActivity(), IArticleView {
                 SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
             )
         }
+
     }
 
     override fun renderSearchPosition(searchPosition: Int) {
@@ -264,7 +271,7 @@ class RootActivity : AppCompatActivity(), IArticleView {
         content.getSpans<SearchFocusSpan>()
             .forEach { content.removeSpan(it) }
 
-        if(spans.isNotEmpty()){
+        if (spans.isNotEmpty()) {
             //find position span
             val result = spans[searchPosition]
             //move to selection
@@ -276,6 +283,7 @@ class RootActivity : AppCompatActivity(), IArticleView {
                 content.getSpanEnd(result),
                 SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
             )
+
         }
     }
 

@@ -81,17 +81,12 @@ interface IArticleViewModel {
      */
     fun handleSearch(query: String?)
 
-
     /**
-     * переместиться к предыдущему совпадению поиска
+     * переместиться к предидущему совпадению поиска
      */
     fun handleUpResult()
-
-
     /**
      * переместиться к следующему совпадению поиска
      */
     fun handleDownResult()
-
-
 }
