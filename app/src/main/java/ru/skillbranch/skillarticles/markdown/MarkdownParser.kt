@@ -7,7 +7,7 @@ object MarkdownParser {
     private val LINE_SEPARATOR = System.getProperty("line.separator") ?: "\n"
 
     //group regex
-    private const val UNORDERED_LIST_ITEM_GROUP = ""
+    private const val UNORDERED_LIST_ITEM_GROUP = "(^[*+-] .+$)"
 
     //result regex
     const val MARKDOWN_GROUPS = "$UNORDERED_LIST_ITEM_GROUP"
@@ -38,6 +38,48 @@ object MarkdownParser {
         val matcher = elementsPattern.matcher(string)
         var lastStartIndex = 0
 
+        loop@ while (matcher.find(lastStartIndex)) {
+            val startIndex = matcher.start()
+            val endIndex = matcher.end()
+
+            //if something is found then everything before - TEXT
+            if (lastStartIndex < startIndex) {
+                parents.add(Element.Text(string.subSequence(lastStartIndex, startIndex)))
+            }
+
+            //found text
+            var text: CharSequence
+
+            //groups range for iterate by groups
+            val groups = 1..1
+            var group = -1
+            for (gr in groups) {
+                if (matcher.group(gr) != null) {
+                    group = gr
+                    break
+                }
+            }
+
+            when (group) {
+                //NOT FOUND -> BREAK
+                -1 -> break@loop
+
+                //UNORDERED LIST
+                1 -> {
+                    //text without "*. "
+                    text = string.subSequence(startIndex.plus(2), endIndex)
+
+                    //find inner elements
+                    val subs = findElements(text)
+                    val element = Element.UnorderedListItem(text, subs)
+                    parents.add(element)
+
+                    //next find start from position "endIndex" (last regex character)
+                    lastStartIndex = endIndex
+                }
+            }
+        }
+
         return parents
     }
 }
@@ -50,7 +92,7 @@ sealed class Element {
 
     data class Text(
         override val text: CharSequence,
-        override val elements: List<Element>
+        override val elements: List<Element> = emptyList()
     ) : Element()
 
     data class UnorderedListItem(

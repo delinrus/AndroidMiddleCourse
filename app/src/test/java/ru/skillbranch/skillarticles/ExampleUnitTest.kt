@@ -1,7 +1,9 @@
 package ru.skillbranch.skillarticles
 
+import junit.framework.Assert.assertEquals
 import org.junit.Test
 import ru.skillbranch.skillarticles.markdown.Element
+import ru.skillbranch.skillarticles.markdown.MarkdownParser
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -11,7 +13,9 @@ import ru.skillbranch.skillarticles.markdown.Element
 class ExampleUnitTest {
     @Test
     fun parse_list_item() {
-
+        val result = MarkdownParser.parse(unorderedListString)
+        val actual = prepare<Element.UnorderedListItem>(result.elements)
+        assertEquals(expectedUnorderedList, actual)
     }
 
     private fun Element.spread(): List<Element> {
