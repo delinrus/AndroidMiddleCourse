@@ -16,6 +16,24 @@ class ExampleUnitTest {
         val result = MarkdownParser.parse(unorderedListString)
         val actual = prepare<Element.UnorderedListItem>(result.elements)
         assertEquals(expectedUnorderedList, actual)
+
+        printResults(actual)
+        println("")
+        printElements(result.elements)
+    }
+
+    private fun printResults(list:List<String>){
+        val iterator = list.iterator()
+        while (iterator.hasNext()){
+            println("find >> ${iterator.next()}")
+        }
+    }
+
+    private fun printElements(list: List<Element>) {
+        val iterator = list.iterator()
+        while(iterator.hasNext()) {
+            println("element >> ${iterator.next()}")
+        }
     }
 
     private fun Element.spread(): List<Element> {

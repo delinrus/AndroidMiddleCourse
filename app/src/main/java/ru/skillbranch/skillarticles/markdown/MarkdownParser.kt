@@ -80,6 +80,11 @@ object MarkdownParser {
             }
         }
 
+        if (lastStartIndex < string.length) {
+            val text = string.subSequence(lastStartIndex, string.length)
+            parents.add(Element.Text(text))
+        }
+
         return parents
     }
 }
