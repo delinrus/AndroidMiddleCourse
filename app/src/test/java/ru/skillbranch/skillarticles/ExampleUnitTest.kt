@@ -22,6 +22,17 @@ class ExampleUnitTest {
         printElements(result.elements)
     }
 
+    @Test
+    fun parse_header() {
+        val result = MarkdownParser.parse(headerString)
+        val actual = prepare<Element.Header>(result.elements)
+        assertEquals(expectedHeader, actual)
+
+        printResults(actual)
+        println("")
+        printElements(result.elements)
+    }
+
     private fun printResults(list:List<String>){
         val iterator = list.iterator()
         while (iterator.hasNext()){
