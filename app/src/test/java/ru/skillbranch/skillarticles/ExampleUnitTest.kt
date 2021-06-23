@@ -59,6 +59,17 @@ class ExampleUnitTest {
         printElements(result.elements)
     }
 
+    @Test
+    fun parse_bold() {
+        val result = MarkdownParser.parse(boldString)
+        val actual = prepare<Element.Bold>(result.elements)
+        assertEquals(expectedBold, actual)
+
+        printResults(actual)
+        println("")
+        printElements(result.elements)
+    }
+
     private fun printResults(list:List<String>){
         val iterator = list.iterator()
         while (iterator.hasNext()){
