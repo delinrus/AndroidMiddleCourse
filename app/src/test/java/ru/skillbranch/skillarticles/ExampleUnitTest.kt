@@ -26,7 +26,11 @@ class ExampleUnitTest {
     fun parse_header() {
         val result = MarkdownParser.parse(headerString)
         val actual = prepare<Element.Header>(result.elements)
+        val actualLevel = result.elements.spread()
+            .filterIsInstance<Element.Header>()
+            .map{it.level}
         assertEquals(expectedHeader, actual)
+        assertEquals(listOf(1,2,3,4,5,6), actualLevel)
 
         printResults(actual)
         println("")
@@ -38,6 +42,17 @@ class ExampleUnitTest {
         val result = MarkdownParser.parse(quoteString)
         val actual = prepare<Element.Quote>(result.elements)
         assertEquals(expectedQuote, actual)
+
+        printResults(actual)
+        println("")
+        printElements(result.elements)
+    }
+
+    @Test
+    fun parse_italic() {
+        val result = MarkdownParser.parse(italicString)
+        val actual = prepare<Element.Italic>(result.elements)
+        assertEquals(expectedItalic, actual)
 
         printResults(actual)
         println("")

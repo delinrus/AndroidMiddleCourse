@@ -10,10 +10,10 @@ object MarkdownParser {
     private const val UNORDERED_LIST_ITEM_GROUP = "(^[*+-] .+$)"
     private const val HEADER_GROUP = "(^#{1,6} .+?$)"
     private const val QUOTE_GROUP = "(^> .+?$)"
-
+    private const val ITALIC_GROUP = "((?<!\\*)\\*[^*].*?[^*]?\\*(?!\\*)|(?<!_)_[^*].*?[^*]?_(?!_))"
 
     //result regex
-    const val MARKDOWN_GROUPS = "$UNORDERED_LIST_ITEM_GROUP|$HEADER_GROUP|$QUOTE_GROUP"
+    const val MARKDOWN_GROUPS = "$UNORDERED_LIST_ITEM_GROUP|$HEADER_GROUP|$QUOTE_GROUP|$ITALIC_GROUP"
 
     private val elementsPattern by lazy { Pattern.compile(MARKDOWN_GROUPS, Pattern.MULTILINE) }
 
@@ -54,7 +54,7 @@ object MarkdownParser {
             var text: CharSequence
 
             //groups range for iterate by groups
-            val groups = 1..3
+            val groups = 1..4
             var group = -1
             for (gr in groups) {
                 if (matcher.group(gr) != null) {
@@ -99,8 +99,17 @@ object MarkdownParser {
                     //text without "> "
                     text = string.subSequence(startIndex.plus(2), endIndex)
                     val subElements = findElements(text)
-
                     val element = Element.Quote(text, subElements)
+                    parents.add(element)
+                    lastStartIndex = endIndex
+                }
+
+                //ITALIC
+                4 -> {
+                    //text without "*{}*"
+                    text = string.subSequence(startIndex.inc(), endIndex.dec())
+                    val subElements = findElements(text)
+                    val element = Element.Italic(text, subElements)
                     parents.add(element)
                     lastStartIndex = endIndex
                 }
@@ -139,6 +148,11 @@ sealed class Element {
     ) : Element()
 
     data class Quote(
+        override val text: CharSequence,
+        override val elements: List<Element> = emptyList()
+    ) : Element()
+
+    data class Italic(
         override val text: CharSequence,
         override val elements: List<Element> = emptyList()
     ) : Element()
