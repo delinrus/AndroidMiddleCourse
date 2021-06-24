@@ -110,6 +110,17 @@ class ExampleUnitTest {
         printElements(result.elements)
     }
 
+    @Test
+    fun parse_inline_code() {
+        val result = MarkdownParser.parse(inlineString)
+        val actual = prepare<Element.InlineCode>(result.elements)
+        assertEquals(expectedInline, actual)
+
+        printResults(actual)
+        println("")
+        printElements(result.elements)
+    }
+
     private fun printResults(list:List<String>){
         val iterator = list.iterator()
         while (iterator.hasNext()){
