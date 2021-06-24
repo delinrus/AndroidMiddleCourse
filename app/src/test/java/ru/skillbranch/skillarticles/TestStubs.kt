@@ -447,10 +447,10 @@ val expectedMarkdown = mapOf(
     ),
     "multiline" to listOf(
         "code block.code block.code block",
-        "multiline code block\n",
-        "multiline code block\n",
-        "multiline code block\n",
-        "multiline code block"
+        "multiline code block\n" +
+                "multiline code block\n" +
+                "multiline code block\n" +
+                "multiline code block"
     ),
     "quote" to listOf(
         "Blockquotes are very handy in ~~email~~ to emulate reply text.",

@@ -1,5 +1,6 @@
 package ru.skillbranch.skillarticles.markdown
 
+import java.lang.StringBuilder
 import java.util.regex.Pattern
 
 object MarkdownParser {
@@ -19,12 +20,13 @@ object MarkdownParser {
     private const val LINK_GROUP = "(\\[[^\\[\\]]*?]\\(.+?\\)|^\\[*?]\\(.*?\\))"
     private const val ORDERED_LIST_GROUP = "(^\\d+\\. .+$)"
     private const val IMAGE_GROUP = "!(\\[[^\\[\\]]*?]\\(.+?\\)|^\\[*?]\\(.*?\\))"
+    private const val BLOCK_GROUP = "(^`{3}[\\s\\S]*?`{3}$)"
 
 
     //result regex
     const val MARKDOWN_GROUPS = "$UNORDERED_LIST_ITEM_GROUP|$HEADER_GROUP|$QUOTE_GROUP" +
             "|$ITALIC_GROUP|$BOLD_GROUP|$STRIKE_GROUP|$RULE_GROUP|$INLINE_GROUP|$LINK_GROUP" +
-            "|$ORDERED_LIST_GROUP|$IMAGE_GROUP"
+            "|$ORDERED_LIST_GROUP|$IMAGE_GROUP|$BLOCK_GROUP"
 
     private val elementsPattern by lazy { Pattern.compile(MARKDOWN_GROUPS, Pattern.MULTILINE) }
 
@@ -41,7 +43,18 @@ object MarkdownParser {
      * clear markdown text to string without markdown characters
      */
     fun clear(string: String): String? {
-        return null
+        val markdown = parse(string)
+        val builder = StringBuilder()
+        markdown.elements.forEach { sumSubElements(it, builder) }
+        return builder.toString()
+    }
+
+    private fun sumSubElements(element: Element, builder: StringBuilder) {
+        if (element.elements.isEmpty()) {
+            builder.append(element.text)
+        } else {
+            element.elements.forEach { sumSubElements(it, builder) }
+        }
     }
 
     /**
@@ -65,7 +78,7 @@ object MarkdownParser {
             var text: CharSequence
 
             //groups range for iterate by groups
-            val groups = 1..11
+            val groups = 1..12
             var group = -1
             for (gr in groups) {
                 if (matcher.group(gr) != null) {
@@ -196,6 +209,14 @@ object MarkdownParser {
                     val nullableAlt = if (alt.isNotEmpty()) alt else null
 
                     val element = Element.Image(url, nullableAlt, titleWithoutQuotes)
+                    parents.add(element)
+                    lastStartIndex = endIndex
+                }
+                //BLOCK CODE
+                12 -> {
+                    //text without "```{}```"
+                    text = string.subSequence(startIndex.plus(3), endIndex.plus(-3))
+                    val element = Element.BlockCode(text = text)
                     parents.add(element)
                     lastStartIndex = endIndex
                 }
