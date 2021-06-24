@@ -99,6 +99,17 @@ class ExampleUnitTest {
         printElements(result.elements)
     }
 
+    @Test
+    fun parse_rule() {
+        val result = MarkdownParser.parse(ruleString)
+        val actual = prepare<Element.Rule>(result.elements)
+        assertEquals(3, actual.size)
+
+        printResults(actual)
+        println("")
+        printElements(result.elements)
+    }
+
     private fun printResults(list:List<String>){
         val iterator = list.iterator()
         while (iterator.hasNext()){

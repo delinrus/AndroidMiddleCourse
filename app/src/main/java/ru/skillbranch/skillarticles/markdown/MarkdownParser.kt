@@ -14,10 +14,12 @@ object MarkdownParser {
     private const val BOLD_GROUP =
         "((?<!\\*)\\*{2}[^*].*?[^*]?\\*{2}(?!\\*)|(?<!_)_{2}[^_].*?[^_]?_{2}(?!_))"
     private const val STRIKE_GROUP = "(implement me)"
+    private const val RULE_GROUP = "(^[-_*]{3}$)"
+
 
     //result regex
     const val MARKDOWN_GROUPS = "$UNORDERED_LIST_ITEM_GROUP|$HEADER_GROUP|$QUOTE_GROUP" +
-            "|$ITALIC_GROUP|$BOLD_GROUP|$STRIKE_GROUP"
+            "|$ITALIC_GROUP|$BOLD_GROUP|$STRIKE_GROUP|$RULE_GROUP"
 
     private val elementsPattern by lazy { Pattern.compile(MARKDOWN_GROUPS, Pattern.MULTILINE) }
 
@@ -58,7 +60,7 @@ object MarkdownParser {
             var text: CharSequence
 
             //groups range for iterate by groups
-            val groups = 1..6
+            val groups = 1..7
             var group = -1
             for (gr in groups) {
                 if (matcher.group(gr) != null) {
@@ -137,6 +139,14 @@ object MarkdownParser {
                     parents.add(element)
                     lastStartIndex = endIndex
                 }
+
+                //RULE
+                7 -> {
+                    //text without "***" insert empty character
+                    val element = Element.Rule()
+                    parents.add(element)
+                    lastStartIndex = endIndex
+                }
             }
         }
 
@@ -188,6 +198,11 @@ sealed class Element {
 
     data class Strike(
         override val text: CharSequence,
+        override val elements: List<Element> = emptyList()
+    ) : Element()
+
+    data class Rule(
+        override val text: CharSequence = " ", //for insert span
         override val elements: List<Element> = emptyList()
     ) : Element()
 }
