@@ -70,6 +70,35 @@ class ExampleUnitTest {
         printElements(result.elements)
     }
 
+    @Test
+    fun parse_strike() {
+        val result = MarkdownParser.parse(strikeString)
+        val actual = prepare<Element.Strike>(result.elements)
+        assertEquals(expectedStrike, actual)
+
+        printResults(actual)
+        println("")
+        printElements(result.elements)
+    }
+
+    @Test
+    fun parse_combine() {
+        val result = MarkdownParser.parse(combineEmphasisString)
+        val actualItalic = prepare<Element.Italic>(result.elements)
+        val actualBold = prepare<Element.Bold>(result.elements)
+        val actualStrike = prepare<Element.Strike>(result.elements)
+
+        assertEquals(expectedCombine["italic"], actualItalic)
+        assertEquals(expectedCombine["bold"], actualBold)
+        assertEquals(expectedCombine["strike"], actualStrike)
+
+        printResults(actualItalic)
+        printResults(actualBold)
+        printResults(actualStrike)
+        println("")
+        printElements(result.elements)
+    }
+
     private fun printResults(list:List<String>){
         val iterator = list.iterator()
         while (iterator.hasNext()){
