@@ -121,6 +121,22 @@ class ExampleUnitTest {
         printElements(result.elements)
     }
 
+    @Test
+    fun parse_link() {
+        val result = MarkdownParser.parse(linkString)
+        val actual = prepare<Element.Link>(result.elements)
+        val actualLink = result.elements.spread()
+            .filterIsInstance<Element.Link>()
+            .map{it.link}
+
+        assertEquals(expectedLink["titles"], actual)
+        assertEquals(expectedLink["links"], actualLink)
+
+        printResults(actual)
+        println("")
+        printElements(result.elements)
+    }
+
     private fun printResults(list:List<String>){
         val iterator = list.iterator()
         while (iterator.hasNext()){
