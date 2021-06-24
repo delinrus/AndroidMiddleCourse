@@ -11,7 +11,7 @@ import ru.skillbranch.skillarticles.markdown.MarkdownParser
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-class ExampleUnitTest {
+class UnitTest {
     @Test
     fun parse_list_item() {
         val result = MarkdownParser.parse(unorderedListString)
