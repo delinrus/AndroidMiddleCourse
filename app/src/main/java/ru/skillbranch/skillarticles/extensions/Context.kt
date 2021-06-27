@@ -1,9 +1,7 @@
 package ru.skillbranch.skillarticles.extensions
 
 import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
-import android.os.Build
+import android.content.res.Resources
 import android.util.TypedValue
 
 fun Context.dpToPx(dp: Int): Float {
@@ -21,4 +19,10 @@ fun Context.dpToIntPx(dp: Int): Int {
         dp.toFloat(),
         this.resources.displayMetrics
     ).toInt()
+}
+
+fun Context.attrValue(colorSecondary: Int): Int {
+    val tv = TypedValue()
+    return if (theme.resolveAttribute(colorSecondary, tv, true)) tv.data
+    else throw Resources.NotFoundException("Resource with id $colorSecondary not found")
 }
