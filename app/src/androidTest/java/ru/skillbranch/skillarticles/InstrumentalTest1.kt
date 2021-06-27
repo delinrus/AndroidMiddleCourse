@@ -107,6 +107,46 @@ class InstrumentalTest1 {
         }
     }
 
+    @Test
+    fun draw_quote() {
+        //settings
+        val color = Color.RED
+        val gap = 8.dpf()
+        val lineWidth = 4.dpf()
+
+        val span = BlockquotesSpan(gap, lineWidth, color)
+        text.setSpan(span, 0, 0, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        //check leading margin
+        assertEquals((lineWidth + gap).toInt(), span.getLeadingMargin(true))
+
+        //check line draw
+        span.drawLeadingMargin(
+            canvas, paint, currentMargin, TEXT_DIRECTION_FIRST_STRONG,
+            lineTop, lineBase, lineBottom, text, 0, text.length,
+            true, layout
+        )
+
+        //check order call
+        verifyOrder {
+            //check first set color to painyt
+            paint.color = color
+            paint.strokeWidth = lineWidth
+            //check draw line
+            canvas.drawLine(
+                lineWidth / 2f,
+                lineTop.toFloat(),
+                lineWidth / 2,
+                lineBottom.toFloat(),
+                paint
+            )
+
+            //check paint color restore
+            paint.color = defaultColor
+        }
+
+    }
+
     private fun Int.dp() = (this * scaleDensity).toInt()
     private fun Int.dpf() = this * scaleDensity
 }

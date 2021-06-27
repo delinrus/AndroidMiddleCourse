@@ -1,6 +1,7 @@
 package ru.skillbranch.skillarticles.markdown
 
 import android.content.Context
+import android.graphics.Paint
 import android.graphics.Typeface
 import android.text.SpannableStringBuilder
 import android.text.SpannedString
@@ -17,6 +18,7 @@ import ru.skillbranch.skillarticles.markdown.spans.*
 class MarkdownBuilder(context: Context) {
     private val gap: Float = context.dpToPx(8)
     private val bulletRadius = context.dpToPx(4)
+    private val quoteWidth = context.dpToPx(4)
     private val colorSecondary = context.attrValue(R.attr.colorSecondary)
 
 
@@ -33,6 +35,16 @@ class MarkdownBuilder(context: Context) {
                 is Element.Text -> append(element.text)
                 is Element.UnorderedListItem -> {
                     inSpans(UnorderedListSpan(gap, bulletRadius, colorSecondary)) {
+                        for (child in element.elements) {
+                            buildElement(child, builder)
+                        }
+                    }
+                }
+                is Element.Quote -> {
+                    inSpans(
+                        BlockquotesSpan(gap, quoteWidth, colorSecondary ),
+                        StyleSpan(Typeface.ITALIC)
+                        ) {
                         for (child in element.elements) {
                             buildElement(child, builder)
                         }
