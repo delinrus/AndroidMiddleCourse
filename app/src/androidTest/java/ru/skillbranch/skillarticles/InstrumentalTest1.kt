@@ -333,6 +333,99 @@ class InstrumentalTest1 {
 
     }
 
+    @Test
+    fun draw_link() {
+        //settings
+        val gap = 8.dpf()
+        val textColor = Color.BLUE
+        val dotWidth = 4.dpf()
+
+        //defaults
+        val fm = Paint.FontMetricsInt()
+        fm.ascent = defaultFontAscent
+        fm.descent = defaultFontDescent
+        val measureText = 100f
+
+        //mocks
+        every { paint.measureText(any<String>(), any(), any()) } returns measureText
+
+        //spy
+        val linkDrawable = spyk(VectorDrawable()) {
+            every { draw(canvas) } answers {} //Unit do nothing if draw on canvas in spy object
+        }
+        val path = spyk(Path())
+
+        val span = IconLinkSpan(linkDrawable, gap, textColor, dotWidth)
+        text.setSpan(span, 0, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        //setter for mock path
+        span.path = path
+
+        //check measure size
+        val size = span.getSize(paint, text, 0, text.length, fm)
+        val iconSize = defaultFontDescent - defaultFontAscent
+        assertEquals((iconSize + gap + measureText).toInt(), size)
+
+        //check drawable set bounds
+        verify {
+            linkDrawable.setBounds(
+                0,
+                0,
+                iconSize,
+                iconSize
+            )
+        }
+
+        //check draw icon
+        span.draw(
+            canvas, text, 0, text.length, currentMargin.toFloat(),
+            lineTop, lineBase, lineBottom,
+            paint
+        )
+
+        //check path effect
+        verifyOrder {
+            paint.pathEffect = any()
+            paint.strokeWidth = 0f
+            paint.color = textColor
+        }
+
+        //check reset path and draw line under text
+        verifyOrder {
+            path.reset()
+            path.moveTo(currentMargin + iconSize + gap, lineBottom.toFloat())
+            path.lineTo(currentMargin + iconSize + gap + measureText, lineBottom.toFloat())
+            canvas.drawPath(path, paint)
+        }
+
+        //check draw icon
+        verifyOrder {
+            canvas.save()
+            canvas.translate(
+                currentMargin + gap / 2f,
+                lineBottom - linkDrawable.bounds.bottom.toFloat()
+            )
+            linkDrawable.draw(canvas)
+            canvas.restore()
+        }
+
+        //check draw text
+        verifyOrder {
+            //set text color
+            paint.color = textColor
+            //check draw text
+            canvas.drawText(
+                text, 0, text.length,
+                currentMargin + iconSize + gap,
+                lineBase.toFloat(),
+                paint
+            )
+            //check restore color
+            paint.color = defaultColor
+        }
+
+
+    }
+
 
     private fun Int.dp() = (this * scaleDensity).toInt()
     private fun Int.dpf() = this * scaleDensity
