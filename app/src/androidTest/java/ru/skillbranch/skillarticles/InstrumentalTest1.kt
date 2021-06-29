@@ -147,6 +147,86 @@ class InstrumentalTest1 {
 
     }
 
+    @Test
+    fun draw_header() {
+        //settings
+        val levels = 1..6
+        val textColor = Color.RED
+        val lineColor = Color.GREEN
+        val marginTop = 12.dpf()
+        val marginBottom = 8.dpf()
+
+        //mocks
+        val measurePaint = mockk<TextPaint>(relaxed = true)
+        val drawPaint = mockk<TextPaint>(relaxed = true)
+        val fm = Paint.FontMetricsInt()
+
+        for (level in levels) {
+
+            val span = HeaderSpan(level, textColor, lineColor, marginTop, marginBottom)
+            text.setSpan(span, 0, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            //check leading margin
+            assertEquals(0, span.getLeadingMargin(true))
+
+            //check measure state
+            span.updateMeasureState(measurePaint)
+            verifyAll {
+                measurePaint.textSize *= span.sizes[level]!!
+                measurePaint.isFakeBoldText = true
+            }
+
+            //check draw state
+            span.updateDrawState(drawPaint)
+            verifyAll {
+                drawPaint.textSize *= span.sizes[level]!!
+                drawPaint.isFakeBoldText = true
+                drawPaint.color = textColor
+            }
+
+            //check change line height
+            fm.ascent = defaultFontAscent
+            fm.descent = defaultFontDescent
+
+            span.chooseHeight(text, 0, text.length.inc(), 0, 0, fm)
+            //check top
+            assertEquals((defaultFontAscent - marginTop).toInt(), fm.ascent)
+            //check bottom
+            assertEquals(
+                ((defaultFontDescent - defaultFontAscent) * span.linePadding + marginBottom).toInt(),
+                fm.descent
+            )
+
+            assertEquals(fm.top, fm.ascent)
+            assertEquals(fm.bottom, fm.descent)
+
+            //check line draw
+            span.drawLeadingMargin(
+                canvas, paint, currentMargin, TEXT_DIRECTION_FIRST_STRONG,
+                lineTop, lineBase, lineBottom, text, 0, text.length,
+                true, layout
+            )
+
+            //check draw line for first, second level header
+            if (level == 1 || level == 2) {
+                val lh = (paint.descent() - paint.ascent()) * span.sizes[level]!!
+                val lineOffset = lineBase + lh * span.linePadding
+
+                verifyOrder {
+                    //check set line color
+                    paint.color = lineColor
+                    //check draw line under header
+                    canvas.drawLine(0f, lineOffset, canvasWidth.toFloat(), lineOffset, paint)
+                    //check restore paint color
+                    paint.color = defaultColor
+                }
+
+            }
+
+        }
+
+    }
+
     private fun Int.dp() = (this * scaleDensity).toInt()
     private fun Int.dpf() = this * scaleDensity
 }
