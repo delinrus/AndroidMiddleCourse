@@ -6,7 +6,6 @@ import android.text.Layout
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.TextPaint
-import android.text.style.UnderlineSpan
 import android.view.View.TEXT_DIRECTION_FIRST_STRONG
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -464,6 +463,64 @@ class InstrumentalTest1 {
 
 
     }
+
+    @Test
+    fun under_line() {
+        //settings
+        val textColor = Color.BLUE
+        val dotWidth = 4.dpf()
+
+        //defaults
+        val fm = Paint.FontMetricsInt()
+        fm.ascent = defaultFontAscent
+        fm.descent = defaultFontDescent
+        val measureText = 100f
+
+        //mocks
+        every { paint.measureText(any<String>(), any(), any()) } returns measureText
+
+        val path = spyk(Path())
+
+        val span = UnderlineSpan(textColor, dotWidth)
+        span.path = path
+        text.setSpan(span, 0, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+
+        //check measure size
+        val size = span.getSize(paint, text, 0, text.length, fm)
+        assertEquals((measureText).toInt(), size)
+
+        //check draw icon
+        span.draw(
+            canvas, text, 0, text.length, currentMargin.toFloat(),
+            lineTop, lineBase, lineBottom,
+            paint
+        )
+        //check reset path and draw line under text
+        verifyOrder {
+            paint.pathEffect = any()
+            paint.color = textColor
+            paint.style = Paint.Style.STROKE
+            paint.strokeWidth = 0f
+
+            path.reset()
+            path.moveTo(currentMargin.toFloat(), lineBottom.toFloat())
+            path.lineTo(currentMargin + measureText, lineBottom.toFloat())
+            canvas.drawPath(path, paint)
+
+            //check restore color
+            paint.color = defaultColor
+            //check draw text
+            canvas.drawText(
+                text, 0, text.length,
+                currentMargin.toFloat(),
+                lineBase.toFloat(),
+                paint
+            )
+
+        }
+    }
+
 
     private fun Int.dp() = (this * scaledDensity).toInt()
     private fun Int.dpf() = this * scaledDensity
