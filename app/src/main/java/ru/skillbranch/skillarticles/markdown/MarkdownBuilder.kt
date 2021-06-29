@@ -22,6 +22,7 @@ class MarkdownBuilder(context: Context) {
     private val quoteWidth = context.dpToPx(4)
     private val headerMarginTop = context.dpToPx(12)
     private val headerMarginBottom = context.dpToPx(8)
+    private val ruleWidth = context.dpToPx(2)
 
 
     fun markdownToSpan(string: String): SpannedString {
@@ -88,6 +89,12 @@ class MarkdownBuilder(context: Context) {
                         for (child in element.elements) {
                             buildElement(child, builder)
                         }
+                    }
+                }
+
+                is Element.Rule -> {
+                    inSpans(HorizontalRuleSpan(ruleWidth, colorDivider)) {
+                        append(element.text)
                     }
                 }
 

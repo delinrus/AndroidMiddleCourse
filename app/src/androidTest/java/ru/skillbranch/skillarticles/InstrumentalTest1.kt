@@ -227,6 +227,47 @@ class InstrumentalTest1 {
 
     }
 
+    @Test
+    fun draw_rule() {
+        //settings
+        val color = Color.RED
+        val width = 2.dpf()
+
+        val span = HorizontalRuleSpan(width, color)
+        text.setSpan(span, 0, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        //check draw rule line
+        span.draw(
+            canvas,
+            text,
+            0,
+            text.length,
+            currentMargin.toFloat(),
+            lineTop,
+            lineBase,
+            lineBottom,
+            paint
+        )
+
+        //verify order call
+        verifyOrder {
+            //check set rule color
+            paint.color = color
+            //check draw line
+            canvas.drawLine(
+                0f,
+                (lineTop + lineBottom) / 2f,
+                canvasWidth.toFloat(),
+                (lineTop + lineBottom) / 2f,
+                paint
+            )
+            //check paint color restore
+            paint.color = defaultColor
+
+        }
+
+    }
+
     private fun Int.dp() = (this * scaleDensity).toInt()
     private fun Int.dpf() = this * scaleDensity
 }
