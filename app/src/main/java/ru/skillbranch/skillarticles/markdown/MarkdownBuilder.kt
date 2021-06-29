@@ -1,13 +1,11 @@
 package ru.skillbranch.skillarticles.markdown
 
 import android.content.Context
-import android.graphics.Paint
 import android.graphics.Typeface
 import android.text.SpannableStringBuilder
 import android.text.SpannedString
 import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
-import android.text.style.URLSpan
 import androidx.core.text.buildSpannedString
 import androidx.core.text.inSpans
 import ru.skillbranch.skillarticles.R
@@ -46,9 +44,9 @@ class MarkdownBuilder(context: Context) {
                 }
                 is Element.Quote -> {
                     inSpans(
-                        BlockquotesSpan(gap, quoteWidth, colorSecondary ),
+                        BlockquotesSpan(gap, quoteWidth, colorSecondary),
                         StyleSpan(Typeface.ITALIC)
-                        ) {
+                    ) {
                         for (child in element.elements) {
                             buildElement(child, builder)
                         }
@@ -56,8 +54,40 @@ class MarkdownBuilder(context: Context) {
                 }
 
                 is Element.Header -> {
-                    inSpans(HeaderSpan(element.level, colorPrimary, colorDivider, headerMarginTop, headerMarginBottom)) {
+                    inSpans(
+                        HeaderSpan(
+                            element.level,
+                            colorPrimary,
+                            colorDivider,
+                            headerMarginTop,
+                            headerMarginBottom
+                        )
+                    ) {
                         append(element.text)
+                    }
+                }
+
+                is Element.Italic -> {
+                    inSpans(StyleSpan(Typeface.ITALIC)) {
+                        for (child in element.elements) {
+                            buildElement(child, builder)
+                        }
+                    }
+                }
+
+                is Element.Bold -> {
+                    inSpans(StyleSpan(Typeface.BOLD)) {
+                        for (child in element.elements) {
+                            buildElement(child, builder)
+                        }
+                    }
+                }
+
+                is Element.Strike -> {
+                    inSpans(StrikethroughSpan()) {
+                        for (child in element.elements) {
+                            buildElement(child, builder)
+                        }
                     }
                 }
 
