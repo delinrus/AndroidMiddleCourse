@@ -268,6 +268,72 @@ class InstrumentalTest1 {
 
     }
 
+    @Test
+    fun draw_inline_code() {
+        //settings
+        val textColor = Color.RED
+        val bgColor = Color.GREEN
+        val cornerRadius = 8.dpf()
+        val padding = 8.dpf()
+        val measureText = 100f
+
+        //mocks
+        every { paint.measureText(any<String>(), any(), any()) } returns measureText
+
+        val fm = Paint.FontMetricsInt()
+
+        val span = InlineCodeSpan(textColor, bgColor, cornerRadius, padding)
+        text.setSpan(span, 0, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        //check span size
+        val size = span.getSize(paint, text, 0, text.length, fm)
+        assertEquals((2 * padding + measureText).toInt(), size)
+
+        //check draw inline code
+        span.draw(
+            canvas,
+            text,
+            0,
+            text.length,
+            currentMargin.toFloat(),
+            lineTop,
+            lineBase,
+            lineBottom,
+            paint
+        )
+
+        //check call order
+        verifyOrder {
+            //check first set color to paint for background
+            paint.color = bgColor
+            //check draw background
+            canvas.drawRoundRect(
+                RectF(
+                    0f,
+                    lineTop.toFloat(),
+                    measureText + 2 * padding,
+                    lineBottom.toFloat()
+                ),
+                cornerRadius, cornerRadius,
+                paint
+            )
+
+            //check set text color
+            paint.color = textColor
+            //check draw text
+            canvas.drawText(
+                text, 0, text.length, currentMargin + padding,
+                lineBase.toFloat(),
+                paint
+            )
+
+            //check paint color restore
+            paint.color = defaultColor
+        }
+
+    }
+
+
     private fun Int.dp() = (this * scaleDensity).toInt()
     private fun Int.dpf() = this * scaleDensity
 }

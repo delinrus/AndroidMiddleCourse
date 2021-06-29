@@ -17,12 +17,16 @@ class MarkdownBuilder(context: Context) {
     private val colorSecondary = context.attrValue(R.attr.colorSecondary)
     private val colorPrimary = context.attrValue(R.attr.colorPrimary)
     private val colorDivider = context.getColor(R.color.color_divider)
+    private val colorOnSurface = context.attrValue(R.attr.colorOnSurface)
+    private val colorSurface = context.attrValue(R.attr.colorSurface)
     private val gap: Float = context.dpToPx(8)
     private val bulletRadius = context.dpToPx(4)
     private val quoteWidth = context.dpToPx(4)
     private val headerMarginTop = context.dpToPx(12)
     private val headerMarginBottom = context.dpToPx(8)
     private val ruleWidth = context.dpToPx(2)
+    private val cornerRadius = context.dpToPx(8)
+
 
 
     fun markdownToSpan(string: String): SpannedString {
@@ -94,6 +98,12 @@ class MarkdownBuilder(context: Context) {
 
                 is Element.Rule -> {
                     inSpans(HorizontalRuleSpan(ruleWidth, colorDivider)) {
+                        append(element.text)
+                    }
+                }
+
+                is Element.InlineCode -> {
+                    inSpans(InlineCodeSpan(colorOnSurface, colorSurface, cornerRadius, gap)) {
                         append(element.text)
                     }
                 }
