@@ -19,6 +19,7 @@ class MarkdownBuilder(context: Context) {
     private val colorSecondary = context.attrValue(R.attr.colorSecondary)
     private val colorPrimary = context.attrValue(R.attr.colorPrimary)
     private val colorOnSurface = context.attrValue(R.attr.colorOnSurface)
+    private val textColor = colorPrimary
     private val opacityColorSurface = context.getColor(R.color.opacity_color_surface)
     private val colorDivider = context.getColor(R.color.color_divider)
     private val gap: Float = context.dpToPx(8)
@@ -116,6 +117,12 @@ class MarkdownBuilder(context: Context) {
                         IconLinkSpan(linkIcon, gap, colorPrimary, strikeWidth),
                         URLSpan(element.link)
                     ) {
+                        append(element.text)
+                    }
+                }
+
+                is Element.OrderedListItem -> {
+                    inSpans(OrderedListSpan(gap, element.order, textColor)) {
                         append(element.text)
                     }
                 }

@@ -6,6 +6,7 @@ import android.text.Layout
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.TextPaint
+import android.text.style.UnderlineSpan
 import android.view.View.TEXT_DIRECTION_FIRST_STRONG
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -18,22 +19,21 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import ru.skillbranch.skillarticles.markdown.spans.*
 
-
 /**
- *  Instrumented test, which will execute on an Android device
+ * Instrumented test, which will execute on an Android device.
  *
- *  See [testing documentation](http://d.android.com/tools/testing).
+ * See [testing documentation](http://d.android.com/tools/testing).
  */
 
 @RunWith(AndroidJUnit4::class)
 class InstrumentalTest1 {
     companion object {
-        var scaleDensity: Float = 0f
+        var scaledDensity: Float = 0f
 
         @BeforeClass
         @JvmStatic
         fun setupClass() {
-            scaleDensity =
+            scaledDensity =
                 ApplicationProvider.getApplicationContext<App>().resources.displayMetrics.scaledDensity
         }
     }
@@ -102,6 +102,45 @@ class InstrumentalTest1 {
                 (lineTop + lineBottom) / 2f,
                 radius, paint
             )
+            //check paint color restore
+            paint.color = defaultColor
+        }
+    }
+
+    @Test
+    fun ordered_list() {
+        //settings
+        val color = Color.RED
+        val gap = 12.dpf()
+        val order = "1"
+
+        //set span on text
+        val span = OrderedListSpan(gap, order, color)
+        text.setSpan(span, 0, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        //check leading margin
+        Assert.assertEquals((order.length.inc() * gap).toInt(), span.getLeadingMargin(true))
+
+        //check bullet draw
+        span.drawLeadingMargin(
+            canvas, paint, currentMargin, TEXT_DIRECTION_FIRST_STRONG,
+            lineTop, lineBase, lineBottom, text, 0, text.length,
+            true, layout
+        )
+
+        //check order call
+        verifyOrder {
+            //check first set color to paint
+            paint.color = color
+
+            //check draw order bullet
+            canvas.drawText(
+                order,
+                currentMargin + gap,
+                lineBase.toFloat(),
+                paint
+            )
+
             //check paint color restore
             paint.color = defaultColor
         }
@@ -426,7 +465,6 @@ class InstrumentalTest1 {
 
     }
 
-
-    private fun Int.dp() = (this * scaleDensity).toInt()
-    private fun Int.dpf() = this * scaleDensity
+    private fun Int.dp() = (this * scaledDensity).toInt()
+    private fun Int.dpf() = this * scaledDensity
 }
