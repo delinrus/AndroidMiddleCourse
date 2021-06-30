@@ -2,8 +2,8 @@ package ru.skillbranch.skillarticles
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import ru.skillbranch.skillarticles.markdown.Element
-import ru.skillbranch.skillarticles.markdown.MarkdownParser
+import ru.skillbranch.skillarticles.ui.custom.markdown.Element
+import ru.skillbranch.skillarticles.ui.custom.markdown.MarkdownParser
 
 
 /**

@@ -1,13 +1,10 @@
 package ru.skillbranch.skillarticles.ui
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.text.Selection
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.method.LinkMovementMethod
-import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
@@ -27,9 +24,9 @@ import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.databinding.ActivityRootBinding
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
 import ru.skillbranch.skillarticles.extensions.setMarginOptionally
-import ru.skillbranch.skillarticles.markdown.MarkdownBuilder
-import ru.skillbranch.skillarticles.ui.custom.SearchFocusSpan
-import ru.skillbranch.skillarticles.ui.custom.SearchSpan
+import ru.skillbranch.skillarticles.ui.custom.markdown.MarkdownBuilder
+import ru.skillbranch.skillarticles.ui.custom.spans.SearchFocusSpan
+import ru.skillbranch.skillarticles.ui.custom.spans.SearchSpan
 import ru.skillbranch.skillarticles.ui.delegates.AttrValue
 import ru.skillbranch.skillarticles.ui.delegates.viewBinding
 import ru.skillbranch.skillarticles.viewmodels.*

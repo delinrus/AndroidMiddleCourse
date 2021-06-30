@@ -16,7 +16,7 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
 import org.junit.runner.RunWith
-import ru.skillbranch.skillarticles.markdown.spans.*
+import ru.skillbranch.skillarticles.ui.custom.spans.*
 
 /**
  * Instrumented test, which will execute on an Android device.
