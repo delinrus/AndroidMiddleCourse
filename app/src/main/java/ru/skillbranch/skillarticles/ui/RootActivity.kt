@@ -253,7 +253,7 @@ class RootActivity : AppCompatActivity(), IArticleView {
 
         searchResult.forEach { (start, end) ->
             content.setSpan(
-                SearchSpan(bgColor, fgColor),
+                SearchSpan(fgColor),
                 start,
                 end,
                 SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -278,7 +278,7 @@ class RootActivity : AppCompatActivity(), IArticleView {
             Selection.setSelection(content, content.getSpanStart(result))
             //set new search focus span
             content.setSpan(
-                SearchFocusSpan(bgColor, fgColor),
+                SearchFocusSpan(fgColor),
                 content.getSpanStart(result),
                 content.getSpanEnd(result),
                 SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
