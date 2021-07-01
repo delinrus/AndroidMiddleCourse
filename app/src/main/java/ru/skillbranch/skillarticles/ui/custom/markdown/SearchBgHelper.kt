@@ -194,6 +194,8 @@ class MultiLineRender(
 ): SearchBgRender(padding) {
     private var lineTop: Int = 0
     private var lineBottom: Int = 0
+    private var lineEndOffset: Int = 0
+    private var lineStartOffset: Int = 0
 
     override fun draw(
         canvas: Canvas,
@@ -205,10 +207,51 @@ class MultiLineRender(
         topExtraPadding: Int,
         bottomExtraPadding: Int
     ){
-        //TODO implement multiline
-        lineTop = getLineTop(layout, startLine)
+        //draw first line
+        lineEndOffset = (layout.getLineRight(startLine) + padding).toInt()
+        lineTop = getLineTop(layout, startLine) + topExtraPadding
         lineBottom = getLineBottom(layout, startLine)
-//        drawable.setBounds(startOffset, lineTop, endOffset, lineBottom)
-//        drawable.draw(canvas)
+        drawStart(canvas, startOffset - padding, lineTop, lineEndOffset, lineBottom)
+
+        //draw middle line
+        for (line in startLine.inc() until endLine) {
+            lineTop = getLineTop(layout, line)
+            lineBottom = getLineBottom(layout, line)
+            drawableMiddle.setBounds(
+                layout.getLineLeft(line).toInt() - padding,
+                lineTop,
+                layout.getLineRight(line).toInt() + padding,
+                lineBottom
+            )
+            drawableMiddle.draw(canvas)
+        }
+
+        //draw last line
+        lineStartOffset = (layout.getLineLeft(startLine) - padding).toInt()
+        lineTop = getLineTop(layout, endLine)
+        lineBottom = getLineBottom(layout, endLine) - bottomExtraPadding
+        drawEnd(canvas, lineStartOffset, lineTop, endOffset + padding, lineBottom)
+    }
+
+    private fun drawStart(
+        canvas: Canvas,
+        start: Int,
+        top: Int,
+        end: Int,
+        bottom: Int
+    ) {
+        drawableLeft.setBounds(start, top, end, bottom)
+        drawableLeft.draw(canvas)
+    }
+
+    private fun drawEnd(
+        canvas: Canvas,
+        start: Int,
+        top: Int,
+        end: Int,
+        bottom: Int
+    ) {
+        drawableRight.setBounds(start, top, end, bottom)
+        drawableRight.draw(canvas)
     }
 }
