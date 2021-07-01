@@ -8,11 +8,13 @@ import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.graphics.withTranslation
+import ru.skillbranch.skillarticles.extensions.dpToPx
 
 class MarkdownTextView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+    defStyleAttr: Int = 0,
+    private val isSizeDepend : Boolean = true
 ) : AppCompatTextView(context, attrs, defStyleAttr) {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -31,6 +33,7 @@ class MarkdownTextView @JvmOverloads constructor(
 
     override fun setTextSize(size: Float) {
         Log.e("MarkdownTextView", "set text size = $size")
+        if(isSizeDepend) setLineSpacing(context.dpToPx(if(size == 14f) 8 else 10), 1f)
         super.setTextSize(size)
     }
 }
