@@ -27,13 +27,12 @@ import ru.skillbranch.skillarticles.extensions.setMarginOptionally
 import ru.skillbranch.skillarticles.ui.custom.markdown.MarkdownBuilder
 import ru.skillbranch.skillarticles.ui.custom.spans.SearchFocusSpan
 import ru.skillbranch.skillarticles.ui.custom.spans.SearchSpan
-import ru.skillbranch.skillarticles.ui.delegates.AttrValue
 import ru.skillbranch.skillarticles.ui.delegates.viewBinding
 import ru.skillbranch.skillarticles.viewmodels.*
 
 class RootActivity : AppCompatActivity(), IArticleView {
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    var viewModelFactory: ViewModelProvider.Factory  = ViewModelFactory(this, "0")
+    var viewModelFactory: ViewModelProvider.Factory = ViewModelFactory(this, "0")
     private val viewModel: ArticleViewModel by viewModels { viewModelFactory }
     val vb: ActivityRootBinding by viewBinding(ActivityRootBinding::inflate)
 
@@ -42,11 +41,6 @@ class RootActivity : AppCompatActivity(), IArticleView {
     val vbSubmenu
         get() = vb.submenu.binding
     private lateinit var searchView: SearchView
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    val bgColor by AttrValue(R.attr.colorSecondary)
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    val fgColor by AttrValue(R.attr.colorOnSecondary)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -253,7 +247,7 @@ class RootActivity : AppCompatActivity(), IArticleView {
 
         searchResult.forEach { (start, end) ->
             content.setSpan(
-                SearchSpan(fgColor),
+                SearchSpan(),
                 start,
                 end,
                 SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -278,7 +272,7 @@ class RootActivity : AppCompatActivity(), IArticleView {
             Selection.setSelection(content, content.getSpanStart(result))
             //set new search focus span
             content.setSpan(
-                SearchFocusSpan(fgColor),
+                SearchFocusSpan(),
                 content.getSpanStart(result),
                 content.getSpanEnd(result),
                 SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
