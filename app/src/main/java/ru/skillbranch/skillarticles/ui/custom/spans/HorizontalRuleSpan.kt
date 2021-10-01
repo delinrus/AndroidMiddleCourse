@@ -38,9 +38,9 @@ class HorizontalRuleSpan(
         paint.forLine {
             canvas.drawLine(
                 0f,
-                (top + bottom) / 2f,
+                (top + y + paint.descent()) / 2f,
                 canvas.width.toFloat(),
-                (top + bottom) / 2f,
+                (top + y + paint.descent()) / 2f,
                 paint
             )
         }

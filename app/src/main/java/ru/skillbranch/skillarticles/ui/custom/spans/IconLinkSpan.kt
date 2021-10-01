@@ -42,12 +42,12 @@ class IconLinkSpan(
 
         paint.forLine {
             path.reset()
-            path.moveTo(textStart, bottom.toFloat())
-            path.lineTo(textStart + textWidth, bottom.toFloat())
+            path.moveTo(textStart, y + paint.descent())
+            path.lineTo(textStart + textWidth, y + paint.descent())
             canvas.drawPath(path, paint)
         }
         canvas.save() //save canvas position
-        val transY = (bottom - linkDrawable.bounds.bottom.toFloat()) //translate icon
+        val transY = (y + paint.descent() - linkDrawable.bounds.bottom.toFloat()) //translate icon
         canvas.translate(x + gap / 2f, transY)
         linkDrawable.draw(canvas) //draw icon
         canvas.restore() //restore canvas position
