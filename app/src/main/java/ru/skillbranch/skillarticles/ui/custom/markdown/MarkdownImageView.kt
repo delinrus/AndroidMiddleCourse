@@ -144,9 +144,13 @@ class MarkdownImageView private constructor(
         var usedHeight = 0
         val width = View.getDefaultSize(suggestedMinimumWidth, widthMeasureSpec)
 
-        measureChild(ivImage, widthMeasureSpec, heightMeasureSpec)
-        measureChild(tvTitle, widthMeasureSpec, heightMeasureSpec)
-        if(tvAlt != null) measureChild(tvAlt, widthMeasureSpec, heightMeasureSpec)
+        //create measureSpec for children EXACTLY
+        //all children width == parent width (constraint parent width)
+        val ms = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY)
+
+        ivImage.measure(ms, heightMeasureSpec)
+        tvTitle.measure(ms, heightMeasureSpec)
+        tvAlt?.measure(ms, heightMeasureSpec)
 
         usedHeight += ivImage.measuredHeight
         usedHeight += titleTopMargin

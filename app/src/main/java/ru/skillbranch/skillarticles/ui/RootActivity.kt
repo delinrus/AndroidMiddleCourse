@@ -50,7 +50,7 @@ class RootActivity : AppCompatActivity(), IArticleView {
         setupBottombar()
         setupSubmenu()
 
-        vb.scroll.addView(MarkdownImageView(this, 14f))
+        vb.scroll.addView(MarkdownImageView(this, 14f, "https://149359143.v2.pressablecdn.com/wp-content/uploads/2017/04/iceland-1751463_1280.jpg", "Island", "it is Iceland"))
 
         viewModel.observeState(this, ::renderUi)
         viewModel.observeSubState(this, ArticleState::toBottombarData, ::renderBotombar)
