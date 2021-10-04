@@ -28,7 +28,7 @@ import kotlin.math.hypot
 
 
 @SuppressLint("ViewConstructor")
-class MarkdownImageView constructor(
+class MarkdownImageView private constructor(
     context: Context,
     fontSize: Float
 ) : ViewGroup(context, null, 0), IMarkdownView {
@@ -73,8 +73,8 @@ class MarkdownImageView constructor(
     }
 
     init {
+        layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
         ivImage = ImageView(context).apply {
-            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
             scaleType = ImageView.ScaleType.CENTER_CROP
             setImageResource(R.drawable.ic_launcher_background)
             outlineProvider = object : ViewOutlineProvider() {
@@ -108,7 +108,34 @@ class MarkdownImageView constructor(
         title: String,
         alt: String?
     ) : this(context, fontSize) {
-        //TODO implement me
+        imageUrl = url
+        imageTitle = title
+
+        tvTitle.setText(title, TextView.BufferType.SPANNABLE)
+
+        Glide
+            .with(context)
+            .load(url)
+            .transform(AspectRatioResizeTransform())
+            .into(ivImage)
+
+        if (alt != null) {
+            tvAlt = TextView(context).apply {
+                text = alt
+                setTextColor(colorOnSurface)
+                setBackgroundColor(ColorUtils.setAlphaComponent(colorSurface, 160))
+                gravity = Gravity.CENTER
+                textSize = fontSize
+                setPadding(titleTopMargin)
+                isVisible = false
+            }
+            addView(tvAlt)
+
+            ivImage.setOnClickListener {
+                if (tvAlt?.isVisible == true) animateHideAlt()
+                else animateShowAlt()
+            }
+        }
     }
 
 
@@ -116,9 +143,10 @@ class MarkdownImageView constructor(
     public override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         var usedHeight = 0
         val width = View.getDefaultSize(suggestedMinimumWidth, widthMeasureSpec)
+
         measureChild(ivImage, widthMeasureSpec, heightMeasureSpec)
         measureChild(tvTitle, widthMeasureSpec, heightMeasureSpec)
-
+        if(tvAlt != null) measureChild(tvAlt, widthMeasureSpec, heightMeasureSpec)
 
         usedHeight += ivImage.measuredHeight
         usedHeight += titleTopMargin
@@ -150,6 +178,14 @@ class MarkdownImageView constructor(
             right,
             usedHeight + tvTitle.measuredHeight
         )
+
+        tvAlt?.layout(
+            left,
+            ivImage.measuredHeight - (tvAlt?.measuredHeight ?: 0),
+            right,
+            ivImage.measuredHeight
+        )
+
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
@@ -173,15 +209,32 @@ class MarkdownImageView constructor(
     }
 
     private fun animateShowAlt() {
-        //TODO implement me
+        tvAlt?.isVisible = true
+        val endRadius = hypot(tvAlt?.width?.toFloat() ?: 0f, tvAlt?.height?.toFloat() ?: 0f)
+        val va = ViewAnimationUtils.createCircularReveal(
+            tvAlt,
+            tvAlt?.width ?: 0,
+            tvAlt?.height ?: 0,
+            0f,
+            endRadius
+        )
+        va.start()
     }
 
     private fun animateHideAlt() {
-        //TODO implement me
+        val endRadius = hypot(tvAlt?.width?.toFloat() ?: 0f, tvAlt?.height?.toFloat() ?: 0f)
+        val va = ViewAnimationUtils.createCircularReveal(
+            tvAlt,
+            tvAlt?.width ?: 0,
+            tvAlt?.height ?: 0,
+            endRadius,
+            0f
+        )
+        va.doOnEnd { tvAlt?.isVisible = false }
+        va.start()
     }
 }
 
-/*
 class AspectRatioResizeTransform : BitmapTransformation() {
     private val ID =
         "ru.skillbranch.skillarticles.glide.AspectRatioResizeTransform" //any unique string
@@ -199,10 +252,18 @@ class AspectRatioResizeTransform : BitmapTransformation() {
         outWidth: Int,
         outHeight: Int
     ): Bitmap {
-        //TODO implement me
+        val originWidth = toTransform.width
+        val originHeight = toTransform.height
+        val aspectRatio = originWidth.toFloat() / originHeight
+        return Bitmap.createScaledBitmap(
+            toTransform,
+            outWidth,
+            (outWidth / aspectRatio).toInt(),
+            true
+        )
     }
 
     override fun equals(other: Any?): Boolean = other is AspectRatioResizeTransform
 
     override fun hashCode(): Int = ID.hashCode()
-}*/
+}
