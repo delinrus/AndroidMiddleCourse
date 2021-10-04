@@ -21,7 +21,7 @@ import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.extensions.attrValue
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
 import ru.skillbranch.skillarticles.extensions.dpToPx
-import ru.skillbranch.skillarticles.extensions.setPaddingOptionally
+//import ru.skillbranch.skillarticles.extensions.setPaddingOptionally
 import java.nio.charset.Charset
 import java.security.MessageDigest
 import kotlin.math.hypot
@@ -63,7 +63,16 @@ class MarkdownImageView private constructor(
     private val linePaint  //TODO implement me
 
     init {
-        //TODO implement me
+        ivImage = ImageView(context).apply {
+            // TODO settings image view
+        }
+        addView(ivImage)
+
+        tvTitle = MarkdownTextView(context).apply {
+            // TODO settings text view
+        }
+
+        addView(tvTitle)
     }
 
     constructor(
@@ -79,12 +88,41 @@ class MarkdownImageView private constructor(
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        //TODO implement me
+        var usedHeight = 0
+        val width = View.getDefaultSize(suggestedMinimumWidth, widthMeasureSpec)
+        measureChild(ivImage, widthMeasureSpec, heightMeasureSpec)
+        measureChild(tvTitle, widthMeasureSpec, heightMeasureSpec)
+
+
+        usedHeight += ivImage.measuredHeight
+        usedHeight += titleTopMargin
+        usedHeight += tvTitle.measuredHeight
+
+        setMeasuredDimension(width, usedHeight)
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        //TODO implement me
+        var usedHeight = 0
+        val bodyWidth = r - l - paddingLeft - paddingRight
+        val left = paddingLeft
+        val right = paddingLeft + bodyWidth
+
+        ivImage.layout(
+            left,
+            usedHeight,
+            right,
+            usedHeight + ivImage.measuredHeight
+        )
+
+        usedHeight += ivImage.measuredHeight + titleTopMargin
+
+        tvTitle.layout(
+            left,
+            usedHeight,
+            right,
+            usedHeight + tvTitle.measuredHeight
+        )
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
