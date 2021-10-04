@@ -25,6 +25,7 @@ import ru.skillbranch.skillarticles.databinding.ActivityRootBinding
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
 import ru.skillbranch.skillarticles.extensions.setMarginOptionally
 import ru.skillbranch.skillarticles.ui.custom.markdown.MarkdownBuilder
+import ru.skillbranch.skillarticles.ui.custom.markdown.MarkdownImageView
 import ru.skillbranch.skillarticles.ui.custom.spans.SearchFocusSpan
 import ru.skillbranch.skillarticles.ui.custom.spans.SearchSpan
 import ru.skillbranch.skillarticles.ui.delegates.viewBinding
@@ -48,6 +49,8 @@ class RootActivity : AppCompatActivity(), IArticleView {
         setupToolbar()
         setupBottombar()
         setupSubmenu()
+
+        vb.scroll.addView(MarkdownImageView(this, 14f))
 
         viewModel.observeState(this, ::renderUi)
         viewModel.observeSubState(this, ArticleState::toBottombarData, ::renderBotombar)
@@ -199,14 +202,14 @@ class RootActivity : AppCompatActivity(), IArticleView {
         delegate.localNightMode =
             if (data.isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
 
-        with(vb.tvTextContent) {
-            textSize = if (data.isBigText) 18f else 14f
-            movementMethod = LinkMovementMethod()  //for scroll and handle link click
-
-            MarkdownBuilder(context)
-                .markdownToSpan(data.content)
-                .run { setText(this, TextView.BufferType.SPANNABLE) }
-        }
+//        with(vb.tvTextContent) {
+//            textSize = if (data.isBigText) 18f else 14f
+//            movementMethod = LinkMovementMethod()  //for scroll and handle link click
+//
+//            MarkdownBuilder(context)
+//                .markdownToSpan(data.content)
+//                .run { setText(this, TextView.BufferType.SPANNABLE) }
+//        }
 
         //bind toolbar
         with(vb.toolbar) {
@@ -241,7 +244,7 @@ class RootActivity : AppCompatActivity(), IArticleView {
 
     override fun renderSearchResult(searchResult: List<Pair<Int, Int>>) {
 
-        val content = vb.tvTextContent.text as Spannable
+/*        val content = vb.tvTextContent.text as Spannable
 
         clearSearchResult()
 
@@ -252,12 +255,12 @@ class RootActivity : AppCompatActivity(), IArticleView {
                 end,
                 SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
             )
-        }
+        }*/
 
     }
 
     override fun renderSearchPosition(searchPosition: Int) {
-        val content = vb.tvTextContent.text as Spannable
+/*        val content = vb.tvTextContent.text as Spannable
 
         val spans = content.getSpans<SearchSpan>()
 
@@ -278,13 +281,13 @@ class RootActivity : AppCompatActivity(), IArticleView {
                 SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
             )
 
-        }
+        }*/
     }
 
     override fun clearSearchResult() {
-        val content = vb.tvTextContent.text as Spannable
+/*        val content = vb.tvTextContent.text as Spannable
         content.getSpans<SearchSpan>()
-            .forEach { content.removeSpan(it) }
+            .forEach { content.removeSpan(it) }*/
     }
 
     override fun showSearchBar(resultsCount: Int, searchPosition: Int) {

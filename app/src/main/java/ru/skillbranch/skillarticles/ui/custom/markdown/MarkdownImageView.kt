@@ -28,13 +28,20 @@ import kotlin.math.hypot
 
 
 @SuppressLint("ViewConstructor")
-class MarkdownImageView private constructor(
+class MarkdownImageView constructor(
     context: Context,
     fontSize: Float
 ) : ViewGroup(context, null, 0), IMarkdownView {
 
-    override var fontSize: Float //TODO implement me
-    override val spannableContent: Spannable //TODO implement me
+    override var fontSize: Float = fontSize
+    set(value) {
+        tvTitle.textSize = value * 0.75f
+        tvAlt?.textSize = value
+        field = value
+    }
+
+    override val spannableContent: Spannable
+        get() = tvTitle.text as Spannable
 
     //views
     private lateinit var imageUrl: String
@@ -60,16 +67,16 @@ class MarkdownImageView private constructor(
 
     //for draw object allocation
     private var linePositionY: Float = 0f
-    private val linePaint  //TODO implement me
+   // private val linePaint  //TODO implement me
 
     init {
         ivImage = ImageView(context).apply {
-            // TODO settings image view
+            setImageResource(R.mipmap.ic_launcher)
         }
         addView(ivImage)
 
         tvTitle = MarkdownTextView(context).apply {
-            // TODO settings text view
+            setText("title", TextView.BufferType.SPANNABLE)
         }
 
         addView(tvTitle)
@@ -140,6 +147,7 @@ class MarkdownImageView private constructor(
     }
 }
 
+/*
 class AspectRatioResizeTransform : BitmapTransformation() {
     private val ID =
         "ru.skillbranch.skillarticles.glide.AspectRatioResizeTransform" //any unique string
@@ -163,4 +171,4 @@ class AspectRatioResizeTransform : BitmapTransformation() {
     override fun equals(other: Any?): Boolean = other is AspectRatioResizeTransform
 
     override fun hashCode(): Int = ID.hashCode()
-}
+}*/
