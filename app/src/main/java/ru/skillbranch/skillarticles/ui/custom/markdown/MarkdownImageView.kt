@@ -21,7 +21,7 @@ import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.extensions.attrValue
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
 import ru.skillbranch.skillarticles.extensions.dpToPx
-//import ru.skillbranch.skillarticles.extensions.setPaddingOptionally
+import ru.skillbranch.skillarticles.extensions.setPaddingOptionally
 import java.nio.charset.Charset
 import java.security.MessageDigest
 import kotlin.math.hypot
@@ -67,16 +67,35 @@ class MarkdownImageView constructor(
 
     //for draw object allocation
     private var linePositionY: Float = 0f
-   // private val linePaint  //TODO implement me
+    private val linePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = lineColor
+        strokeWidth = 0f
+    }
 
     init {
         ivImage = ImageView(context).apply {
-            setImageResource(R.mipmap.ic_launcher)
+            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+            scaleType = ImageView.ScaleType.CENTER_CROP
+            setImageResource(R.drawable.ic_launcher_background)
+            outlineProvider = object : ViewOutlineProvider() {
+                override fun getOutline(view: View, outline: Outline) {
+                    outline.setRoundRect(
+                        Rect(0, 0, view.measuredWidth, view.measuredHeight),
+                        cornerRadius
+                    )
+                }
+            }
+            clipToOutline = true
         }
         addView(ivImage)
 
         tvTitle = MarkdownTextView(context).apply {
             setText("title", TextView.BufferType.SPANNABLE)
+            setTextColor(colorOnBackground)
+            gravity = Gravity.CENTER
+            typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL)
+            setPaddingOptionally( left = titlePadding, right = titlePadding)
+            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
         }
 
         addView(tvTitle)
@@ -103,6 +122,7 @@ class MarkdownImageView constructor(
 
         usedHeight += ivImage.measuredHeight
         usedHeight += titleTopMargin
+        linePositionY = usedHeight + tvTitle.measuredHeight / 2f
         usedHeight += tvTitle.measuredHeight
 
         setMeasuredDimension(width, usedHeight)
@@ -135,7 +155,21 @@ class MarkdownImageView constructor(
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public override fun dispatchDraw(canvas: Canvas) {
         super.dispatchDraw(canvas)
-        //TODO implement me
+        canvas.drawLine(
+            0f,
+            linePositionY,
+            titlePadding.toFloat(),
+            linePositionY,
+            linePaint
+        )
+
+        canvas.drawLine(
+            canvas.width - titlePadding.toFloat(),
+            linePositionY,
+            canvas.width.toFloat(),
+            linePositionY,
+            linePaint
+        )
     }
 
     private fun animateShowAlt() {
