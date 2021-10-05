@@ -73,9 +73,6 @@ class MarkdownImageView private constructor(
     }
 
     init {
-
-        setBackgroundColor(Color.RED)
-
         layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
         ivImage = ImageView(context).apply {
             scaleType = ImageView.ScaleType.CENTER_CROP

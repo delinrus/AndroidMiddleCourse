@@ -38,11 +38,21 @@ fun ArticleState.asMap(): Map<String, Any?> = mapOf(
 )
 
 fun User.asMap(): Map<String, Any?> = mapOf(
-    "id"  to id,
-    "name"  to name,
-    "avatar"  to avatar,
-    "rating"  to rating,
-    "respect"  to respect,
-    "about"  to about
+    "id" to id,
+    "name" to name,
+    "avatar" to avatar,
+    "rating" to rating,
+    "respect" to respect,
+    "about" to about
 )
+
+fun List<Pair<Int, Int>>.groupByBounds(bounds: List<Pair<Int, Int>>): List<MutableList<Pair<Int, Int>>> {
+    return bounds.fold(mutableListOf()) { acc, pair ->
+        val res = this.filter {
+            it.first >= pair.first && it.second <= pair.second
+        }.toMutableList()
+        acc.add(res)
+        acc
+    }
+}
 
