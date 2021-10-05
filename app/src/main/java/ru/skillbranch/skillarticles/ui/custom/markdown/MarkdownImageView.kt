@@ -105,7 +105,7 @@ class MarkdownImageView private constructor(
         context: Context,
         fontSize: Float,
         url: String,
-        title: String,
+        title: CharSequence,
         alt: String?
     ) : this(context, fontSize) {
         imageUrl = url

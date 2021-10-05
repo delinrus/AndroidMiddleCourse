@@ -29,16 +29,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
-<!--        <ru.skillbranch.skillarticles.ui.custom.markdown.MarkdownTextView-->
-<!--            android:id="@+id/tv_text_content"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:layout_margin="8dp"-->
-<!--            android:padding="8dp"-->
-<!--            android:focusable="true"-->
-<!--            android:focusableInTouchMode="true"-->
-<!--            android:textColor="?attr/colorOnBackground"-->
-<!--            android:text="Loading..."/>-->
+        <ru.skillbranch.skillarticles.ui.custom.markdown.MarkdownContentView
+            android:id="@+id/tv_text_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true" />
     </androidx.core.widget.NestedScrollView>
 
     <ru.skillbranch.skillarticles.ui.custom.ArticleSubmenu

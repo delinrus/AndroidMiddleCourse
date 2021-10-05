@@ -50,8 +50,6 @@ class RootActivity : AppCompatActivity(), IArticleView {
         setupBottombar()
         setupSubmenu()
 
-        vb.scroll.addView(MarkdownImageView(this, 14f, "https://149359143.v2.pressablecdn.com/wp-content/uploads/2017/04/iceland-1751463_1280.jpg", "Island", "it is Iceland"))
-
         viewModel.observeState(this, ::renderUi)
         viewModel.observeSubState(this, ArticleState::toBottombarData, ::renderBotombar)
         viewModel.observeSubState(this, ArticleState::toSubmenuData, ::renderSubmenu)
@@ -202,14 +200,11 @@ class RootActivity : AppCompatActivity(), IArticleView {
         delegate.localNightMode =
             if (data.isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
 
-//        with(vb.tvTextContent) {
-//            textSize = if (data.isBigText) 18f else 14f
-//            movementMethod = LinkMovementMethod()  //for scroll and handle link click
-//
-//            MarkdownBuilder(context)
-//                .markdownToSpan(data.content)
-//                .run { setText(this, TextView.BufferType.SPANNABLE) }
-//        }
+        with(vb.tvTextContent) {
+            textSize = if (data.isBigText) 18f else 14f
+            isLoading = data.content.isEmpty()
+            setContent(data.content)
+        }
 
         //bind toolbar
         with(vb.toolbar) {
