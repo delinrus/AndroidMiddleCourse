@@ -2,6 +2,7 @@ package ru.skillbranch.skillarticles.ui.custom.markdown
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.text.Spannable
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
@@ -37,6 +38,7 @@ class MarkdownTextView (
     }
 
     init {
+        setBackgroundColor(Color.GREEN)
         setTextColor(color)
         textSize = fontSize
         movementMethod = LinkMovementMethod()
