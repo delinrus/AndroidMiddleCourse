@@ -5,10 +5,9 @@ import android.util.AttributeSet
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.children
-//import ru.skillbranch.skillarticles.data.repositories.MarkdownElement
+import ru.skillbranch.skillarticles.data.repositories.MarkdownElement
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
 import ru.skillbranch.skillarticles.extensions.groupByBounds
-//import ru.skillbranch.skillarticles.extensions.groupByBounds
 import ru.skillbranch.skillarticles.extensions.setPaddingOptionally
 import kotlin.properties.Delegates
 
@@ -76,7 +75,7 @@ class MarkdownContentView @JvmOverloads constructor(
     }
 
     fun setContent(content: List<MarkdownElement>) {
-        if(elements.isNotEmpty()) return
+        if (elements.isNotEmpty()) return
         elements = content
         content.forEach {
             when (it) {

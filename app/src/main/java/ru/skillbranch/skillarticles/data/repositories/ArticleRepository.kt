@@ -3,8 +3,6 @@ package ru.skillbranch.skillarticles.data.repositories
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import ru.skillbranch.skillarticles.data.*
-import ru.skillbranch.skillarticles.ui.custom.markdown.MarkdownElement
-import ru.skillbranch.skillarticles.ui.custom.markdown.MarkdownParser
 
 interface IArticleRepository {
     fun loadArticleContent(articleId: String): LiveData<List<MarkdownElement>?>
