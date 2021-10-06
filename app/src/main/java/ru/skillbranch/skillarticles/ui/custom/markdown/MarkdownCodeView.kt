@@ -85,11 +85,15 @@ class MarkdownCodeView private constructor(
         tvCodeView = MarkdownTextView(context, fontSize * 0.85f).apply {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL)
             setTextColor(textColor)
-            //setPaddingOptionally(right = textExtraPadding)
+            setPaddingOptionally(right = textExtraPadding)
+            isFocusable = true
+            isFocusableInTouchMode = true
         }
 
         svScroll = object : HorizontalScrollView(context) {
-            //TODO custom scroll
+            override fun getLeftFadingEdgeStrength(): Float {
+                return 0f
+            }
         }.apply {
             overScrollMode = View.OVER_SCROLL_NEVER
             isHorizontalFadingEdgeEnabled = true
@@ -194,15 +198,22 @@ class MarkdownCodeView private constructor(
     }
 
     override fun renderSearchPosition(searchPosition: Pair<Int, Int>, offset: Int) {
-        //TODO implement me
+        super.renderSearchPosition(searchPosition, offset)
+        if ((parent as ViewGroup).hasFocus() && !tvCodeView.hasFocus()) tvCodeView.requestFocus()
+        Selection.setSelection(spannableContent, searchPosition.first.minus(offset))
     }
 
     private fun toggleColors() {
-        //TODO implement me
+        isManual = true
+        isDark = !isDark
+        applyColors()
     }
 
 
     private fun applyColors() {
-        //TODO implement me
+        ivSwitch.imageTintList = ColorStateList.valueOf(textColor)
+        ivCopy.imageTintList = ColorStateList.valueOf(textColor)
+        (background as GradientDrawable).color = ColorStateList.valueOf(bgColor)
+        tvCodeView.setTextColor(textColor)
     }
 }

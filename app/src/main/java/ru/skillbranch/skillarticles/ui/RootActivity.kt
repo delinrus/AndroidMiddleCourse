@@ -17,6 +17,7 @@ import com.google.android.material.snackbar.Snackbar
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.databinding.ActivityRootBinding
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
+import ru.skillbranch.skillarticles.extensions.hideKeyboard
 import ru.skillbranch.skillarticles.extensions.setMarginOptionally
 import ru.skillbranch.skillarticles.ui.delegates.viewBinding
 import ru.skillbranch.skillarticles.viewmodels.*
@@ -148,11 +149,15 @@ class RootActivity : AppCompatActivity(), IArticleView {
             btnSettings.setOnClickListener { viewModel.handleToggleMenu() }
 
             btnResultUp.setOnClickListener {
+                if(!vb.tvTextContent.hasFocus()) vb.tvTextContent.requestFocus()
+                hideKeyboard(it)
                 searchView.clearFocus()
                 viewModel.handleUpResult()
             }
 
             btnResultDown.setOnClickListener {
+                if(!vb.tvTextContent.hasFocus()) vb.tvTextContent.requestFocus()
+                hideKeyboard(it)
                 searchView.clearFocus()
                 viewModel.handleDownResult()
             }
