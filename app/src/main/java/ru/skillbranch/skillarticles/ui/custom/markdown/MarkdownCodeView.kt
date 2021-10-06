@@ -82,7 +82,7 @@ class MarkdownCodeView private constructor(
         }
 
     init {
-        tvCodeView = MarkdownTextView(context, fontSize).apply {
+        tvCodeView = MarkdownTextView(context, fontSize * 0.85f).apply {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL)
             setTextColor(textColor)
             //setPaddingOptionally(right = textExtraPadding)
@@ -94,6 +94,7 @@ class MarkdownCodeView private constructor(
             overScrollMode = View.OVER_SCROLL_NEVER
             isHorizontalFadingEdgeEnabled = true
             scrollBarSize = scrollBarHeight
+            setFadingEdgeLength(fadingOffset)
             //add code text to scroll
             addView(tvCodeView)
         }
@@ -121,8 +122,6 @@ class MarkdownCodeView private constructor(
         context: Context,
         fontSize: Float,
         code: CharSequence,
-        padding: Int,
-        cornerRadius: Float
     ) : this(context, fontSize) {
         codeString = code.toString()
         isSingleLine = code.lines().size == 1
@@ -153,6 +152,38 @@ class MarkdownCodeView private constructor(
         val left = paddingLeft
         val right = paddingLeft + bodyWidth
 
+        if (isSingleLine) {
+            val iconHeight = (b - t - iconSize) / 2
+
+            ivCopy.layout(
+                right - iconSize,
+                iconHeight,
+                right,
+                iconHeight + iconSize
+            )
+
+            ivSwitch.layout(
+                ivCopy.right - (2.5f * iconSize).toInt(),
+                iconHeight,
+                ivCopy.right - (1.5f * iconSize).toInt(),
+                iconHeight + iconSize
+            )
+
+        } else {
+            ivCopy.layout(
+                right - iconSize,
+                usedHeight,
+                right,
+                usedHeight + iconSize
+            )
+
+            ivSwitch.layout(
+                ivCopy.right - (2.5f * iconSize).toInt(),
+                usedHeight,
+                ivCopy.right - (1.5f * iconSize).toInt(),
+                usedHeight + iconSize
+            )
+        }
 
         svScroll.layout(
             left,
