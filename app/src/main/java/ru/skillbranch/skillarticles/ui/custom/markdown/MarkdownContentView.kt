@@ -29,9 +29,7 @@ class MarkdownContentView @JvmOverloads constructor(
             it.fontSize = value
         }
     }
-
     var isLoading: Boolean = true
-
     private val padding = context.dpToIntPx(8)
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -75,7 +73,7 @@ class MarkdownContentView @JvmOverloads constructor(
     }
 
     fun setContent(content: List<MarkdownElement>) {
-        if (elements.isNotEmpty()) return
+        if(elements.isNotEmpty()) return
         elements = content
         content.forEach {
             when (it) {
@@ -85,7 +83,6 @@ class MarkdownContentView @JvmOverloads constructor(
                             left = padding,
                             right = padding
                         )
-                        setLineSpacing(fontSize * 0.5f, 1f)
                     }
 
                     MarkdownBuilder(context)
@@ -112,7 +109,7 @@ class MarkdownContentView @JvmOverloads constructor(
                     val sv = MarkdownCodeView(
                         context,
                         textSize,
-                        it.blockCode.text,
+                        it.blockCode.text.toString()
                     )
                     sv.copyListener = copyListener
                     addView(sv)
@@ -135,7 +132,7 @@ class MarkdownContentView @JvmOverloads constructor(
 
         children.forEachIndexed { index, view ->
             view as IMarkdownView
-            //search for child with markdown element offset
+//search for child with markdown element offset
             view.renderSearchResult(result[index], elements[index].offset)
         }
     }

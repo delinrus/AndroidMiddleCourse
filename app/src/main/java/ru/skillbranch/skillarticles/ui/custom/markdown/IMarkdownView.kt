@@ -37,7 +37,7 @@ interface IMarkdownView {
     fun renderSearchPosition(
         searchPosition: Pair<Int, Int>,
         offset: Int
-    ) {
+    ){
         spannableContent.getSpans<SearchFocusSpan>().forEach { spannableContent.removeSpan(it) }
 
         spannableContent.setSpan(
@@ -48,7 +48,7 @@ interface IMarkdownView {
         )
     }
 
-    fun clearSearchResult() {
+    fun clearSearchResult(){
         spannableContent.getSpans<SearchSpan>().forEach { spannableContent.removeSpan(it) }
     }
 }

@@ -31,6 +31,7 @@ class MarkdownCodeView private constructor(
             tvCodeView.textSize = value * 0.85f
             field = value
         }
+
     override val spannableContent: Spannable
         get() = tvCodeView.text as Spannable
 
@@ -82,7 +83,7 @@ class MarkdownCodeView private constructor(
         }
 
     init {
-        tvCodeView = MarkdownTextView(context, fontSize * 0.85f).apply {
+        tvCodeView = MarkdownTextView(context, fontSize * 0.85f, false).apply {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL)
             setTextColor(textColor)
             setPaddingOptionally(right = textExtraPadding)
@@ -122,12 +123,13 @@ class MarkdownCodeView private constructor(
         addView(ivSwitch)
     }
 
+
     constructor(
         context: Context,
         fontSize: Float,
-        code: CharSequence,
+        code: String
     ) : this(context, fontSize) {
-        codeString = code.toString()
+        codeString = code
         isSingleLine = code.lines().size == 1
         tvCodeView.setText(codeString, TextView.BufferType.SPANNABLE)
         setPadding(padding)

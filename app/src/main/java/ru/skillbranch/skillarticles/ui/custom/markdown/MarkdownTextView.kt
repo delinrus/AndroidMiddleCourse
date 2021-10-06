@@ -1,5 +1,6 @@
 package ru.skillbranch.skillarticles.ui.custom.markdown
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -7,7 +8,6 @@ import android.graphics.Rect
 import android.text.Spannable
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
-import android.util.AttributeSet
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.widget.AppCompatTextView
@@ -17,10 +17,12 @@ import ru.skillbranch.skillarticles.extensions.attrValue
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
 import ru.skillbranch.skillarticles.extensions.dpToPx
 
-class MarkdownTextView (
+
+@SuppressLint("ViewConstructor")
+class MarkdownTextView(
     context: Context,
     fontSize: Float,
-    private val isSizeDepend : Boolean = true
+    private val isSizeDepend: Boolean = true
 ) : AppCompatTextView(context, null, 0), IMarkdownView {
 
     override var fontSize: Float = fontSize
@@ -49,9 +51,10 @@ class MarkdownTextView (
         movementMethod = LinkMovementMethod()
     }
 
+
     override fun onDraw(canvas: Canvas) {
         if (text is Spanned && layout != null) {
-            canvas.withTranslation (totalPaddingLeft.toFloat(), totalPaddingTop.toFloat()) {
+            canvas.withTranslation(totalPaddingLeft.toFloat(), totalPaddingTop.toFloat()) {
                 searchBgHelper.draw(canvas, text as Spanned, layout)
             }
         }
@@ -60,7 +63,7 @@ class MarkdownTextView (
 
     override fun setTextSize(size: Float) {
         Log.e("MarkdownTextView", "set text size = $size")
-        if(isSizeDepend) setLineSpacing(context.dpToPx(if(size == 14f) 8 else 10), 1f)
+        if (isSizeDepend) setLineSpacing(context.dpToPx(if (size == 14f) 8 else 10), 1f)
         super.setTextSize(size)
     }
 }

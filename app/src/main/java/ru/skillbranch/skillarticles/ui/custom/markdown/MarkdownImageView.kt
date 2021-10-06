@@ -34,11 +34,11 @@ class MarkdownImageView private constructor(
 ) : ViewGroup(context, null, 0), IMarkdownView {
 
     override var fontSize: Float = fontSize
-    set(value) {
-        tvTitle.textSize = value * 0.75f
-        tvAlt?.textSize = value
-        field = value
-    }
+        set(value) {
+            tvTitle.textSize = value * 0.75f
+            tvAlt?.textSize = value
+            field = value
+        }
 
     override val spannableContent: Spannable
         get() = tvTitle.text as Spannable
@@ -63,6 +63,7 @@ class MarkdownImageView private constructor(
     @ColorInt private val colorSurface: Int = context.attrValue(R.attr.colorSurface)
     @ColorInt private val colorOnSurface: Int = context.attrValue(R.attr.colorOnSurface)
     @ColorInt private val colorOnBackground: Int = context.attrValue(R.attr.colorOnBackground)
+
     @ColorInt private var lineColor: Int = context.getColor(R.color.color_divider)
 
     //for draw object allocation
@@ -73,10 +74,8 @@ class MarkdownImageView private constructor(
     }
 
     init {
-        layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+        layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
         ivImage = ImageView(context).apply {
-            scaleType = ImageView.ScaleType.CENTER_CROP
-            setImageResource(R.drawable.ic_launcher_background)
             outlineProvider = object : ViewOutlineProvider() {
                 override fun getOutline(view: View, outline: Outline) {
                     outline.setRoundRect(
@@ -89,13 +88,11 @@ class MarkdownImageView private constructor(
         }
         addView(ivImage)
 
-        tvTitle = MarkdownTextView(context, fontSize * 0.75f).apply {
-            setText("title", TextView.BufferType.SPANNABLE)
+        tvTitle = MarkdownTextView(context, fontSize * 0.75f, false).apply {
             setTextColor(colorOnBackground)
             gravity = Gravity.CENTER
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL)
-            setPaddingOptionally( left = titlePadding, right = titlePadding)
-            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+            setPaddingOptionally(left = titlePadding, right = titlePadding)
         }
 
         addView(tvTitle)
@@ -108,6 +105,7 @@ class MarkdownImageView private constructor(
         title: CharSequence,
         alt: String?
     ) : this(context, fontSize) {
+
         imageUrl = url
         imageTitle = title
 

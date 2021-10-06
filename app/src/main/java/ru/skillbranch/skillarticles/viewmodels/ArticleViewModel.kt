@@ -8,8 +8,9 @@ import androidx.lifecycle.SavedStateHandle
 import ru.skillbranch.skillarticles.data.ArticleData
 import ru.skillbranch.skillarticles.data.ArticlePersonalInfo
 import ru.skillbranch.skillarticles.data.repositories.ArticleRepository
-import ru.skillbranch.skillarticles.extensions.*
 import ru.skillbranch.skillarticles.data.repositories.MarkdownElement
+import ru.skillbranch.skillarticles.extensions.*
+import ru.skillbranch.skillarticles.data.repositories.MarkdownParser
 import ru.skillbranch.skillarticles.data.repositories.clearContent
 
 class ArticleViewModel(private val articleId: String, savedStateHandle: SavedStateHandle) :
@@ -19,7 +20,7 @@ class ArticleViewModel(private val articleId: String, savedStateHandle: SavedSta
 
     init {
         //set custom saved state provider for non serializable or custom states
-        savedStateHandle.setSavedStateProvider("state"){
+        savedStateHandle.setSavedStateProvider("state") {
             currentState.toBundle()
         }
 
@@ -142,7 +143,7 @@ class ArticleViewModel(private val articleId: String, savedStateHandle: SavedSta
     override fun handleSearch(query: String?) {
         query ?: return
 
-        if(clearContent == null && currentState.content.isNotEmpty()) clearContent =
+        if (clearContent == null && currentState.content.isNotEmpty()) clearContent =
             currentState.content.clearContent()
 
         val result = clearContent.indexesOf(query)

@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.AppBarLayout
@@ -146,24 +147,20 @@ class RootActivity : AppCompatActivity(), IArticleView {
 
     override fun setupBottombar() {
         with(vbBottombar) {
-            val vbr = vb
-
             btnLike.setOnClickListener { viewModel.handleLike() }
             btnBookmark.setOnClickListener { viewModel.handleBookmark() }
             btnShare.setOnClickListener { viewModel.handleShare() }
             btnSettings.setOnClickListener { viewModel.handleToggleMenu() }
 
             btnResultUp.setOnClickListener {
-                if(!vb.tvTextContent.hasFocus()) vb.tvTextContent.requestFocus()
+                if (!vb.tvTextContent.hasFocus()) vb.tvTextContent.requestFocus()
                 hideKeyboard(it)
-                searchView.clearFocus()
                 viewModel.handleUpResult()
             }
 
             btnResultDown.setOnClickListener {
-                if(!vb.tvTextContent.hasFocus()) vb.tvTextContent.requestFocus()
+                if (!vb.tvTextContent.hasFocus()) vb.tvTextContent.requestFocus()
                 hideKeyboard(it)
-                searchView.clearFocus()
                 viewModel.handleDownResult()
             }
 
@@ -221,7 +218,8 @@ class RootActivity : AppCompatActivity(), IArticleView {
         with(vb.toolbar) {
             title = data.title ?: "loading"
             subtitle = data.category ?: "loading"
-            if (data.categoryIcon != null) logo = getDrawable(data.categoryIcon as Int)
+            if (data.categoryIcon != null) logo =
+                ContextCompat.getDrawable(context, data.categoryIcon as Int)
         }
 
         if (data.isLoadingContent) return
