@@ -115,6 +115,7 @@ class MarkdownContentView @JvmOverloads constructor(
                         textSize,
                         it.blockCode.text,
                     )
+                    sv.copyListener = copyListener
                     addView(sv)
                 }
             }
@@ -166,6 +167,6 @@ class MarkdownContentView @JvmOverloads constructor(
     }
 
     fun setCopyListener(listener: (String) -> Unit) {
-        //TODO implement me
+        copyListener = listener
     }
 }

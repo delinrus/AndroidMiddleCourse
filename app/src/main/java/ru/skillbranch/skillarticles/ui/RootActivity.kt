@@ -1,5 +1,8 @@
 package ru.skillbranch.skillarticles.ui
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -13,6 +16,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.children
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.snackbar.Snackbar
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.databinding.ActivityRootBinding
@@ -40,6 +44,7 @@ class RootActivity : AppCompatActivity(), IArticleView {
         setupToolbar()
         setupBottombar()
         setupSubmenu()
+        setupCopyListener()
 
         viewModel.observeState(this, ::renderUi)
         viewModel.observeSubState(this, ArticleState::toBottombarData, ::renderBotombar)
@@ -176,9 +181,20 @@ class RootActivity : AppCompatActivity(), IArticleView {
             btnBookmark.isChecked = data.isBookmark
         }
 
-        if (data.isSearch) showSearchBar(data.resultsCount, data.searchPosition)
-        else hideSearchBar()
-
+        if (data.isSearch) {
+            showSearchBar(data.resultsCount, data.searchPosition)
+            with(vb.toolbar) {
+                (layoutParams as AppBarLayout.LayoutParams).scrollFlags =
+                    AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
+            }
+        } else {
+            hideSearchBar()
+            with(vb.toolbar) {
+                (layoutParams as AppBarLayout.LayoutParams).scrollFlags =
+                    AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
+                            AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED
+            }
+        }
     }
 
     override fun renderSubmenu(data: SubmenuData) {
@@ -257,5 +273,14 @@ class RootActivity : AppCompatActivity(), IArticleView {
             setSearchState(false)
         }
         vb.scroll.setMarginOptionally(bottom = dpToIntPx(0))
+    }
+
+    override fun setupCopyListener(){
+        vb.tvTextContent.setCopyListener { copy ->
+            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("Copied code", copy)
+            clipboard.setPrimaryClip(clip)
+            viewModel.handleCopyCode()
+        }
     }
 }

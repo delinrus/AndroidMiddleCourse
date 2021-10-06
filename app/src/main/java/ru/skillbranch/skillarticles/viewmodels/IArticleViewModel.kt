@@ -90,4 +90,9 @@ interface IArticleViewModel {
      * переместиться к следующему совпадению поиска
      */
     fun handleDownResult()
+
+    /**
+     * скопировать результат из CodeView в буфер обмена
+     */
+    fun handleCopyCode()
 }
