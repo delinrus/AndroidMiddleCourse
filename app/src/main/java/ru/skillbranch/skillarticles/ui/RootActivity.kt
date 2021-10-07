@@ -36,7 +36,7 @@ class RootActivity : AppCompatActivity(), IArticleView {
     val vbBottombar
         get() = vb.bottombar
     val vbSubmenu
-        get() = vb.submenu.binding
+        get() = vb.submenu
     private lateinit var searchView: SearchView
 
     override fun onCreate(savedInstanceState: Bundle?) {
