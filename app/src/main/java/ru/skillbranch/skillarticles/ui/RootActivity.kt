@@ -34,7 +34,7 @@ class RootActivity : AppCompatActivity(), IArticleView {
     val vb: ActivityRootBinding by viewBinding(ActivityRootBinding::inflate)
 
     val vbBottombar
-        get() = vb.bottombar.binding
+        get() = vb.bottombar
     val vbSubmenu
         get() = vb.submenu.binding
     private lateinit var searchView: SearchView
