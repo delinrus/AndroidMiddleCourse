@@ -1,7 +1,11 @@
 package ru.skillbranch.skillarticles.ui.custom.markdown
 
 import android.content.Context
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.AttributeSet
+import android.util.SparseArray
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.children
@@ -73,7 +77,7 @@ class MarkdownContentView @JvmOverloads constructor(
     }
 
     fun setContent(content: List<MarkdownElement>) {
-        if(elements.isNotEmpty()) return
+        if (elements.isNotEmpty()) return
         elements = content
         content.forEach {
             when (it) {
@@ -90,7 +94,7 @@ class MarkdownContentView @JvmOverloads constructor(
                         .run {
                             tv.setText(this, TextView.BufferType.SPANNABLE)
                         }
-
+                    tv.id = generateViewId()
                     addView(tv)
                 }
 
@@ -102,6 +106,7 @@ class MarkdownContentView @JvmOverloads constructor(
                         it.image.text,
                         it.image.alt
                     )
+                    iv.id = View.generateViewId()
                     addView(iv)
                 }
 
@@ -112,6 +117,7 @@ class MarkdownContentView @JvmOverloads constructor(
                         it.blockCode.text.toString()
                     )
                     sv.copyListener = copyListener
+                    sv.id = View.generateViewId()
                     addView(sv)
                 }
             }
@@ -132,7 +138,7 @@ class MarkdownContentView @JvmOverloads constructor(
 
         children.forEachIndexed { index, view ->
             view as IMarkdownView
-//search for child with markdown element offset
+            //search for child with markdown element offset
             view.renderSearchResult(result[index], elements[index].offset)
         }
     }
@@ -164,5 +170,55 @@ class MarkdownContentView @JvmOverloads constructor(
 
     fun setCopyListener(listener: (String) -> Unit) {
         copyListener = listener
+    }
+
+    override fun onSaveInstanceState(): Parcelable? {
+        val saveState = SavedState(super.onSaveInstanceState())
+        saveState.ssIds.addAll(ids)
+        return saveState
+    }
+
+    override fun dispatchSaveInstanceState(container: SparseArray<Parcelable>?) {
+        if (ids.isEmpty()) {
+            children.forEach {
+                ids.add(it.id)
+            }
+        }
+        super.dispatchSaveInstanceState(container)
+    }
+
+    override fun dispatchRestoreInstanceState(container: SparseArray<Parcelable>?) {
+        val state = container?.get(id) as SavedState
+        if (state.ssIds.isNotEmpty()) {
+            ids.addAll(state.ssIds)
+            children.forEachIndexed { ind, it ->
+                it.id = ids[ind]
+            }
+        }
+        super.dispatchRestoreInstanceState(container)
+    }
+
+    private class SavedState : BaseSavedState, Parcelable {
+        var ssIds = arrayListOf<Int>()
+
+        constructor(superState: Parcelable?) : super(superState)
+
+        constructor(parcel: Parcel) : super(parcel) {
+            ssIds = parcel.readSerializable() as ArrayList<Int>
+        }
+
+        override fun writeToParcel(parcel: Parcel, flags: Int) {
+            super.writeToParcel(parcel, flags)
+            parcel.writeSerializable(ssIds)
+        }
+
+        override fun describeContents(): Int {
+            return 0
+        }
+
+        companion object CREATOR : Parcelable.Creator<SavedState> {
+            override fun createFromParcel(parcel: Parcel) = SavedState(parcel)
+            override fun newArray(size: Int): Array<SavedState?> = arrayOfNulls(size)
+        }
     }
 }

@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.os.Parcel
+import android.os.Parcelable
 import android.text.Selection
 import android.text.Spannable
 import android.view.View
@@ -83,6 +85,7 @@ class MarkdownCodeView private constructor(
         }
 
     init {
+        isSaveEnabled = true
         tvCodeView = MarkdownTextView(context, fontSize * 0.85f, false).apply {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL)
             setTextColor(textColor)
@@ -211,11 +214,43 @@ class MarkdownCodeView private constructor(
         applyColors()
     }
 
-
     private fun applyColors() {
         ivSwitch.imageTintList = ColorStateList.valueOf(textColor)
         ivCopy.imageTintList = ColorStateList.valueOf(textColor)
         (background as GradientDrawable).color = ColorStateList.valueOf(bgColor)
         tvCodeView.setTextColor(textColor)
+    }
+
+    override fun onSaveInstanceState(): Parcelable? {
+        val savedState = SavedStateCodeView(super.onSaveInstanceState())
+        savedState.isDark = isDark
+        return savedState
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable) {
+        super.onRestoreInstanceState(state)
+        if (state is SavedStateCodeView) {
+            isManual = true
+            isDark = state.isDark
+            applyColors()
+        }
+    }
+
+    private class SavedStateCodeView: BaseSavedState, Parcelable {
+        var isDark = false
+        constructor(superState: Parcelable?) : super(superState)
+
+        constructor(parcel: Parcel) : super(parcel) {
+            isDark = parcel.readInt() == 1
+        }
+
+        override fun writeToParcel(out: Parcel?, flags: Int) {
+            super.writeToParcel(out, flags)
+            out?.writeInt(if (isDark) 1 else 0)
+        }
+        companion object CREATOR : Parcelable.Creator<SavedStateCodeView> {
+            override fun createFromParcel(parcel: Parcel) = SavedStateCodeView(parcel)
+            override fun newArray(size: Int): Array<SavedStateCodeView?> = arrayOfNulls(size)
+        }
     }
 }
