@@ -58,15 +58,26 @@ class MarkdownImageView private constructor(
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     var tvAlt: TextView? = null
 
-    @Px private val titleTopMargin: Int = context.dpToIntPx(8)
-    @Px private val titlePadding: Int = context.dpToIntPx(56)
-    @Px private val cornerRadius: Float = context.dpToPx(4)
+    @Px
+    private val titleTopMargin: Int = context.dpToIntPx(8)
 
-    @ColorInt private val colorSurface: Int = context.attrValue(R.attr.colorSurface)
-    @ColorInt private val colorOnSurface: Int = context.attrValue(R.attr.colorOnSurface)
-    @ColorInt private val colorOnBackground: Int = context.attrValue(R.attr.colorOnBackground)
+    @Px
+    private val titlePadding: Int = context.dpToIntPx(56)
 
-    @ColorInt private var lineColor: Int = context.getColor(R.color.color_divider)
+    @Px
+    private val cornerRadius: Float = context.dpToPx(4)
+
+    @ColorInt
+    private val colorSurface: Int = context.attrValue(R.attr.colorSurface)
+
+    @ColorInt
+    private val colorOnSurface: Int = context.attrValue(R.attr.colorOnSurface)
+
+    @ColorInt
+    private val colorOnBackground: Int = context.attrValue(R.attr.colorOnBackground)
+
+    @ColorInt
+    private var lineColor: Int = context.getColor(R.color.color_divider)
 
     //for draw object allocation
     private var linePositionY: Float = 0f
@@ -76,7 +87,8 @@ class MarkdownImageView private constructor(
     }
 
     init {
-        isSaveEnabled = true
+        // set id for view
+        //id = View.generateViewId()
         layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
         ivImage = ImageView(context).apply {
             outlineProvider = object : ViewOutlineProvider() {
@@ -239,38 +251,39 @@ class MarkdownImageView private constructor(
         va.start()
     }
 
-    //save state
     override fun onSaveInstanceState(): Parcelable? {
-        val savedState = SavedStateImageView(super.onSaveInstanceState())
-        savedState.isAlt = tvAlt?.isVisible ?: false
+        // Log.e("MarkdownImageView", "sve state $id")
+        val savedState =
+            SavedState(super.onSaveInstanceState())
+        savedState.ssIsOpen = tvAlt?.isVisible ?: false
         return savedState
     }
 
-    //restore state
-    override fun onRestoreInstanceState(state: Parcelable) {
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        // Log.e("MarkdownImageView", "restore state $id")
         super.onRestoreInstanceState(state)
-        if (state is SavedStateImageView) {
-            tvAlt?.apply {
-                isVisible = state.isAlt
-            }
+        if (state is SavedState) {
+            tvAlt?.isVisible = state.ssIsOpen
         }
     }
 
-    private class SavedStateImageView: BaseSavedState, Parcelable {
-        var isAlt = false
+    private class SavedState : BaseSavedState, Parcelable {
+        var ssIsOpen: Boolean = false
+
         constructor(superState: Parcelable?) : super(superState)
 
         constructor(src: Parcel) : super(src) {
-            isAlt = src.readInt() == 1
+            ssIsOpen = src.readInt() == 1
         }
 
         override fun writeToParcel(out: Parcel?, flags: Int) {
             super.writeToParcel(out, flags)
-            out?.writeInt(if (isAlt) 1 else 0)
+            out?.writeInt(if (ssIsOpen) 1 else 0)
         }
-        companion object CREATOR : Parcelable.Creator<SavedStateImageView> {
-            override fun createFromParcel(parcel: Parcel) = SavedStateImageView(parcel)
-            override fun newArray(size: Int): Array<SavedStateImageView?> = arrayOfNulls(size)
+
+        companion object CREATOR : Parcelable.Creator<SavedState> {
+            override fun createFromParcel(parcel: Parcel) = SavedState(parcel)
+            override fun newArray(size: Int): Array<SavedState?> = arrayOfNulls(size)
         }
     }
 }

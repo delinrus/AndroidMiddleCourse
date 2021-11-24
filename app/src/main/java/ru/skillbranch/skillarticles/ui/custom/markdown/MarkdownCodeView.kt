@@ -85,7 +85,8 @@ class MarkdownCodeView private constructor(
         }
 
     init {
-        isSaveEnabled = true
+        // set id for view
+        //id = View.generateViewId()
         tvCodeView = MarkdownTextView(context, fontSize * 0.85f, false).apply {
             typeface = Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL)
             setTextColor(textColor)
@@ -222,21 +223,22 @@ class MarkdownCodeView private constructor(
     }
 
     override fun onSaveInstanceState(): Parcelable? {
-        val savedState = SavedStateCodeView(super.onSaveInstanceState())
+        val savedState = SavedState(super.onSaveInstanceState())
         savedState.isDark = isDark
         return savedState
     }
 
     override fun onRestoreInstanceState(state: Parcelable) {
         super.onRestoreInstanceState(state)
-        if (state is SavedStateCodeView) {
+        if (state is SavedState) {
             isManual = true
+
             isDark = state.isDark
             applyColors()
         }
     }
 
-    private class SavedStateCodeView: BaseSavedState, Parcelable {
+    private class SavedState: BaseSavedState, Parcelable {
         var isDark = false
         constructor(superState: Parcelable?) : super(superState)
 
@@ -248,9 +250,9 @@ class MarkdownCodeView private constructor(
             super.writeToParcel(out, flags)
             out?.writeInt(if (isDark) 1 else 0)
         }
-        companion object CREATOR : Parcelable.Creator<SavedStateCodeView> {
-            override fun createFromParcel(parcel: Parcel) = SavedStateCodeView(parcel)
-            override fun newArray(size: Int): Array<SavedStateCodeView?> = arrayOfNulls(size)
+        companion object CREATOR : Parcelable.Creator<SavedState> {
+            override fun createFromParcel(parcel: Parcel) = SavedState(parcel)
+            override fun newArray(size: Int): Array<SavedState?> = arrayOfNulls(size)
         }
     }
 }
