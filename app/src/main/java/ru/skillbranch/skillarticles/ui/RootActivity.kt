@@ -9,6 +9,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.snackbar.Snackbar
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.databinding.ActivityRootBinding
 import ru.skillbranch.skillarticles.viewmodels.*
@@ -47,5 +48,37 @@ class RootActivity : AppCompatActivity() {
     //for navigate on press back arrow in action bar
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp() || super.onSupportNavigateUp()
+    }
+
+    fun renderNotification(notify: Notify) {
+        val snackbar = Snackbar.make(viewBinding.coordinatorContainer, notify.message, Snackbar.LENGTH_LONG)
+         //   .setAnchorView(vb.bottombar)
+
+        when (notify) {
+            is Notify.ActionMessage -> {
+                val (_, label, handler) = notify
+
+                with(snackbar) {
+                    setActionTextColor(getColor(R.color.color_accent_dark))
+                    setAction(label) { handler.invoke() }
+                }
+            }
+
+            is Notify.ErrorMessage -> {
+                val (_, label, handler) = notify
+
+                with(snackbar) {
+                    setBackgroundTint(getColor(R.color.design_default_color_error))
+                    setTextColor(getColor(android.R.color.white))
+                    setActionTextColor(getColor(android.R.color.white))
+                    handler ?: return@with
+                    setAction(label) { handler.invoke() }
+                }
+            }
+            else -> { /* nothing */
+            }
+        }
+
+        snackbar.show()
     }
 }

@@ -95,37 +95,7 @@ class ArticleFragment : Fragment() {
         super.onSaveInstanceState(outState)
     }
 
-    private fun renderNotification(notify: Notify) {
-        val snackbar = Snackbar.make(vb.coordinatorContainer, notify.message, Snackbar.LENGTH_LONG)
-            .setAnchorView(vb.bottombar)
 
-        when (notify) {
-            is Notify.ActionMessage -> {
-                val (_, label, handler) = notify
-
-                with(snackbar) {
-                    setActionTextColor(getColor(R.color.color_accent_dark))
-                    setAction(label) { handler.invoke() }
-                }
-            }
-
-            is Notify.ErrorMessage -> {
-                val (_, label, handler) = notify
-
-                with(snackbar) {
-                    setBackgroundTint(getColor(R.color.design_default_color_error))
-                    setTextColor(getColor(android.R.color.white))
-                    setActionTextColor(getColor(android.R.color.white))
-                    handler ?: return@with
-                    setAction(label) { handler.invoke() }
-                }
-            }
-            else -> { /* nothing */
-            }
-        }
-
-        snackbar.show()
-    }
 
     override fun setupSubmenu() {
         with(vbSubmenu) {
