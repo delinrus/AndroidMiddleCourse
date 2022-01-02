@@ -6,8 +6,14 @@ import ru.skillbranch.skillarticles.data.repositories.ArticlesRepository
 import ru.skillbranch.skillarticles.viewmodels.articles.ArticleItem
 
 class ArticlesViewModel(savedStateHandle: SavedStateHandle) : BaseViewModel<ArticlesState>(ArticlesState(), savedStateHandle) {
+    fun navigateToArticle(articleItem: ArticleItem) {
+    }
+
+    fun checkBookmark(articleItem: ArticleItem, checked: Boolean) {
+    }
+
     private val repository: ArticlesRepository = ArticlesRepository()
-    private val articles: LiveData<List<ArticleItem>> = repository.findArticles()
+    val articles: LiveData<List<ArticleItem>> = repository.findArticles()
 }
 
 data class ArticlesState(
