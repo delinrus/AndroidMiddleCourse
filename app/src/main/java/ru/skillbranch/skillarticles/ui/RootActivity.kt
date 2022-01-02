@@ -31,7 +31,13 @@ class RootActivity : AppCompatActivity() {
         navController = navHost.navController
 
         //setup action bar navigation
-        val appbarConfig = AppBarConfiguration(navController.graph)
+        val appbarConfig = AppBarConfiguration(
+            setOf(
+                R.id.nav_articles,
+                R.id.nav_bookmarks,
+                R.id.nav_profile
+            )
+        )
         setupActionBarWithNavController(navController, appbarConfig)
 
         //setup bottombar navigation
