@@ -179,6 +179,12 @@ sealed class Notify() {
 }
 
 public interface VMState : Serializable{
-    fun toBundle(): Bundle
-    fun fromBundle(bundle:Bundle): VMState?
+    open fun toBundle(): Bundle {
+        /*overwrite if need*/
+        return bundleOf()
+    }
+    open fun fromBundle(bundle:Bundle): VMState? {
+        /*overwrite if need*/
+        return null
+    }
 }
