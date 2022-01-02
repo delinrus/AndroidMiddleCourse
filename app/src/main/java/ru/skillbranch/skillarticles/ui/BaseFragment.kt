@@ -8,6 +8,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.viewbinding.ViewBinding
+import ru.skillbranch.skillarticles.ui.delegates.viewBinding
 import ru.skillbranch.skillarticles.viewmodels.BaseViewModel
 import ru.skillbranch.skillarticles.viewmodels.VMState
 
@@ -55,6 +56,8 @@ abstract class BaseFragment<S, T : BaseViewModel<S>, B : ViewBinding>(@LayoutRes
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     private fun activityInflated() {
+        //show appbar if hidden due to scroll behavior
+        root.viewBinding.appbar.setExpanded(true, true)
         setupActivityViews()
     }
 

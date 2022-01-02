@@ -16,7 +16,7 @@ import ru.skillbranch.skillarticles.viewmodels.*
 
 class RootActivity : AppCompatActivity() {
     val viewModel: RootViewModel by viewModels()
-    private lateinit var viewBinding: ActivityRootBinding
+    lateinit var viewBinding: ActivityRootBinding
     private lateinit var navController: NavController
 
 
