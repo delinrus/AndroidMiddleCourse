@@ -2,6 +2,7 @@ package ru.skillbranch.skillarticles.viewmodels.auth
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavOptions
+import ru.skillbranch.skillarticles.MainFlowDirections
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.data.repositories.AuthRepository
 import ru.skillbranch.skillarticles.ui.auth.AuthFragmentDirections
@@ -25,6 +26,7 @@ class AuthViewModel(savedStateHandle: SavedStateHandle) : BaseViewModel<AuthStat
 
     fun handleLogin(login: String, password: String) {
         repository.login(login, password)
+        navigate(NavCommand.Action(MainFlowDirections.finishLogin()))
         intentDestination?.let {
             if(it!=-1 && RootViewModel.privateDestinations.contains(it)) {
                 val options = NavOptions.Builder()

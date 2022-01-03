@@ -59,7 +59,7 @@
         <fragment
             android:id="@+id/nav_auth"
             android:name="ru.skillbranch.skillarticles.ui.auth.AuthFragment"
-            android:label="fragment_auth"
+            android:label="@string/title_authorization"
             tools:layout="@layout/fragment_auth">
             <action
                 android:id="@+id/action_authFragment_to_privacyPolicyFragment"
@@ -75,12 +75,12 @@
         <fragment
             android:id="@+id/page_privacy"
             android:name="ru.skillbranch.skillarticles.ui.auth.PrivacyPolicyFragment"
-            android:label="fragment_privacy_policy"
+            android:label="@string/title_privacy_policy"
             tools:layout="@layout/fragment_privacy_policy" />
         <fragment
             android:id="@+id/page_register"
             android:name="ru.skillbranch.skillarticles.ui.auth.RegistrationFragment"
-            android:label="RegistrationFragment"
+            android:label="@string/title_registration"
             tools:layout="@layout/fragment_registration">
             <action
                 android:id="@+id/action_registrationFragment_to_privacyPolicyFragment"
