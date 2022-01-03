@@ -1,13 +1,18 @@
 package ru.skillbranch.skillarticles.viewmodels.auth
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.NavOptions
+import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.data.repositories.AuthRepository
 import ru.skillbranch.skillarticles.ui.auth.AuthFragmentDirections
 import ru.skillbranch.skillarticles.viewmodels.BaseViewModel
 import ru.skillbranch.skillarticles.viewmodels.NavCommand
+import ru.skillbranch.skillarticles.viewmodels.RootViewModel
 import ru.skillbranch.skillarticles.viewmodels.VMState
 
 class AuthViewModel(savedStateHandle: SavedStateHandle) : BaseViewModel<AuthState>(AuthState(), savedStateHandle) {
+    private val intentDestination: Int? = savedStateHandle["intent_destination"]
+
     fun navigateToPrivacy() {
         val action = AuthFragmentDirections.actionAuthFragmentToPrivacyPolicyFragment()
         navigate(NavCommand.Action(action))
@@ -20,7 +25,16 @@ class AuthViewModel(savedStateHandle: SavedStateHandle) : BaseViewModel<AuthStat
 
     fun handleLogin(login: String, password: String) {
         repository.login(login, password)
-        //TODO navigate
+        intentDestination?.let {
+            if(it!=-1 && RootViewModel.privateDestinations.contains(it)) {
+                val options = NavOptions.Builder()
+                    .setEnterAnim(R.animator.nav_default_enter_anim)
+                    .setExitAnim(R.animator.nav_default_exit_anim)
+                    .setPopEnterAnim(R.animator.nav_default_pop_enter_anim)
+                    .setPopExitAnim(R.animator.nav_default_pop_exit_anim)
+                navigate(NavCommand.Builder(it, options = options.build()))
+            }
+        }
     }
 
 
