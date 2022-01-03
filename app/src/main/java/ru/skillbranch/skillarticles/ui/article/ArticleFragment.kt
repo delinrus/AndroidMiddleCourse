@@ -40,8 +40,7 @@ import ru.skillbranch.skillarticles.viewmodels.*
 class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArticleBinding>(R.layout.fragment_article),
     IArticleView {
 
-    var viewModelFactory: ViewModelProvider.Factory = ViewModelFactory(this,"0")
-    override val viewModel: ArticleViewModel by viewModels {viewModelFactory}
+    override val viewModel: ArticleViewModel by viewModels()
     override val viewBinding: FragmentArticleBinding by viewBinding(FragmentArticleBinding::bind)
 
     private lateinit var toolbar: Toolbar
@@ -127,6 +126,7 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
 
     override fun setupActivityViews() {
         root.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        root.viewBinding.navView.isVisible = false
         toolbar = root.viewBinding.toolbar
         bottombar = Bottombar(requireContext())
         submenu = ArticleSubmenu(requireContext())

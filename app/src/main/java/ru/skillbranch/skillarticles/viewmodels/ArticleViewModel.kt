@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
+import com.bumptech.glide.Glide.init
 import ru.skillbranch.skillarticles.data.ArticleData
 import ru.skillbranch.skillarticles.data.ArticlePersonalInfo
 import ru.skillbranch.skillarticles.data.repositories.ArticleRepository
@@ -12,11 +13,16 @@ import ru.skillbranch.skillarticles.data.repositories.MarkdownElement
 import ru.skillbranch.skillarticles.extensions.*
 import ru.skillbranch.skillarticles.data.repositories.MarkdownParser
 import ru.skillbranch.skillarticles.data.repositories.clearContent
+import ru.skillbranch.skillarticles.ui.article.ArticleFragmentArgs
 
-class ArticleViewModel(private val articleId: String, savedStateHandle: SavedStateHandle) :
+class ArticleViewModel(savedStateHandle: SavedStateHandle) :
     BaseViewModel<ArticleState>(ArticleState(), savedStateHandle), IArticleViewModel {
     private val repository = ArticleRepository()
     private var clearContent: String? = null
+    // private val args : String = savedStateHandle["article_id"]!! //old bad way
+    //from nav component 2.4
+    private val args : ArticleFragmentArgs = ArticleFragmentArgs.fromSavedStateHandle(savedStateHandle)
+    private val articleId = args.articleId
 
     init {
         //set custom saved state provider for non serializable or custom states

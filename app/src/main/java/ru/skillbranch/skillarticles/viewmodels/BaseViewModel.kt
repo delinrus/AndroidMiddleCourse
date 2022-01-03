@@ -134,19 +134,6 @@ abstract class BaseViewModel<T>(initState: T, private val savedStateHandle: Save
 
 }
 
-class ViewModelFactory(owner : SavedStateRegistryOwner, private val params: String) : AbstractSavedStateViewModelFactory(owner, bundleOf()) {
-   override fun <T : ViewModel?> create(
-        key: String,
-        modelClass: Class<T>,
-        handle: SavedStateHandle
-    ): T {
-        if (modelClass.isAssignableFrom(ArticleViewModel::class.java)) {
-            return ArticleViewModel(params, handle) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
-
 class Event<out E>(private val content: E) {
     var hasBeenHandled = false
 
