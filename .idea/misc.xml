@@ -3,13 +3,17 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Work/AndroidMiddleCourse/app/src/main/res/drawable-night/ic_logo_full.xml" value="0.146" />
         <entry key="..\:/Work/AndroidMiddleCourse/app/src/main/res/drawable/ic_account_circle_black_24dp.xml" value="0.122" />
         <entry key="..\:/Work/AndroidMiddleCourse/app/src/main/res/drawable/ic_android_black_24dp.xml" value="0.1815" />
         <entry key="..\:/Work/AndroidMiddleCourse/app/src/main/res/layout/activity_root.xml" value="0.10891590678824721" />
         <entry key="..\:/Work/AndroidMiddleCourse/app/src/main/res/layout/fragment_article.xml" value="0.12864583333333332" />
         <entry key="..\:/Work/AndroidMiddleCourse/app/src/main/res/layout/fragment_articles.xml" value="0.22395833333333334" />
+        <entry key="..\:/Work/AndroidMiddleCourse/app/src/main/res/layout/fragment_auth.xml" value="0.1359375" />
         <entry key="..\:/Work/AndroidMiddleCourse/app/src/main/res/layout/fragment_bookmarks.xml" value="0.20989583333333334" />
+        <entry key="..\:/Work/AndroidMiddleCourse/app/src/main/res/layout/fragment_privacy_policy.xml" value="0.1359375" />
         <entry key="..\:/Work/AndroidMiddleCourse/app/src/main/res/layout/fragment_profile.xml" value="0.20989583333333334" />
+        <entry key="..\:/Work/AndroidMiddleCourse/app/src/main/res/layout/fragment_registration.xml" value="0.1359375" />
         <entry key="..\:/Work/AndroidMiddleCourse/app/src/main/res/layout/item_article.xml" value="0.4" />
         <entry key="..\:/Work/AndroidMiddleCourse/app/src/main/res/menu/bottom_nav_menu.xml" value="0.22395833333333334" />
       </map>

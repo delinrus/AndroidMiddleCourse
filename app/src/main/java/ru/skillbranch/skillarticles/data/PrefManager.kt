@@ -17,7 +17,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.zip
 import ru.skillbranch.skillarticles.App
+import ru.skillbranch.skillarticles.data.adapters.UserJsonAdapter
 import ru.skillbranch.skillarticles.data.delegates.PrefDelegate
+import ru.skillbranch.skillarticles.data.delegates.PrefObjDelegate
+import ru.skillbranch.skillarticles.data.local.User
 
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
@@ -36,6 +39,8 @@ class PrefManager(context: Context = App.applicationContext()) {
     var accessToken by PrefDelegate("")
 
     var testInt by PrefDelegate(Int.MAX_VALUE)
+
+    var profile: User? by PrefObjDelegate(UserJsonAdapter())
 
     val settings: LiveData<AppSettings>
         get() {

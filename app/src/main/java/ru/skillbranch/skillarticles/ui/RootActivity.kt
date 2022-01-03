@@ -41,9 +41,12 @@ class RootActivity : AppCompatActivity() {
             )
         )
         setupActionBarWithNavController(navController, appbarConfig)
+        viewBinding.navView.setOnItemSelectedListener {
+            viewModel.topLevelNavigate(it.itemId)
+            true
+        }
 
-        //setup bottombar navigation
-        viewBinding.navView.setupWithNavController(navController)
+        viewModel.observeNavigation(this, ::handleNavigation)
     }
 
     //for navigate on press back arrow in action bar
@@ -88,7 +91,7 @@ class RootActivity : AppCompatActivity() {
             is NavCommand.Action -> navController.navigate(cmd.action)
             is NavCommand.Builder -> navController.navigate(cmd.destination, cmd.args, cmd.options, cmd.extras)
             is NavCommand.TopLevel -> {
-                //TODO implement me for top level (bottom navigation)
+                navController.navigate(cmd.destination, null, cmd.options)
             }
         }
     }

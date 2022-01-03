@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mobile_navigation"
+    android:id="@+id/main_flow"
     app:startDestination="@id/nav_articles">
 
     <fragment
@@ -54,4 +54,56 @@
             android:name="date"
             app:argType="java.util.Date" />
     </fragment>
+    <navigation android:id="@+id/auth_flow"
+        app:startDestination="@id/nav_auth">
+        <fragment
+            android:id="@+id/nav_auth"
+            android:name="ru.skillbranch.skillarticles.ui.auth.AuthFragment"
+            android:label="fragment_auth"
+            tools:layout="@layout/fragment_auth">
+            <action
+                android:id="@+id/action_authFragment_to_privacyPolicyFragment"
+                app:destination="@id/page_privacy" />
+            <action
+                android:id="@+id/action_authFragment_to_registrationFragment"
+                app:destination="@id/page_register" />
+            <argument
+                android:name="intent_destination"
+                app:argType="integer"
+                android:defaultValue="-1" />
+        </fragment>
+        <fragment
+            android:id="@+id/page_privacy"
+            android:name="ru.skillbranch.skillarticles.ui.auth.PrivacyPolicyFragment"
+            android:label="fragment_privacy_policy"
+            tools:layout="@layout/fragment_privacy_policy" />
+        <fragment
+            android:id="@+id/page_register"
+            android:name="ru.skillbranch.skillarticles.ui.auth.RegistrationFragment"
+            android:label="RegistrationFragment"
+            tools:layout="@layout/fragment_registration">
+            <action
+                android:id="@+id/action_registrationFragment_to_privacyPolicyFragment"
+                app:destination="@id/page_privacy" />
+            <argument
+                android:name="intent_destination"
+                app:argType="integer"
+                android:defaultValue="-1" />
+        </fragment>
+    </navigation>
+
+    <!--Global action -->
+    <action
+        android:id="@+id/start_login"
+        app:destination="@id/auth_flow" >
+        <argument
+            android:name="intent_destination"
+            app:argType="integer"
+            android:defaultValue="-1"/>
+    </action>
+    <action
+        android:id="@+id/finish_login"
+        app:popUpTo="@id/auth_flow"
+        app:popUpToInclusive="true" />
+
 </navigation>
