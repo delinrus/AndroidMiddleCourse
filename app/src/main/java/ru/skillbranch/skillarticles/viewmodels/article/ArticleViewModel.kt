@@ -5,15 +5,14 @@ import android.util.Log
 import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
-import com.bumptech.glide.Glide.init
 import ru.skillbranch.skillarticles.data.ArticleData
 import ru.skillbranch.skillarticles.data.ArticlePersonalInfo
 import ru.skillbranch.skillarticles.data.repositories.ArticleRepository
 import ru.skillbranch.skillarticles.data.repositories.MarkdownElement
 import ru.skillbranch.skillarticles.extensions.*
-import ru.skillbranch.skillarticles.data.repositories.MarkdownParser
 import ru.skillbranch.skillarticles.data.repositories.clearContent
 import ru.skillbranch.skillarticles.ui.article.ArticleFragmentArgs
+import ru.skillbranch.skillarticles.viewmodels.article.IArticleViewModel
 
 class ArticleViewModel(savedStateHandle: SavedStateHandle) :
     BaseViewModel<ArticleState>(ArticleState(), savedStateHandle), IArticleViewModel {

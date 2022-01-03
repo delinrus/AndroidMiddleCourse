@@ -12,6 +12,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.snackbar.Snackbar
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.databinding.ActivityRootBinding
+import ru.skillbranch.skillarticles.ui.custom.Bottombar
 import ru.skillbranch.skillarticles.viewmodels.*
 
 class RootActivity : AppCompatActivity() {
@@ -52,7 +53,7 @@ class RootActivity : AppCompatActivity() {
 
     fun renderNotification(notify: Notify) {
         val snackbar = Snackbar.make(viewBinding.coordinatorContainer, notify.message, Snackbar.LENGTH_LONG)
-         //   .setAnchorView(vb.bottombar)
+            .setAnchorView(findViewById<Bottombar>(R.id.bottombar) ?: viewBinding.navView)
 
         when (notify) {
             is Notify.ActionMessage -> {
