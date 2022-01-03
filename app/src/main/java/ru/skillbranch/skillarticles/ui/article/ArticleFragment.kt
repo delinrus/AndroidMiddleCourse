@@ -1,54 +1,89 @@
 package ru.skillbranch.skillarticles.ui.article
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.WindowManager
+import android.widget.ImageView
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.view.children
+import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.navArgs
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.request.RequestOptions.circleCropTransform
+import com.google.android.material.appbar.AppBarLayout
 import ru.skillbranch.skillarticles.R
+import ru.skillbranch.skillarticles.databinding.FragmentArticleBinding
+import ru.skillbranch.skillarticles.extensions.dpToIntPx
+import ru.skillbranch.skillarticles.extensions.format
+import ru.skillbranch.skillarticles.extensions.hideKeyboard
+import ru.skillbranch.skillarticles.extensions.setMarginOptionally
+import ru.skillbranch.skillarticles.ui.BaseFragment
+import ru.skillbranch.skillarticles.ui.IArticleView
+import ru.skillbranch.skillarticles.ui.custom.ArticleSubmenu
+import ru.skillbranch.skillarticles.ui.custom.Bottombar
+import ru.skillbranch.skillarticles.ui.delegates.viewBinding
+import ru.skillbranch.skillarticles.viewmodels.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [ArticleFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class ArticleFragment : Fragment() {
- /*
-     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    var viewModelFactory: ViewModelProvider.Factory = ViewModelFactory(this, "0")
-    private val viewModel: ArticleViewModel by viewModels { viewModelFactory }
-    val vb: ActivityRootBinding by viewBinding(ActivityRootBinding::inflate)
+class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArticleBinding>(R.layout.fragment_article),
+    IArticleView {
 
-    val vbBottombar
-        get() = vb.bottombar
-    val vbSubmenu
-        get() = vb.submenu
+    var viewModelFactory: ViewModelProvider.Factory = ViewModelFactory(this,"0")
+    override val viewModel: ArticleViewModel by viewModels {viewModelFactory}
+    override val viewBinding: FragmentArticleBinding by viewBinding(FragmentArticleBinding::bind)
+
+    private lateinit var toolbar: Toolbar
+    private lateinit var bottombar: Bottombar
+    private lateinit var submenu: ArticleSubmenu
     private lateinit var searchView: SearchView
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private val logoSize: Int by lazy { dpToIntPx(40) }
+    private val cornerRadius: Int by lazy { dpToIntPx(8) }
 
-        setupToolbar()
-        setupBottombar()
-        setupSubmenu()
+    private val args : ArticleFragmentArgs by navArgs()
+
+    override fun setupViews() {
         setupCopyListener()
 
-        viewModel.observeState(this, ::renderUi)
-        viewModel.observeSubState(this, ArticleState::toBottombarData, ::renderBotombar)
-        viewModel.observeSubState(this, ArticleState::toSubmenuData, ::renderSubmenu)
+        with(viewBinding){
+            Glide.with(this@ArticleFragment)
+                .load(args.authorAvatar)
+                .placeholder(R.drawable.logo_placeholder)
+                .apply(circleCropTransform())
+                .override(logoSize)
+                .into(ivAuthorAvatar)
 
-        viewModel.observeNotifications(this) {
-            renderNotification(it)
+            Glide.with(this@ArticleFragment)
+                .load(args.poster)
+                .placeholder(R.drawable.poster_placeholder)
+                .transform(CenterCrop(), RoundedCorners(cornerRadius))
+                .into(ivPoster)
+
+            tvTitle.text = args.title
+            tvAuthor.text = args.author
+            tvDate.text =args.date.format()
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_search, menu)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater:MenuInflater) {
+        inflater.inflate(R.menu.menu_search, menu)
         val menuItem = menu.findItem(R.id.action_search)
         searchView = (menuItem.actionView as SearchView)
         searchView.queryHint = getString(R.string.article_search_placeholder)
@@ -87,7 +122,36 @@ class ArticleFragment : Fragment() {
 
         })
 
-        return super.onCreateOptionsMenu(menu)
+        return super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun setupActivityViews() {
+        root.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        toolbar = root.viewBinding.toolbar
+        bottombar = Bottombar(requireContext())
+        submenu = ArticleSubmenu(requireContext())
+        root.viewBinding.coordinatorContainer.addView(bottombar)
+        root.viewBinding.coordinatorContainer.addView(submenu)
+        setupToolbar()
+        setupBottombar()
+        setupSubmenu()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        root.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+        root.viewBinding.navView.isVisible = true
+        toolbar.logo = null
+        toolbar.subtitle = null
+        root.viewBinding.coordinatorContainer.removeView(bottombar)
+        root.viewBinding.coordinatorContainer.removeView(submenu)
+
+    }
+
+    override fun observeViewModelData() {
+        viewModel.observeSubState(this, ArticleState::toBottombarData, ::renderBottombar)
+        viewModel.observeSubState(this, ArticleState::toSubmenuData, ::renderSubmenu)
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -95,10 +159,8 @@ class ArticleFragment : Fragment() {
         super.onSaveInstanceState(outState)
     }
 
-
-
     override fun setupSubmenu() {
-        with(vbSubmenu) {
+        with(submenu) {
             btnTextUp.setOnClickListener { viewModel.handleUpText() }
             btnTextDown.setOnClickListener { viewModel.handleDownText() }
             switchMode.setOnClickListener { viewModel.handleNightMode() }
@@ -107,33 +169,33 @@ class ArticleFragment : Fragment() {
     }
 
     override fun setupBottombar() {
-        with(vbBottombar) {
+        with(bottombar) {
             btnLike.setOnClickListener { viewModel.handleLike() }
             btnBookmark.setOnClickListener { viewModel.handleBookmark() }
             btnShare.setOnClickListener { viewModel.handleShare() }
             btnSettings.setOnClickListener { viewModel.handleToggleMenu() }
 
             btnResultUp.setOnClickListener {
-                if (!vb.tvTextContent.hasFocus()) vb.tvTextContent.requestFocus()
-                hideKeyboard(it)
+                if (!viewBinding.tvTextContent.hasFocus()) viewBinding.tvTextContent.requestFocus()
+                requireContext().hideKeyboard(it)
                 viewModel.handleUpResult()
             }
 
             btnResultDown.setOnClickListener {
-                if (!vb.tvTextContent.hasFocus()) vb.tvTextContent.requestFocus()
-                hideKeyboard(it)
+                if (!viewBinding.tvTextContent.hasFocus()) viewBinding.tvTextContent.requestFocus()
+                requireContext().hideKeyboard(it)
                 viewModel.handleDownResult()
             }
 
             btnSearchClose.setOnClickListener {
                 viewModel.handleSearchMode(false)
-                invalidateOptionsMenu()
+                root.invalidateOptionsMenu()
             }
         }
     }
 
-    override fun renderBotombar(data: BottombarData) {
-        with(vbBottombar) {
+    override fun renderBottombar(data: BottombarData) {
+        with(bottombar) {
             btnSettings.isChecked = data.isShowMenu
             btnLike.isChecked = data.isLike
             btnBookmark.isChecked = data.isBookmark
@@ -141,13 +203,13 @@ class ArticleFragment : Fragment() {
 
         if (data.isSearch) {
             showSearchBar(data.resultsCount, data.searchPosition)
-            with(vb.toolbar) {
+            with(toolbar) {
                 (layoutParams as AppBarLayout.LayoutParams).scrollFlags =
                     AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
             }
         } else {
             hideSearchBar()
-            with(vb.toolbar) {
+            with(toolbar) {
                 (layoutParams as AppBarLayout.LayoutParams).scrollFlags =
                     AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or
                             AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED
@@ -156,32 +218,25 @@ class ArticleFragment : Fragment() {
     }
 
     override fun renderSubmenu(data: SubmenuData) {
-        with(vbSubmenu) {
+        with(submenu) {
             switchMode.isChecked = data.isDarkMode
             btnTextDown.isChecked = !data.isBigText
             btnTextUp.isChecked = data.isBigText
         }
 
-        if (data.isShowMenu) vb.submenu.open() else vb.submenu.close()
+        if (data.isShowMenu) submenu.open() else submenu.close()
     }
 
     override fun renderUi(data: ArticleState) {
-        delegate.localNightMode =
+        root.delegate.localNightMode =
             if (data.isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
 
-        with(vb.tvTextContent) {
+        with(viewBinding.tvTextContent) {
             textSize = if (data.isBigText) 18f else 14f
             isLoading = data.content.isEmpty()
             setContent(data.content)
         }
 
-        //bind toolbar
-        with(vb.toolbar) {
-            title = data.title ?: "loading"
-            subtitle = data.category ?: "loading"
-            if (data.categoryIcon != null) logo =
-                ContextCompat.getDrawable(context, data.categoryIcon as Int)
-        }
 
         if (data.isLoadingContent) return
 
@@ -192,55 +247,62 @@ class ArticleFragment : Fragment() {
     }
 
     override fun setupToolbar() {
-        setSupportActionBar(vb.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        val logo = vb.toolbar.children.find { it is AppCompatImageView } as? ImageView
+        toolbar.setLogo(R.drawable.logo_placeholder)
+
+        val logo = toolbar.children.find { it is AppCompatImageView } as? ImageView
         logo ?: return
         logo.scaleType = ImageView.ScaleType.CENTER_CROP
         //check toolbar imports
         (logo.layoutParams as? Toolbar.LayoutParams)?.let {
-            it.width = dpToIntPx(40)
-            it.height = dpToIntPx(40)
+            it.width = logoSize
+            it.height = logoSize
             it.marginEnd = dpToIntPx(16)
             logo.layoutParams = it
         }
 
+        toolbar.subtitle = args.category
+
+        Glide.with(this)
+            .load(args.categoryIcon)
+            .apply(circleCropTransform())
+            .override(logoSize)
+            .into(logo)
+
     }
 
     override fun renderSearchResult(searchResult: List<Pair<Int, Int>>) {
-        vb.tvTextContent.renderSearchResult(searchResult)
+        viewBinding.tvTextContent.renderSearchResult(searchResult)
     }
 
     override fun renderSearchPosition(searchPosition: Int, searchResult: List<Pair<Int, Int>>) {
-        vb.tvTextContent.renderSearchPosition(searchResult.getOrNull(searchPosition))
+        viewBinding.tvTextContent.renderSearchPosition(searchResult.getOrNull(searchPosition))
     }
 
     override fun clearSearchResult() {
-        vb.tvTextContent.clearSearchResult()
+        viewBinding.tvTextContent.clearSearchResult()
     }
 
     override fun showSearchBar(resultsCount: Int, searchPosition: Int) {
-        with(vb.bottombar) {
+        with(bottombar) {
             setSearchState(true)
             setSearchInfo(resultsCount, searchPosition)
         }
-        vb.scroll.setMarginOptionally(bottom = dpToIntPx(56))
+        viewBinding.scroll.setMarginOptionally(bottom = dpToIntPx(56))
     }
 
     override fun hideSearchBar() {
-        with(vb.bottombar) {
+        with(bottombar) {
             setSearchState(false)
         }
-        vb.scroll.setMarginOptionally(bottom = dpToIntPx(0))
+        viewBinding.scroll.setMarginOptionally(bottom = dpToIntPx(0))
     }
 
     override fun setupCopyListener(){
-        vb.tvTextContent.setCopyListener { copy ->
-            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        viewBinding.tvTextContent.setCopyListener { copy ->
+            val clipboard = getSystemService(requireContext(), ClipboardManager::class.java)
             val clip = ClipData.newPlainText("Copied code", copy)
-            clipboard.setPrimaryClip(clip)
+            clipboard?.setPrimaryClip(clip)
             viewModel.handleCopyCode()
         }
     }
-  */
 }

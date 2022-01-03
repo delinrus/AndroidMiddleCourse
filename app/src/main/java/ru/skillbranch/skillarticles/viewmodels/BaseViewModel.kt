@@ -2,16 +2,22 @@ package ru.skillbranch.skillarticles.viewmodels
 
 import android.os.Bundle
 import android.util.Log
+import androidx.annotation.IdRes
 import androidx.annotation.UiThread
 import androidx.annotation.VisibleForTesting
 import androidx.core.os.bundleOf
 import androidx.lifecycle.*
+import androidx.navigation.NavDirections
+import androidx.navigation.NavOptions
+import androidx.navigation.Navigator
 import androidx.savedstate.SavedStateRegistryOwner
 import java.io.Serializable
 
 abstract class BaseViewModel<T>(initState: T, private val savedStateHandle: SavedStateHandle) : ViewModel() where T : VMState{
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     val notifications = MutableLiveData<Event<Notify>>()
+
+    val navigation = MutableLiveData<Event<NavCommand>>()
 
     /***
      * Инициализация начального состояния аргументом конструктоа, и объявления состояния как
@@ -80,6 +86,18 @@ abstract class BaseViewModel<T>(initState: T, private val savedStateHandle: Save
      */
     fun observeNotifications(owner: LifecycleOwner, onNotify: (notification: Notify) -> Unit) {
         notifications.observe(owner, EventObserver { onNotify(it) })
+    }
+
+    fun observeNavigation(owner: LifecycleOwner, onNavigate: (navCommands: NavCommand) -> Unit) {
+        navigation.observe(owner, EventObserver { onNavigate(it) })
+    }
+
+    /**
+     * Важно вызвать именно на основном потоке
+     */
+    @UiThread
+    protected fun navigate(cmd: NavCommand) {
+        navigation.value = Event(cmd)
     }
 
     /***
@@ -176,6 +194,21 @@ sealed class Notify() {
         val errLabel: String?,
         val errHandler: (() -> Unit)?
     ) : Notify()
+}
+
+sealed class NavCommand{
+    data class Builder(
+        @IdRes val destination: Int,
+        val args: Bundle? = null,
+        val options: NavOptions? = null,
+        val extras: Navigator.Extras? = null
+    ) : NavCommand()
+
+    data class Action(val action: NavDirections) : NavCommand()
+    data class TopLevel(
+        @IdRes val destination: Int,
+        val options: NavOptions,
+    ) : NavCommand()
 }
 
 public interface VMState : Serializable{

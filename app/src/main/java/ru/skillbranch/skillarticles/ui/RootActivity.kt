@@ -81,4 +81,14 @@ class RootActivity : AppCompatActivity() {
 
         snackbar.show()
     }
+
+    fun handleNavigation(cmd: NavCommand){
+        when(cmd){
+            is NavCommand.Action -> navController.navigate(cmd.action)
+            is NavCommand.Builder -> navController.navigate(cmd.destination, cmd.args, cmd.options, cmd.extras)
+            is NavCommand.TopLevel -> {
+                //TODO implement me for top level (bottom navigation)
+            }
+        }
+    }
 }

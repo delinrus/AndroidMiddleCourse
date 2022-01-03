@@ -6,14 +6,14 @@ import android.graphics.Paint
 import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
-import android.view.View
-import android.view.ViewAnimationUtils
-import android.view.ViewGroup
+import android.view.*
+import android.view.inputmethod.BaseInputConnection
 import android.widget.TextView
 import androidx.annotation.VisibleForTesting
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
+import androidx.core.view.isVisible
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.switchmaterial.SwitchMaterial
 import ru.skillbranch.skillarticles.R
@@ -24,11 +24,9 @@ import ru.skillbranch.skillarticles.extensions.setPaddingOptionally
 import ru.skillbranch.skillarticles.ui.custom.behaviors.SubmenuBehavior
 import kotlin.math.hypot
 
-class ArticleSubmenu @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : ViewGroup(context, attrs, defStyleAttr), CoordinatorLayout.AttachedBehavior {
+class ArticleSubmenu(baseContext: Context):
+    ViewGroup(ContextThemeWrapper(baseContext, R.style.ArticleBarsTheme), null, 0),
+    CoordinatorLayout.AttachedBehavior {
 
     var isOpen = false
     private var menuWidth: Int = context.dpToIntPx(200)
@@ -43,6 +41,23 @@ class ArticleSubmenu @JvmOverloads constructor(
 
 
     init {
+        id = R.id.submenu
+        val marg = dpToIntPx(8)
+        val elev = dpToPx(8)
+        layoutParams = CoordinatorLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
+            gravity = Gravity.BOTTOM
+            dodgeInsetEdges = Gravity.BOTTOM
+            setMargins(0, 0, marg, marg)
+        }
+
+        //add material bg for handle elevation and color surface
+        val materialBg = MaterialShapeDrawable.createWithElevationOverlay(context)
+        materialBg.elevation = elevation
+        background = materialBg
+        materialBg.elevation = elev
+        elevation = elev
+        isVisible = false
+
         val backGroundRes = context.attrValue(R.attr.selectableItemBackground)
         btnTextDown = CheckableImageView(context).apply {
             setPaddingOptionally(top = context.dpToIntPx(12), bottom = context.dpToIntPx(12))
@@ -69,11 +84,6 @@ class ArticleSubmenu @JvmOverloads constructor(
             setTextColor(context.attrValue(R.attr.colorOnSurface))
         }
         addView(tvLabel)
-
-        //add material bg for handle elevation and color surface
-        val materialBg = MaterialShapeDrawable.createWithElevationOverlay(context)
-        materialBg.elevation = elevation
-        background = materialBg
     }
 
     override fun getBehavior(): CoordinatorLayout.Behavior<ArticleSubmenu> {

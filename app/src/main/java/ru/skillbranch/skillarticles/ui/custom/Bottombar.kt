@@ -3,7 +3,8 @@ package ru.skillbranch.skillarticles.ui.custom
 import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
-import android.util.AttributeSet
+import android.view.ContextThemeWrapper
+import android.view.Gravity
 import android.view.ViewAnimationUtils
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -19,15 +20,12 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.extensions.attrValue
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
+import ru.skillbranch.skillarticles.extensions.dpToPx
 import ru.skillbranch.skillarticles.extensions.setPaddingOptionally
 import ru.skillbranch.skillarticles.ui.custom.behaviors.BottombarBehavior
 import kotlin.math.hypot
 
-class Bottombar @JvmOverloads constructor(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
-) : ViewGroup(context, attrs, defStyleAttr), CoordinatorLayout.AttachedBehavior {
+class Bottombar(baseContext: Context) : ViewGroup(ContextThemeWrapper(baseContext, R.style.ArticleBarsTheme), null, 0), CoordinatorLayout.AttachedBehavior {
 
     var isSearchMode = false
 
@@ -58,6 +56,18 @@ class Bottombar @JvmOverloads constructor(
     }
 
     init {
+        id = R.id.bottom
+        layoutParams = CoordinatorLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
+            gravity = Gravity.BOTTOM
+            insetEdge = Gravity.BOTTOM
+        }
+
+        val elev = dpToPx(4)
+
+        val materialBg = MaterialShapeDrawable.createWithElevationOverlay(context)
+        materialBg.elevation = elev
+        elevation = elev
+
         btnLike = CheckableImageView(context).apply {
             setPadding(iconPadding)
             imageTintList = iconTintColor
@@ -104,8 +114,6 @@ class Bottombar @JvmOverloads constructor(
         }
         addView(searchBar)
 
-        val materialBg = MaterialShapeDrawable.createWithElevationOverlay(context)
-        materialBg.elevation = elevation
         background = materialBg
     }
 

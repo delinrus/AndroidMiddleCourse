@@ -39,6 +39,7 @@ abstract class BaseFragment<S, T : BaseViewModel<S>, B : ViewBinding>(@LayoutRes
         setupViews()
         requireActivity().lifecycle.addObserver(this)
         viewModel.observeNotifications(root, root::renderNotification)
+        viewModel.observeNavigation(root, root::handleNavigation)
         viewModel.observeState(viewLifecycleOwner, ::renderUi)
 
         observeViewModelData()
