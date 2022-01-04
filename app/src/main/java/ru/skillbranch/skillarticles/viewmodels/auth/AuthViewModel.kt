@@ -1,5 +1,6 @@
 package ru.skillbranch.skillarticles.viewmodels.auth
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavOptions
 import ru.skillbranch.skillarticles.MainFlowDirections
@@ -11,8 +12,13 @@ import ru.skillbranch.skillarticles.viewmodels.NavCommand
 import ru.skillbranch.skillarticles.viewmodels.RootViewModel
 import ru.skillbranch.skillarticles.viewmodels.VMState
 
-class AuthViewModel(savedStateHandle: SavedStateHandle) : BaseViewModel<AuthState>(AuthState(), savedStateHandle) {
+class AuthViewModel(savedStateHandle: SavedStateHandle) :
+    BaseViewModel<AuthState>(AuthState(), savedStateHandle) {
     private val intentDestination: Int? = savedStateHandle["intent_destination"]
+
+    init {
+        Log.e("AuthViewModel", "init viewmodel ${this::class.simpleName} ${this.hashCode()}")
+    }
 
     fun navigateToPrivacy() {
         val action = AuthFragmentDirections.actionAuthFragmentToPrivacyPolicyFragment()
@@ -28,7 +34,7 @@ class AuthViewModel(savedStateHandle: SavedStateHandle) : BaseViewModel<AuthStat
         repository.login(login, password)
         navigate(NavCommand.Action(MainFlowDirections.finishLogin()))
         intentDestination?.let {
-            if(it!=-1 && RootViewModel.privateDestinations.contains(it)) {
+            if (it != -1 && RootViewModel.privateDestinations.contains(it)) {
                 val options = NavOptions.Builder()
                     .setEnterAnim(R.animator.nav_default_enter_anim)
                     .setExitAnim(R.animator.nav_default_exit_anim)

@@ -1,6 +1,6 @@
 package ru.skillbranch.skillarticles.ui.articles
 
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.skillbranch.skillarticles.R
@@ -11,8 +11,8 @@ import ru.skillbranch.skillarticles.viewmodels.ArticlesState
 import ru.skillbranch.skillarticles.viewmodels.ArticlesViewModel
 import ru.skillbranch.skillarticles.viewmodels.articles.ArticleItem
 
-class ArticlesFragment : BaseFragment<ArticlesState, ArticlesViewModel, ru.skillbranch.skillarticles.databinding.FragmentArticlesBinding>(R.layout.fragment_articles) {
-    override val viewModel: ArticlesViewModel by viewModels()
+class ArticlesFragment : BaseFragment<ArticlesState, ArticlesViewModel, FragmentArticlesBinding>(R.layout.fragment_articles) {
+    override val viewModel: ArticlesViewModel by activityViewModels()
     override val viewBinding: FragmentArticlesBinding by viewBinding(FragmentArticlesBinding::bind)
     private var articlesAdapter: ArticlesAdapter? = null
 
