@@ -122,6 +122,11 @@ abstract class BaseViewModel<T>(initState: T, private val savedStateHandle: Save
         savedStateHandle.set("state", currentState)
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        Log.e("BaseViewModel", "on Cleared ${this::class.simpleName}")
+    }
+
     /***
      * восстановление стейта из bundle после смерти процесса
      */

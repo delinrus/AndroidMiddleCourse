@@ -24,6 +24,7 @@ class ArticleViewModel(savedStateHandle: SavedStateHandle) :
     private val articleId = args.articleId
 
     init {
+        Log.e("ArticleViewModel", "init viewmodel $this")
         //set custom saved state provider for non serializable or custom states
         savedStateHandle.setSavedStateProvider("state") {
             currentState.toBundle()
