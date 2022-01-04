@@ -27,10 +27,6 @@
             android:name="is_bookmarks"
             app:argType="boolean"
             android:defaultValue="true" />
-        <!-- conflict action id-->
-        <!-- <action
-            android:id="@+id/to_article"
-            app:destination="@id/page_article" /> -->
     </fragment>
     <fragment
         android:id="@+id/nav_profile"
@@ -98,10 +94,6 @@
             <action
                 android:id="@+id/action_registrationFragment_to_privacyPolicyFragment"
                 app:destination="@id/page_privacy" />
-            <argument
-                android:name="intent_destination"
-                app:argType="integer"
-                android:defaultValue="-1" />
         </fragment>
     </navigation>
 

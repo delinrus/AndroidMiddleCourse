@@ -21,8 +21,12 @@ class AuthViewModel(savedStateHandle: SavedStateHandle) :
     }
 
     fun navigateToPrivacy() {
-        val action = AuthFragmentDirections.actionAuthFragmentToPrivacyPolicyFragment()
-        navigate(NavCommand.Action(action))
+        val options = NavOptions.Builder()
+            .setEnterAnim(R.animator.nav_default_enter_anim)
+            .setExitAnim(R.animator.nav_default_exit_anim)
+            .setPopEnterAnim(R.animator.nav_default_pop_enter_anim)
+            .setPopExitAnim(R.animator.nav_default_pop_exit_anim)
+        navigate(NavCommand.Builder(R.id.page_privacy, null, options.build()))
     }
 
     fun navigateToRegistration() {

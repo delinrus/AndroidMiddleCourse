@@ -5,9 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.os.Parcel
 import android.os.Parcelable
-import android.util.AttributeSet
 import android.view.*
-import android.view.inputmethod.BaseInputConnection
 import android.widget.TextView
 import androidx.annotation.VisibleForTesting
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -24,7 +22,7 @@ import ru.skillbranch.skillarticles.extensions.setPaddingOptionally
 import ru.skillbranch.skillarticles.ui.custom.behaviors.SubmenuBehavior
 import kotlin.math.hypot
 
-class ArticleSubmenu(baseContext: Context):
+class ArticleSubmenu(baseContext: Context) :
     ViewGroup(ContextThemeWrapper(baseContext, R.style.ArticleBarsTheme), null, 0),
     CoordinatorLayout.AttachedBehavior {
 
@@ -38,17 +36,16 @@ class ArticleSubmenu(baseContext: Context):
     val switchMode: SwitchMaterial
     val tvLabel: TextView
 
-
-
     init {
         id = R.id.submenu
         val marg = dpToIntPx(8)
         val elev = dpToPx(8)
-        layoutParams = CoordinatorLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT).apply {
-            gravity = Gravity.BOTTOM
-            dodgeInsetEdges = Gravity.BOTTOM
-            setMargins(0, 0, marg, marg)
-        }
+        layoutParams = CoordinatorLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+            .apply {
+                gravity = Gravity.BOTTOM or Gravity.RIGHT
+                dodgeInsetEdges = Gravity.BOTTOM
+                setMargins(0, 0, marg, marg)
+            }
 
         //add material bg for handle elevation and color surface
         val materialBg = MaterialShapeDrawable.createWithElevationOverlay(context)
