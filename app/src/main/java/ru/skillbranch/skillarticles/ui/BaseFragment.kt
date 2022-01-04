@@ -8,6 +8,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.viewbinding.ViewBinding
+import ru.skillbranch.skillarticles.ui.delegates.viewBinding
 import ru.skillbranch.skillarticles.viewmodels.BaseViewModel
 import ru.skillbranch.skillarticles.viewmodels.VMState
 
@@ -25,12 +26,12 @@ abstract class BaseFragment<S, T : BaseViewModel<S>, B : ViewBinding>(@LayoutRes
 
     //access to toolbar, call when activity inflated
     open fun setupActivityViews() {
-        //overwrite if nedd
+        //overwrite if need
     }
 
-    //observe substates this if need
+    //observer substates this if need
     open fun observeViewModelData() {
-
+        //overwrite if need
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -55,10 +56,11 @@ abstract class BaseFragment<S, T : BaseViewModel<S>, B : ViewBinding>(@LayoutRes
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    private fun activityInflated() {
+    private fun activityInflated(){
         //show appbar if hidden due to scroll behavior
         root.viewBinding.appbar.setExpanded(true, true)
+        root.viewBinding.toolbar.logo = null //remove glitch destroy view -> move clear toolbar logic
+        root.viewBinding.toolbar.subtitle =null
         setupActivityViews()
     }
-
 }

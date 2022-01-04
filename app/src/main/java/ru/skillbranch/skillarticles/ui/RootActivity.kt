@@ -1,7 +1,6 @@
 package ru.skillbranch.skillarticles.ui
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.annotation.IdRes
@@ -13,7 +12,6 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.snackbar.Snackbar
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.databinding.ActivityRootBinding
@@ -21,10 +19,9 @@ import ru.skillbranch.skillarticles.ui.custom.Bottombar
 import ru.skillbranch.skillarticles.viewmodels.*
 
 class RootActivity : AppCompatActivity() {
-    val viewModel: RootViewModel by viewModels()
+    private val viewModel : RootViewModel by viewModels()
     lateinit var viewBinding: ActivityRootBinding
-    private lateinit var navController: NavController
-
+    private lateinit var navController : NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +39,7 @@ class RootActivity : AppCompatActivity() {
             setOf(
                 R.id.nav_articles,
                 R.id.nav_bookmarks,
-                R.id.nav_profile
+                R.id.nav_profile,
             )
         )
         setupActionBarWithNavController(navController, appbarConfig)
@@ -55,8 +52,8 @@ class RootActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener{ _, destination, args ->
             Log.e("RootActivity", "change destination $destination")
-            viewBinding.navView.menu.forEach { item ->
-                if(destination.matchDestination(item.itemId)) {
+            viewBinding.navView.menu.forEach {  item ->
+                if(destination.matchDestination(item.itemId)){
                     item.isChecked = true
                 }
 
@@ -68,7 +65,7 @@ class RootActivity : AppCompatActivity() {
 
     //for navigate on press back arrow in action bar
     override fun onSupportNavigateUp(): Boolean {
-        return navController.navigateUp() || super.onSupportNavigateUp()
+        return navController.navigateUp() ||  super.onSupportNavigateUp()
     }
 
     fun renderNotification(notify: Notify) {
@@ -115,5 +112,4 @@ class RootActivity : AppCompatActivity() {
     }
 
     private fun NavDestination.matchDestination(@IdRes resId: Int) = hierarchy.any{ it.id == resId}
-
 }

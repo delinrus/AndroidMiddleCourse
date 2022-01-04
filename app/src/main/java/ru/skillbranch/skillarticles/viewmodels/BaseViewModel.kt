@@ -13,12 +13,11 @@ import androidx.navigation.Navigator
 import androidx.savedstate.SavedStateRegistryOwner
 import java.io.Serializable
 
-abstract class BaseViewModel<T>(initState: T, private val savedStateHandle: SavedStateHandle) : ViewModel() where T : VMState{
+abstract class BaseViewModel<T>(initState: T, private val savedStateHandle: SavedStateHandle) :
+    ViewModel() where T : VMState {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     val notifications = MutableLiveData<Event<Notify>>()
-
     val navigation = MutableLiveData<Event<NavCommand>>()
-
     /***
      * Инициализация начального состояния аргументом конструктоа, и объявления состояния как
      * MediatorLiveData - медиатор исспользуется для того чтобы учитывать изменяемые данные модели
@@ -27,10 +26,9 @@ abstract class BaseViewModel<T>(initState: T, private val savedStateHandle: Save
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     val state: MediatorLiveData<T> = MediatorLiveData<T>().apply {
         val restoredState = savedStateHandle.get<Any>("state")?.let {
-            if(it is Bundle) initState.fromBundle(it) as? T
+            if (it is Bundle) initState.fromBundle(it) as? T
             else it as T
         }
-        Log.e("BaseViewModel", "handle restore state $restoredState")
         value = restoredState ?: initState
     }
 
@@ -72,7 +70,11 @@ abstract class BaseViewModel<T>(initState: T, private val savedStateHandle: Save
     /***
      * вспомогательная функция позволяющая наблюдать за изменениями части стейта ViewModel
      */
-    fun <D> observeSubState(owner: LifecycleOwner, transform : (T) -> D, onChanged: (substate: D) -> Unit) {
+    fun <D> observeSubState(
+        owner: LifecycleOwner,
+        transform: (T) -> D,
+        onChanged: (substate: D) -> Unit
+    ) {
         state
             .map(transform) //трансыормируем весь стейт в необходимую модель substate
             .distinctUntilChanged() //отфильтровываем и пропускаем дальше только если значение измнилось
@@ -93,8 +95,8 @@ abstract class BaseViewModel<T>(initState: T, private val savedStateHandle: Save
     }
 
     /**
-     * Важно вызвать именно на основном потоке
-     */
+     * Важно вызывать именно на основном потоке
+     * */
     @UiThread
     protected fun navigate(cmd: NavCommand) {
         navigation.value = Event(cmd)
@@ -117,27 +119,18 @@ abstract class BaseViewModel<T>(initState: T, private val savedStateHandle: Save
     /***
      * сохранение стейта в bundle
      */
-    fun saveSate(){
-        Log.e("BaseViewModel", "save state $currentState")
+    fun saveSate() {
         savedStateHandle.set("state", currentState)
     }
 
     override fun onCleared() {
         super.onCleared()
-        Log.e("BaseViewModel", "on Cleared ${this::class.simpleName}")
+        Log.e("BaseViewModel", "on Cleared ${this::class.simpleName} ${this.hashCode()}")
     }
 
-    /***
-     * восстановление стейта из bundle после смерти процесса
-     */
-   /* fun restoreSate(){
-        val restoredState = savedStateHandle.get<T>("state")
-        Log.e("BaseViewModel", "restore state $restoredState")
-        restoredState ?: return
-        state.value = restoredState
-    }*/
-
 }
+
+
 
 class Event<out E>(private val content: E) {
     var hasBeenHandled = false
@@ -173,6 +166,7 @@ class EventObserver<E>(private val onEventUnhandledContent: (E) -> Unit) : Obser
 
 sealed class Notify() {
     abstract val message: String
+
     data class TextMessage(override val message: String) : Notify()
 
     data class ActionMessage(
@@ -196,19 +190,21 @@ sealed class NavCommand{
         val extras: Navigator.Extras? = null
     ) : NavCommand()
 
-    data class Action(val action: NavDirections) : NavCommand()
+    data class Action(val action : NavDirections) : NavCommand()
     data class TopLevel(
         @IdRes val destination: Int,
         val options: NavOptions,
     ) : NavCommand()
+
 }
 
-public interface VMState : Serializable{
+public interface VMState : Serializable {
     open fun toBundle(): Bundle {
         /*overwrite if need*/
         return bundleOf()
     }
-    open fun fromBundle(bundle:Bundle): VMState? {
+
+    open fun fromBundle(bundle: Bundle): VMState? {
         /*overwrite if need*/
         return null
     }

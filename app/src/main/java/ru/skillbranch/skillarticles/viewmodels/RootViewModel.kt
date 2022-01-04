@@ -8,8 +8,8 @@ import ru.skillbranch.skillarticles.MainFlowDirections
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.data.repositories.RootRepository
 
-class RootViewModel(savedStateHandle: SavedStateHandle) :
-    BaseViewModel<RootState>(RootState(), savedStateHandle) {
+class RootViewModel(savedStateHandle: SavedStateHandle) : BaseViewModel<RootState>(RootState(), savedStateHandle),
+    IRootViewModel {
 
     companion object{
         val privateDestinations = listOf(
@@ -17,12 +17,12 @@ class RootViewModel(savedStateHandle: SavedStateHandle) :
         )
     }
 
-    private val repository: RootRepository = RootRepository()
-    //for live data update
-    private val selfObserver = Observer<RootState> { state -> /*do nothing*/ }
+    private val repository : RootRepository = RootRepository()
+    //for live data updated
+    private val selfObserver = Observer<RootState>{ state -> /*do nothing*/}
 
     init {
-        subscribeOnDataSource(repository.isAuth()) { isAuth, currentState ->
+        subscribeOnDataSource(repository.isAuth()){isAuth, currentState ->
             currentState.copy(isAuth = isAuth)
         }
         state.observeForever(selfObserver)
@@ -33,7 +33,7 @@ class RootViewModel(savedStateHandle: SavedStateHandle) :
         state.removeObserver(selfObserver)
     }
 
-    fun topLevelNavigate(@IdRes resId: Int) {
+    override fun topLevelNavigate(@IdRes resId: Int) {
         val options = NavOptions.Builder()
             .setLaunchSingleTop(true)
             .setEnterAnim(R.animator.nav_default_enter_anim)
@@ -41,13 +41,15 @@ class RootViewModel(savedStateHandle: SavedStateHandle) :
             .setPopEnterAnim(R.animator.nav_default_pop_enter_anim)
             .setPopExitAnim(R.animator.nav_default_pop_exit_anim)
 
-        if(privateDestinations.contains(resId) && !currentState.isAuth) {
+        if(privateDestinations.contains(resId) && !currentState.isAuth){
             val action = MainFlowDirections.startLogin(resId)
             navigate(NavCommand.Action(action))
         }else{
             navigate(NavCommand.TopLevel(resId, options.build()))
         }
     }
+
+
 }
 
-data class RootState(val isAuth: Boolean = false) : VMState
+data class RootState(val isAuth:Boolean = false) : VMState

@@ -95,4 +95,6 @@ interface IArticleViewModel {
      * скопировать результат из CodeView в буфер обмена
      */
     fun handleCopyCode()
+
+    fun handleSendMessage(message: String)
 }

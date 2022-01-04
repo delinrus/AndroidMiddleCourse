@@ -16,7 +16,6 @@ import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -30,11 +29,10 @@ import ru.skillbranch.skillarticles.extensions.format
 import ru.skillbranch.skillarticles.extensions.hideKeyboard
 import ru.skillbranch.skillarticles.extensions.setMarginOptionally
 import ru.skillbranch.skillarticles.ui.BaseFragment
-import ru.skillbranch.skillarticles.ui.IArticleView
 import ru.skillbranch.skillarticles.ui.custom.ArticleSubmenu
 import ru.skillbranch.skillarticles.ui.custom.Bottombar
 import ru.skillbranch.skillarticles.ui.delegates.viewBinding
-import ru.skillbranch.skillarticles.viewmodels.*
+import ru.skillbranch.skillarticles.viewmodels.article.*
 
 
 class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArticleBinding>(R.layout.fragment_article),
@@ -151,12 +149,6 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
     override fun observeViewModelData() {
         viewModel.observeSubState(this, ArticleState::toBottombarData, ::renderBottombar)
         viewModel.observeSubState(this, ArticleState::toSubmenuData, ::renderSubmenu)
-
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        viewModel.saveSate()
-        super.onSaveInstanceState(outState)
     }
 
     override fun setupSubmenu() {
@@ -237,7 +229,6 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
             setContent(data.content)
         }
 
-
         if (data.isLoadingContent) return
 
         if (data.isSearch) {
@@ -304,5 +295,9 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
             clipboard?.setPrimaryClip(clip)
             viewModel.handleCopyCode()
         }
+    }
+
+    override fun onClickMessageSend() {
+        // TODO implement me
     }
 }

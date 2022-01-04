@@ -1,4 +1,4 @@
-package ru.skillbranch.skillarticles.viewmodels
+package ru.skillbranch.skillarticles.viewmodels.article
 
 import android.os.Bundle
 import android.util.Log
@@ -12,19 +12,21 @@ import ru.skillbranch.skillarticles.data.repositories.MarkdownElement
 import ru.skillbranch.skillarticles.extensions.*
 import ru.skillbranch.skillarticles.data.repositories.clearContent
 import ru.skillbranch.skillarticles.ui.article.ArticleFragmentArgs
-import ru.skillbranch.skillarticles.viewmodels.article.IArticleViewModel
+import ru.skillbranch.skillarticles.viewmodels.BaseViewModel
+import ru.skillbranch.skillarticles.viewmodels.Notify
+import ru.skillbranch.skillarticles.viewmodels.VMState
 
-class ArticleViewModel(savedStateHandle: SavedStateHandle) :
+class ArticleViewModel( savedStateHandle: SavedStateHandle) :
     BaseViewModel<ArticleState>(ArticleState(), savedStateHandle), IArticleViewModel {
     private val repository = ArticleRepository()
-    private var clearContent: String? = null
-    // private val args : String = savedStateHandle["article_id"]!! //old bad way
+    // private val articleId : String = savedStateHandle["article_id"]!! //old bad way
     //from nav component 2.4
     private val args : ArticleFragmentArgs = ArticleFragmentArgs.fromSavedStateHandle(savedStateHandle)
     private val articleId = args.articleId
 
+    private var clearContent: String? = null
+
     init {
-        Log.e("ArticleViewModel", "init viewmodel $this")
         //set custom saved state provider for non serializable or custom states
         savedStateHandle.setSavedStateProvider("state") {
             currentState.toBundle()
@@ -33,7 +35,6 @@ class ArticleViewModel(savedStateHandle: SavedStateHandle) :
         //subscribe on mutable data
         subscribeOnDataSource(getArticleData()) { article, state ->
             article ?: return@subscribeOnDataSource null
-            Log.e("ArticleViewModel", "author: ${article.author}");
             state.copy(
                 shareLink = article.shareLink,
                 title = article.title,
@@ -169,6 +170,10 @@ class ArticleViewModel(savedStateHandle: SavedStateHandle) :
     override fun handleCopyCode() {
         notify(Notify.TextMessage("Code copy to clipboard"))
     }
+
+    override fun handleSendMessage(message: String) {
+        TODO("TODO implement me")
+    }
 }
 
 data class ArticleState(
@@ -192,7 +197,8 @@ data class ArticleState(
     val author: Any? = null, //автор статьи
     val poster: String? = null, //обложка статьи
     val content: List<MarkdownElement> = emptyList(), //контент
-    val reviews: List<Any> = emptyList() //комментарии
+    val reviews: List<Any> = emptyList(), //комментарии
+    val message: String? = null //сообщение пользователя
 ) : VMState {
     override fun toBundle(): Bundle {
         val map = copy(content = emptyList(), isLoadingContent = true)
@@ -228,6 +234,7 @@ data class ArticleState(
             poster = map["poster"] as String?,
             content = map["content"] as List<MarkdownElement>,
             reviews = map["reviews"] as List<Any>,
+            message = map["message"] as String?,
         )
     }
 }

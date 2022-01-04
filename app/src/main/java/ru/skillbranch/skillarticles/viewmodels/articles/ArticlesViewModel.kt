@@ -1,24 +1,29 @@
-package ru.skillbranch.skillarticles.viewmodels
+package ru.skillbranch.skillarticles.viewmodels.articles
 
 import android.util.Log
 import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.NavDirections
 import androidx.navigation.NavOptions
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.data.repositories.ArticlesRepository
-import ru.skillbranch.skillarticles.viewmodels.articles.ArticleItem
+import ru.skillbranch.skillarticles.ui.articles.ArticlesFragmentDirections
+import ru.skillbranch.skillarticles.viewmodels.BaseViewModel
+import ru.skillbranch.skillarticles.viewmodels.NavCommand
+import ru.skillbranch.skillarticles.viewmodels.VMState
 
 class ArticlesViewModel(savedStateHandle: SavedStateHandle) :
-    BaseViewModel<ArticlesState>(ArticlesState(), savedStateHandle) {
+    BaseViewModel<ArticlesState>(ArticlesState(), savedStateHandle), IArticlesViewModel {
     private val repository: ArticlesRepository = ArticlesRepository()
     val articles: LiveData<List<ArticleItem>> = repository.findArticles()
 
     init {
-        Log.e("ArticleViewModel", "init viewmodel ${this::class.simpleName} ${this.hashCode()}")
+        Log.e("ArticlesViewModel", "init viewmodel ${this::class.simpleName} ${this.hashCode()}")
     }
 
-    fun navigateToArticle(articleItem: ArticleItem) {
+
+    override fun navigateToArticle(articleItem: ArticleItem) {
         articleItem.run {
             val options = NavOptions.Builder()
                 .setEnterAnim(R.animator.nav_default_enter_anim)
@@ -42,13 +47,13 @@ class ArticlesViewModel(savedStateHandle: SavedStateHandle) :
                     options.build()
                 )
             )
+
         }
+
     }
 
-    fun checkBookmark(articleItem: ArticleItem, checked: Boolean) {
+    override fun checkBookmark(articleItem: ArticleItem, checked: Boolean) {
     }
-
-
 }
 
 data class ArticlesState(

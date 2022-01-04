@@ -13,26 +13,41 @@ import ru.skillbranch.skillarticles.ui.delegates.viewBinding
 import ru.skillbranch.skillarticles.viewmodels.auth.AuthState
 import ru.skillbranch.skillarticles.viewmodels.auth.AuthViewModel
 
-class AuthFragment() : BaseFragment<AuthState, AuthViewModel, FragmentAuthBinding>(R.layout.fragment_auth) {
+class AuthFragment() : BaseFragment<AuthState, AuthViewModel, FragmentAuthBinding>(R.layout.fragment_auth),
+    IAuthView {
     override val viewModel: AuthViewModel by navGraphViewModels(R.id.auth_flow)
     override val viewBinding: FragmentAuthBinding by viewBinding(FragmentAuthBinding::bind)
 
     override fun renderUi(data: AuthState) {
         val decorColor = requireContext().attrValue(R.attr.colorPrimary)
         with(viewBinding){
-            tvPrivacy.setOnClickListener { viewModel.navigateToPrivacy() }
-            tvRegister.setOnClickListener { viewModel.navigateToRegistration() }
-            btnLogin.setOnClickListener { viewModel.handleLogin(
-                etLogin.text.toString(),
-                etPassword.text.toString()
-            ) }
+            tvPrivacy.setOnClickListener { onClickPrivacy() }
+            tvRegister.setOnClickListener { onClickRegistration() }
+            btnLogin.setOnClickListener { onClickLogin() }
 
-            (tvPrivacy.text as Spannable).let { it[0..it.length] = UnderlineSpan(decorColor) }
-            (tvRegister.text as Spannable).let { it[0..it.length] = UnderlineSpan(decorColor) }
+            (tvPrivacy.text as Spannable).let { it[0..it.length]  = UnderlineSpan(decorColor) }
+            (tvRegister.text as Spannable).let { it[0..it.length]  = UnderlineSpan(decorColor) }
         }
     }
 
     override fun setupViews() {
         //handle input errors this (show error on text input layout)
+    }
+
+    override fun onClickPrivacy(){
+        viewModel.navigateToPrivacy()
+    }
+
+    override fun onClickRegistration(){
+        viewModel.navigateToRegistration()
+    }
+
+    override fun onClickLogin(){
+        with(viewBinding){
+            viewModel.handleLogin(
+                etLogin.text.toString(),
+                etPassword.text.toString()
+            )
+        }
     }
 }

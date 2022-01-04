@@ -1,32 +1,29 @@
 package ru.skillbranch.skillarticles.ui.articles
 
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.databinding.FragmentArticlesBinding
 import ru.skillbranch.skillarticles.ui.BaseFragment
 import ru.skillbranch.skillarticles.ui.delegates.viewBinding
-import ru.skillbranch.skillarticles.viewmodels.ArticlesState
-import ru.skillbranch.skillarticles.viewmodels.ArticlesViewModel
 import ru.skillbranch.skillarticles.viewmodels.articles.ArticleItem
+import ru.skillbranch.skillarticles.viewmodels.articles.ArticlesState
+import ru.skillbranch.skillarticles.viewmodels.articles.ArticlesViewModel
 
-class ArticlesFragment : BaseFragment<ArticlesState, ArticlesViewModel, FragmentArticlesBinding>(R.layout.fragment_articles) {
+class ArticlesFragment :
+    BaseFragment<ArticlesState, ArticlesViewModel, FragmentArticlesBinding>(R.layout.fragment_articles), IArticlesView {
     override val viewModel: ArticlesViewModel by activityViewModels()
     override val viewBinding: FragmentArticlesBinding by viewBinding(FragmentArticlesBinding::bind)
     private var articlesAdapter: ArticlesAdapter? = null
 
     override fun renderUi(data: ArticlesState) {
-
+        //TODO implement me later
     }
 
     override fun setupViews() {
-        articlesAdapter = ArticlesAdapter(
-            onClick = { articleItem -> viewModel.navigateToArticle(articleItem) },
-            onToggleBookmark = { articleItem: ArticleItem, isChecked: Boolean ->
-                viewModel.checkBookmark(articleItem, isChecked)
-            }
-        )
+        articlesAdapter = ArticlesAdapter(::onArticleClick,::onToggleBookmark)
 
         viewBinding.rvArticles.apply {
             adapter = articlesAdapter
@@ -45,4 +42,13 @@ class ArticlesFragment : BaseFragment<ArticlesState, ArticlesViewModel, Fragment
             articlesAdapter?.submitList(it)
         }
     }
+
+    override fun onArticleClick(articleItem: ArticleItem){
+        viewModel.navigateToArticle(articleItem)
+    }
+
+    override fun onToggleBookmark(articleItem: ArticleItem, isChecked: Boolean){
+        viewModel.checkBookmark(articleItem,isChecked)
+    }
+
 }

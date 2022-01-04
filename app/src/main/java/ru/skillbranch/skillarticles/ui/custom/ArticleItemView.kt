@@ -1,4 +1,4 @@
-package ru.skillbranch.skillarticles.ui.articles
+package ru.skillbranch.skillarticles.ui.custom
 
 import android.content.Context
 import android.content.res.ColorStateList
@@ -13,7 +13,6 @@ import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.extensions.attrValue
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
 import ru.skillbranch.skillarticles.extensions.shortFormat
-import ru.skillbranch.skillarticles.ui.custom.CheckableImageView
 import ru.skillbranch.skillarticles.viewmodels.articles.ArticleItem
 import androidx.core.view.setPadding
 import kotlin.math.max

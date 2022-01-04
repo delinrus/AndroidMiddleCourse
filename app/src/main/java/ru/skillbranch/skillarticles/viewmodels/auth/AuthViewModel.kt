@@ -13,14 +13,15 @@ import ru.skillbranch.skillarticles.viewmodels.RootViewModel
 import ru.skillbranch.skillarticles.viewmodels.VMState
 
 class AuthViewModel(savedStateHandle: SavedStateHandle) :
-    BaseViewModel<AuthState>(AuthState(), savedStateHandle) {
+    BaseViewModel<AuthState>(AuthState(), savedStateHandle), IAuthViewModel {
     private val intentDestination: Int? = savedStateHandle["intent_destination"]
+    private val repository: AuthRepository = AuthRepository()
 
     init {
         Log.e("AuthViewModel", "init viewmodel ${this::class.simpleName} ${this.hashCode()}")
     }
 
-    fun navigateToPrivacy() {
+    override fun navigateToPrivacy() {
         val options = NavOptions.Builder()
             .setEnterAnim(R.animator.nav_default_enter_anim)
             .setExitAnim(R.animator.nav_default_exit_anim)
@@ -29,16 +30,16 @@ class AuthViewModel(savedStateHandle: SavedStateHandle) :
         navigate(NavCommand.Builder(R.id.page_privacy, null, options.build()))
     }
 
-    fun navigateToRegistration() {
+    override fun navigateToRegistration() {
         val action = AuthFragmentDirections.actionAuthFragmentToRegistrationFragment()
         navigate(NavCommand.Action(action))
     }
 
-    fun handleLogin(login: String, password: String) {
+    override fun handleLogin(login: String, password: String) {
         repository.login(login, password)
         navigate(NavCommand.Action(MainFlowDirections.finishLogin()))
         intentDestination?.let {
-            if (it != -1 && RootViewModel.privateDestinations.contains(it)) {
+            if (RootViewModel.privateDestinations.contains(it)) {
                 val options = NavOptions.Builder()
                     .setEnterAnim(R.animator.nav_default_enter_anim)
                     .setExitAnim(R.animator.nav_default_exit_anim)
@@ -49,8 +50,14 @@ class AuthViewModel(savedStateHandle: SavedStateHandle) :
         }
     }
 
+    override fun handleRegistration(name: String, login: String, password: String) {
 
-    private val repository: AuthRepository = AuthRepository()
+    }
+
+    override fun resetErrors(){
+
+    }
+
 }
 
 data class AuthState(val inputErrors: Map<String, String> = emptyMap()) : VMState

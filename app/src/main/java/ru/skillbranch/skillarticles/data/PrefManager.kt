@@ -14,7 +14,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.zip
 import ru.skillbranch.skillarticles.App
 import ru.skillbranch.skillarticles.data.adapters.UserJsonAdapter
@@ -22,10 +21,10 @@ import ru.skillbranch.skillarticles.data.delegates.PrefDelegate
 import ru.skillbranch.skillarticles.data.delegates.PrefObjDelegate
 import ru.skillbranch.skillarticles.data.local.User
 
-
-val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "skillarticles")
 
 class PrefManager(context: Context = App.applicationContext()) {
+
 
     val dataStore = context.dataStore
     private val errHandler = CoroutineExceptionHandler { _, th ->
@@ -38,8 +37,6 @@ class PrefManager(context: Context = App.applicationContext()) {
     var isDarkMode by PrefDelegate(false)
     var accessToken by PrefDelegate("")
 
-    var testInt by PrefDelegate(Int.MAX_VALUE)
-
     var profile: User? by PrefObjDelegate(UserJsonAdapter())
 
     val settings: LiveData<AppSettings>
@@ -50,7 +47,6 @@ class PrefManager(context: Context = App.applicationContext()) {
                 dataStore.data.map { it[booleanPreferencesKey(this::isDarkMode.name)] ?: false }
 
             return isDark.zip(isBig) { dark, big -> AppSettings(dark, big) }
-                .onEach { Log.e("PrefManager", "settings $it") }
                 .distinctUntilChanged()
                 .asLiveData()
         }
@@ -59,6 +55,4 @@ class PrefManager(context: Context = App.applicationContext()) {
         get() = dataStore.data.map { it[stringPreferencesKey(this::accessToken.name)]?.isNotEmpty() ?: false }
             .distinctUntilChanged()
             .asLiveData()
-
 }
-

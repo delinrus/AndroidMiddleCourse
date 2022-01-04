@@ -11,7 +11,7 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class ContainerBehavior() : AppBarLayout.ScrollingViewBehavior() {
-    constructor(context: Context, attribSet: AttributeSet) : this()
+    constructor(context:Context, attribSet: AttributeSet) : this()
 
     override fun onMeasureChild(
         parent: CoordinatorLayout,
@@ -22,15 +22,16 @@ class ContainerBehavior() : AppBarLayout.ScrollingViewBehavior() {
         heightUsed: Int
     ): Boolean {
 
+
         //if child not scrolling - measure manually
         val innerChild = (child as FragmentContainerView).children.first() as FragmentContainerView
-        if (innerChild.children.firstOrNull()?.isNestedScrollingEnabled?.not() == true) {
+        if(innerChild.children.firstOrNull()?.isNestedScrollingEnabled?.not() ==true){
             val appbar = parent.children.find { it is AppBarLayout }
             val ah = appbar?.measuredHeight ?: 0
             val bottombar = parent.children.find { it is BottomNavigationView }
-            val bh = if (bottombar?.isVisible == true) bottombar.measuredHeight else 0
+            val bh = if(bottombar?.isVisible == true) bottombar.measuredHeight else 0
             val size = View.MeasureSpec.getSize(parentHeightMeasureSpec)
-            val height = size - ah - bh
+            val height  = size - ah - bh
             parent.onMeasureChild(
                 child, parentWidthMeasureSpec, widthUsed,
                 View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY),

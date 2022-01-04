@@ -5,12 +5,19 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.os.Parcel
 import android.os.Parcelable
-import android.view.*
+import android.util.AttributeSet
+import android.util.Log
+import android.view.Gravity
+import android.view.View
+import android.view.ViewAnimationUtils
+import android.view.ViewGroup
 import android.widget.TextView
-import androidx.annotation.VisibleForTesting
+import androidx.annotation.*
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.animation.doOnEnd
 import androidx.core.animation.doOnStart
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -18,34 +25,56 @@ import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.extensions.attrValue
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
 import ru.skillbranch.skillarticles.extensions.dpToPx
-import ru.skillbranch.skillarticles.extensions.setPaddingOptionally
 import ru.skillbranch.skillarticles.ui.custom.behaviors.SubmenuBehavior
 import kotlin.math.hypot
 
 class ArticleSubmenu(baseContext: Context) :
     ViewGroup(ContextThemeWrapper(baseContext, R.style.ArticleBarsTheme), null, 0),
     CoordinatorLayout.AttachedBehavior {
+    //settings
+    @Px
+    private val menuWidth = context.dpToIntPx(200)
+    @Px
+    private val menuHeight = context.dpToIntPx(96)
+    @Px
+    private val btnHeight = context.dpToIntPx(40)
+    @Px
+    private val btnWidth = menuWidth / 2
+    @Px
+    private val defaultPadding = context.dpToIntPx(16)
+    @ColorInt
+    private var lineColor: Int = context.getColor(R.color.color_divider)
+    @ColorInt
+    private val textColor = context.attrValue(R.attr.colorOnSurface)
+    private val iconTint = context.getColorStateList(R.color.tint_color)
+    @DrawableRes
+    private val bg = context.attrValue(R.attr.selectableItemBackground, needRes = true)
 
-    var isOpen = false
-    private var menuWidth: Int = context.dpToIntPx(200)
-    private var menuHeight: Int = context.dpToIntPx(96)
-
-    //Views
+    //views
     val btnTextDown: CheckableImageView
     val btnTextUp: CheckableImageView
     val switchMode: SwitchMaterial
     val tvLabel: TextView
 
+    var isOpen = false
+
+    private val linePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = lineColor
+        strokeWidth = 0f
+    }
+
     init {
+
         id = R.id.submenu
         val marg = dpToIntPx(8)
         val elev = dpToPx(8)
-        layoutParams = CoordinatorLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-            .apply {
-                gravity = Gravity.BOTTOM or Gravity.RIGHT
-                dodgeInsetEdges = Gravity.BOTTOM
-                setMargins(0, 0, marg, marg)
-            }
+        layoutParams =
+            CoordinatorLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+                .apply {
+                    gravity = Gravity.BOTTOM or Gravity.RIGHT
+                    dodgeInsetEdges = Gravity.BOTTOM
+                    setMargins(0, 0, marg, marg)
+                }
 
         //add material bg for handle elevation and color surface
         val materialBg = MaterialShapeDrawable.createWithElevationOverlay(context)
@@ -55,30 +84,31 @@ class ArticleSubmenu(baseContext: Context) :
         elevation = elev
         isVisible = false
 
-        val backGroundRes = context.attrValue(R.attr.selectableItemBackground)
         btnTextDown = CheckableImageView(context).apply {
-            setPaddingOptionally(top = context.dpToIntPx(12), bottom = context.dpToIntPx(12))
-            setImageResource(R.drawable.ic_title_black_24dp)
-            imageTintList = context.getColorStateList(R.color.tint_color)
-            setBackgroundColor(backGroundRes)
+            setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_title_black_24dp)!!)
+            val pad = context.dpToIntPx(12)
+            setPadding(pad, pad, pad, pad)
+            imageTintList = iconTint
+            setBackgroundResource(bg)
         }
         addView(btnTextDown)
 
         btnTextUp = CheckableImageView(context).apply {
-            setPaddingOptionally(top = context.dpToIntPx(8), bottom = context.dpToIntPx(8))
-            setImageResource(R.drawable.ic_title_black_24dp)
-            imageTintList = context.getColorStateList(R.color.tint_color)
-            setBackgroundColor(backGroundRes)
+            setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_title_black_24dp)!!)
+            val pad = defaultPadding / 2
+            setPadding(pad, pad, pad, pad)
+            imageTintList = iconTint
+            setBackgroundResource(bg)
         }
         addView(btnTextUp)
 
-        switchMode = SwitchMaterial(context).apply {
-        }
+        switchMode = SwitchMaterial(context)
         addView(switchMode)
 
         tvLabel = TextView(context).apply {
             text = "Темный режим"
-            setTextColor(context.attrValue(R.attr.colorOnSurface))
+            textSize = 14f
+            setTextColor(textColor)
         }
         addView(tvLabel)
     }
@@ -100,7 +130,7 @@ class ArticleSubmenu(baseContext: Context) :
     }
 
     private fun animatedShow() {
-        val endRadius = hypot(menuWidth.toDouble(), menuHeight.toDouble()).toInt()
+        val endRadius = hypot(menuWidth.toFloat(), menuHeight.toFloat()).toInt()
         val anim = ViewAnimationUtils.createCircularReveal(
             this,
             menuWidth,
@@ -115,7 +145,7 @@ class ArticleSubmenu(baseContext: Context) :
     }
 
     private fun animatedHide() {
-        val endRadius = hypot(menuWidth.toDouble(), menuHeight.toDouble()).toInt()
+        val endRadius = hypot(menuWidth.toFloat(), menuHeight.toFloat()).toInt()
         val anim = ViewAnimationUtils.createCircularReveal(
             this,
             menuWidth,
@@ -141,73 +171,75 @@ class ArticleSubmenu(baseContext: Context) :
         super.onRestoreInstanceState(state)
         if (state is SavedState) {
             isOpen = state.ssIsOpen
-            visibility = if (isOpen) View.VISIBLE else View.GONE
+            isVisible = isOpen
         }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val wms = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
-        val hms = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
-        tvLabel.measure(wms, hms)
-        switchMode.measure(wms, hms)
+        measureChild(switchMode, widthMeasureSpec, heightMeasureSpec)
+        measureChild(tvLabel, widthMeasureSpec, heightMeasureSpec)
         setMeasuredDimension(menuWidth, menuHeight)
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+    public override fun onLayout(p0: Boolean, l: Int, t: Int, r: Int, b: Int) {
         val bodyWidth = r - l - paddingLeft - paddingRight
         val left = paddingLeft
         val right = paddingLeft + bodyWidth
-
-        val textBtnHeight = context.dpToIntPx(40);
-        val center = (r - l) / 2
-        val horizontalDividerY = paddingTop + textBtnHeight
+        var usedHeight = paddingTop
 
         btnTextDown.layout(
             left,
-            paddingTop,
-            center,
-            horizontalDividerY
+            usedHeight,
+            btnWidth,
+            btnHeight
         )
 
         btnTextUp.layout(
-            center,
-            paddingTop,
+            right - btnWidth,
+            usedHeight,
             right,
-            horizontalDividerY
+            btnHeight
         )
 
-        val horizontalMargin = context.dpToIntPx(16)
-        val lablelCenterY = (measuredHeight - horizontalDividerY) / 2 + horizontalDividerY
-        switchMode.layout(
-            right - horizontalMargin - switchMode.measuredWidth,
-            lablelCenterY - switchMode.measuredHeight / 2,
-            right - horizontalMargin,
-            lablelCenterY + switchMode.measuredHeight / 2
-        )
+        usedHeight += btnHeight
+        val deltaHLabel = (menuHeight - usedHeight - tvLabel.measuredHeight) / 2
 
         tvLabel.layout(
-            left + horizontalMargin,
-            lablelCenterY - tvLabel.measuredHeight / 2,
-            left + horizontalMargin + tvLabel.measuredWidth,
-            lablelCenterY + tvLabel.measuredHeight / 2
+            left + defaultPadding,
+            usedHeight + deltaHLabel,
+            left + defaultPadding + tvLabel.measuredWidth,
+            usedHeight + deltaHLabel + tvLabel.measuredHeight
+        )
+
+        val deltaHSwitch = (menuHeight - usedHeight - switchMode.measuredHeight) / 2
+        switchMode.layout(
+            right - defaultPadding - switchMode.measuredWidth,
+            usedHeight + deltaHSwitch,
+            right - defaultPadding,
+            usedHeight + deltaHSwitch + switchMode.measuredHeight
         )
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public override fun dispatchDraw(canvas: Canvas?) {
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = context.getColor(R.color.color_divider)
-            strokeWidth = context.dpToPx(1)
-        }
-        val w = measuredWidth.toFloat()
-        val h = measuredHeight.toFloat()
-        val h1 = context.dpToPx(40)
-
-        canvas?.drawLine(0f, h1, w, h1, paint)  // horizontal divider
-        canvas?.drawLine(w / 2, 0f, w / 2, h1, paint) // vertical divider
+    public override fun dispatchDraw(canvas: Canvas) {
         super.dispatchDraw(canvas)
+        canvas.drawLine(
+            0f,
+            btnHeight.toFloat(),
+            canvas.width.toFloat(),
+            btnHeight.toFloat(),
+            linePaint
+        )
+
+        canvas.drawLine(
+            canvas.width / 2f,
+            0f,
+            canvas.width / 2f,
+            btnHeight.toFloat(),
+            linePaint
+        )
     }
 
     private class SavedState : BaseSavedState, Parcelable {

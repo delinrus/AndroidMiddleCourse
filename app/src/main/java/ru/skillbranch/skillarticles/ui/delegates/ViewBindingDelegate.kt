@@ -52,18 +52,18 @@ class ViewBindingFragmentDelegate<T : ViewBinding>(
     private var _value : T? = null
 
     init {
-        fragment.viewLifecycleOwnerLiveData.observe(fragment) { viewOwner ->
+        fragment.viewLifecycleOwnerLiveData.observe(fragment){ viewOwner ->
             viewOwner.lifecycle.addObserver(this)
         }
     }
 
     override fun getValue(thisRef: Fragment, property: KProperty<*>): T {
         val binding = _value
-        if(binding != null) return binding
+        if(binding !=null) return  binding
 
         val lifecycle = thisRef.viewLifecycleOwner.lifecycle
 
-        if(!lifecycle.currentState.isAtLeast(Lifecycle.State.INITIALIZED)) {
+        if(!lifecycle.currentState.isAtLeast(Lifecycle.State.INITIALIZED)){
             throw IllegalStateException("Should not attempt to get bindings when Fragment views are destroyed")
         }
 
@@ -76,7 +76,7 @@ class ViewBindingFragmentDelegate<T : ViewBinding>(
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun onDestroy() {
+    fun onDestroy(){
         _value = null
     }
 }
