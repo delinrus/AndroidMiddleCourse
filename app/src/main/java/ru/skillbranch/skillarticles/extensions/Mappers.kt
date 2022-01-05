@@ -35,7 +35,7 @@ fun ArticleState.asMap(): Map<String, Any?> = mapOf(
     "poster" to poster,
     "content" to content,
     "reviews" to reviews,
-  //  "message" to message,
+    "message" to message,
 )
 
 fun User.asMap(): Map<String, Any?> = mapOf(

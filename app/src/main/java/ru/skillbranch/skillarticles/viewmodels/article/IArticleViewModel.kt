@@ -96,5 +96,9 @@ interface IArticleViewModel {
      */
     fun handleCopyCode()
 
-    fun handleSendMessage(message: String)
+    /**
+     * Отправка комментария к статье, если пользователь не авторизован отобразить Auth flow
+     * сохранить введенное сообщение
+     */
+    fun handleSendMessage(message:String)
 }

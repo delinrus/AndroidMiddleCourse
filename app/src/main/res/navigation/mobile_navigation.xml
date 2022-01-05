@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_flow"
     app:startDestination="@id/nav_articles">
-
     <fragment
         android:id="@+id/nav_articles"
         android:name="ru.skillbranch.skillarticles.ui.articles.ArticlesFragment"
@@ -37,7 +36,7 @@
         android:id="@+id/page_article"
         android:name="ru.skillbranch.skillarticles.ui.article.ArticleFragment"
         android:label="{title}"
-        tools:layout="@layout/fragment_article" > <!-- set title from args -->
+        tools:layout="@layout/fragment_article"> <!-- set title from args -->
         <argument
             android:name="article_id"
             app:argType="string" />
@@ -69,7 +68,7 @@
             android:id="@+id/nav_auth"
             android:name="ru.skillbranch.skillarticles.ui.auth.AuthFragment"
             android:label="@string/title_authorization"
-            tools:layout="@layout/fragment_auth">
+            tools:layout="@layout/fragment_auth" >
             <action
                 android:id="@+id/action_authFragment_to_privacyPolicyFragment"
                 app:destination="@id/page_privacy" />
@@ -100,7 +99,7 @@
     <!--Global action -->
     <action
         android:id="@+id/start_login"
-        app:destination="@id/auth_flow" >
+        app:destination="@id/auth_flow">
         <argument
             android:name="intent_destination"
             app:argType="integer"
@@ -110,5 +109,4 @@
         android:id="@+id/finish_login"
         app:popUpTo="@id/auth_flow"
         app:popUpToInclusive="true" />
-
 </navigation>
