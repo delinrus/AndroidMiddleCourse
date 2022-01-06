@@ -1,7 +1,11 @@
 package ru.skillbranch.skillarticles.extensions
 
+import android.app.Activity
+import android.content.Context
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.annotation.IdRes
 import androidx.core.view.*
 import androidx.navigation.NavDestination
@@ -29,4 +33,20 @@ fun View.setPaddingOptionally(
     bottom : Int = paddingBottom
 ){
     setPadding(left, top, right, bottom)
+}
+
+fun View.hideKeyboard(){
+    val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(windowToken,0)
+}
+
+fun EditText.showKeyboard(){
+    requestFocus()
+    val imm = context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+}
+
+fun View.screenHeight() : Int{
+    val displayMetrics = context.resources.displayMetrics
+    return  displayMetrics.heightPixels - (24*displayMetrics.density).toInt() //24dp status bar height
 }

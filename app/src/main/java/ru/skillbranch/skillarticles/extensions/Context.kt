@@ -9,6 +9,7 @@ import android.os.Build
 import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.annotation.AttrRes
 import androidx.fragment.app.Fragment
 
