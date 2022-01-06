@@ -11,7 +11,9 @@ class TestViewModel() : ViewModel() {
     private val repository = ArticleRepository()
     val commentPager: LiveData<PagingData<CommentRes>> = Pager(
         config = PagingConfig(
-            pageSize = 5
+            pageSize = 10,
+            prefetchDistance = 3*20 //default
+            //initialLoadSize = 4*20 //default
         ),
         pagingSourceFactory = {
             repository.makeCommentDataSource("0")

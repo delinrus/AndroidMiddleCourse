@@ -25,7 +25,7 @@ class TestActivity : AppCompatActivity() {
 
         with(viewBinding) {
             btnDo.setOnClickListener {
-                // DO Something with list
+                commentsAdapter.refresh()
             }
         }
 
