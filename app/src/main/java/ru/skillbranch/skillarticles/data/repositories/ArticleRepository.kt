@@ -57,7 +57,10 @@ class CommentsDataSource(
     val network: NetworkDataHolder,
     val totalComments :Int = 100
 ) : PagingSource<Int, CommentRes>() {
-/*    override fun getRefreshKey(state: PagingState<Int, CommentRes>): Int? {
+
+    override val jumpingSupported = true //default
+
+    /*    override fun getRefreshKey(state: PagingState<Int, CommentRes>): Int? {
         val anchorPosition = state.anchorPosition
             ?: return null //visible viewHolder position or null in initial load
         val anchorPage = state.closestPageToPosition(anchorPosition) ?: return null //loaded page
