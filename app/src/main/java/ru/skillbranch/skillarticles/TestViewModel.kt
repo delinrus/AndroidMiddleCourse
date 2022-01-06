@@ -15,6 +15,7 @@ class TestViewModel() : ViewModel() {
             prefetchDistance = 3*20 //default
             //initialLoadSize = 4*20 //default
         ),
+        initialKey = 50,
         pagingSourceFactory = {
             repository.makeCommentDataSource("0")
         }

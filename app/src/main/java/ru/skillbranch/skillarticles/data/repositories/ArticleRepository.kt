@@ -78,8 +78,8 @@ class CommentsDataSource(
 
         return try {
             val comments = network.loadComments(articleId, pageKey, pageSize)
-            val prevKey = pageKey?.minus(pageSize)
-            val nextKey = if (comments.isNotEmpty()) pageKey?.plus(pageSize) else null
+            val prevKey = if (pageKey>0) pageKey.minus(pageSize) else null
+            val nextKey = if (comments.isNotEmpty()) pageKey.plus(pageSize) else null
 
             Log.e(
                 "LOAD",
