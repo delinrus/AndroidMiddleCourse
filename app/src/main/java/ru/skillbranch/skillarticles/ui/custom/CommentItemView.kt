@@ -177,21 +177,34 @@ class CommentItemView(context: Context) : ViewGroup(context, null, 0) {
         }
     }
 
-    fun bind(item: CommentRes) {
-        val level = min(item.slug.split("/").size.dec(), 5)
-        setPaddingOptionally(left = level * defaultHSpace)
+    fun bind(item: CommentRes?, position: Int) {
+        ivAvatar.isVisible = item != null
+        tvAnswerTo.isVisible = item != null
+        tvAnswerTo.isVisible = item != null
+        ivAnswerIcon.isVisible = item != null
+        tvAuthor.isVisible = item != null
+        tvDate.isVisible = item != null
 
-        Glide.with(context)
-            .load(item.user.avatar)
-            .apply(RequestOptions.circleCropTransform())
-            .override(avatarSize)
-            .into(ivAvatar)
+        if(item == null){
+            setPaddingOptionally(left = defaultHSpace)
+            tvMessage.text = "Loading..."
+            tvDate.text = "$position"
+        }else{
+            val level = min(item.slug.split("/").size.dec(), 5)
+            setPaddingOptionally(left = level * defaultHSpace)
 
-        tvAuthor.text = item.user.name
-        tvDate.text = item.id + " " + item.date.humanizeDiff() //add id for demo
-        tvMessage.text = item.message
-        tvAnswerTo.text = item.answerTo
-        tvAnswerTo.isVisible = item.answerTo != null
-        ivAnswerIcon.isVisible = item.answerTo != null
+            Glide.with(context)
+                .load(item.user.avatar)
+                .apply(RequestOptions.circleCropTransform())
+                .override(avatarSize)
+                .into(ivAvatar)
+
+            tvAuthor.text = item.user.name
+            tvDate.text = item.id + " " + item.date.humanizeDiff() //add id for demo
+            tvMessage.text = item.message
+            tvAnswerTo.text = item.answerTo
+            tvAnswerTo.isVisible = item.answerTo != null
+            ivAnswerIcon.isVisible = item.answerTo != null
+        }
     }
 }

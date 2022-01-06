@@ -13,7 +13,8 @@ class CommentAdapter(
 ) : PagingDataAdapter<CommentRes, CommentVH>(CommentDiffCallback()) {
     override fun onBindViewHolder(holder: CommentVH, position: Int) {
         //if not use placeholder always not null
-        holder.bind(getItem(position)!!, onClick)
+        //if use placeholder may be null
+        holder.bind(getItem(position), onClick, position)
 
     }
 
@@ -29,9 +30,9 @@ class CommentDiffCallback : DiffUtil.ItemCallback<CommentRes>() {
 }
 
 class CommentVH(convertView: View) : RecyclerView.ViewHolder(convertView) {
-    fun bind(item: CommentRes, onClick: (CommentRes) -> Unit) {
-        (itemView as CommentItemView).bind(item)
-        itemView.setOnClickListener { onClick(item) }
+    fun bind(item: CommentRes?, onClick: (CommentRes) -> Unit, position: Int) {
+        (itemView as CommentItemView).bind(item, position)
+        itemView.setOnClickListener { item?.let(onClick) }
     }
 
 }

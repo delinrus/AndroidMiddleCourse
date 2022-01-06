@@ -1,6 +1,7 @@
 package ru.skillbranch.skillarticles.data.repositories
 
 import android.util.Log
+import androidx.core.math.MathUtils.clamp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import androidx.paging.PagingSource
@@ -53,9 +54,10 @@ class ArticleRepository(
 
 class CommentsDataSource(
     val articleId: String,
-    val network: NetworkDataHolder
+    val network: NetworkDataHolder,
+    val totalComments :Int = 100
 ) : PagingSource<Int, CommentRes>() {
-    override fun getRefreshKey(state: PagingState<Int, CommentRes>): Int? {
+/*    override fun getRefreshKey(state: PagingState<Int, CommentRes>): Int? {
         val anchorPosition = state.anchorPosition
             ?: return null //visible viewHolder position or null in initial load
         val anchorPage = state.closestPageToPosition(anchorPosition) ?: return null //loaded page
@@ -70,6 +72,20 @@ class CommentsDataSource(
             "anchorPosition$pageKey, offset:$pageKey prev:$prevKey, next$nextKey"
         )
         return pageKey
+    }*/
+
+    override fun getRefreshKey(state: PagingState<Int, CommentRes>): Int? {
+        //if placeholders
+        val anchorPosition = state.anchorPosition
+            ?: return null //visible viewHolder position or null in initial load
+
+        val pageKey = clamp(anchorPosition, 0, totalComments)
+
+        Log.w(
+            "GET_REFRESH_KEY",
+            "offset:$pageKey"
+        )
+        return pageKey
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CommentRes> {
@@ -80,12 +96,20 @@ class CommentsDataSource(
             val comments = network.loadComments(articleId, pageKey, pageSize)
             val prevKey = if (pageKey>0) pageKey.minus(pageSize) else null
             val nextKey = if (comments.isNotEmpty()) pageKey.plus(pageSize) else null
+            val itemsAfter = nextKey?.let {totalComments -it} ?: 0
+            val itemsBefore = pageKey
 
             Log.e(
                 "LOAD",
-                "load from network comments:${comments.size} offset:$pageKey limit:$pageSize prev:$prevKey next:$nextKey"
+                "load from network comments:${comments.size} offset:$pageKey limit:$pageSize prev:$prevKey next:$nextKey itemsAfter:$itemsAfter, itemsBefore:$itemsBefore"
             )
-            LoadResult.Page(data = comments, prevKey = prevKey, nextKey = nextKey)
+            LoadResult.Page(
+                data = comments,
+                prevKey = prevKey,
+                nextKey = nextKey,
+                itemsBefore = clamp(itemsBefore, 0, totalComments),
+                itemsAfter = clamp(itemsAfter, 0, totalComments)
+            )
         } catch (t: Throwable) {
             LoadResult.Error(t)
         }
