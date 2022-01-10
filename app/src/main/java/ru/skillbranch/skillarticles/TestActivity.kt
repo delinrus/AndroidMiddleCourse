@@ -3,6 +3,8 @@ package ru.skillbranch.skillarticles
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.core.view.isVisible
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.skillbranch.skillarticles.databinding.ActivityTestBinding
 import ru.skillbranch.skillarticles.ui.article.CommentAdapter
@@ -23,8 +25,16 @@ class TestActivity : AppCompatActivity() {
                 header = LoadStateItemsAdapter(commentsAdapter::retry),
                 footer = LoadStateItemsAdapter(commentsAdapter::retry)
             )
+            commentsAdapter.addLoadStateListener { loadState ->
+                if(loadState.refresh == LoadState.Loading) {
+                    viewBinding.progress.isVisible = true
+                    isVisible = false
+                }else{
+                    viewBinding.progress.isVisible = false
+                    isVisible = true
+                }
+            }
             layoutManager = LinearLayoutManager(this@TestActivity)
-
         }
 
         with(viewBinding) {
