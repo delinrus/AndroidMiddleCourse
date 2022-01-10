@@ -24,7 +24,7 @@ class LoadStateItemsAdapter(
             LayoutInflater.from(parent.context).inflate(R.layout.item_loading, parent, false)
         )
         is LoadState.Error -> ErrorVH(
-            LayoutInflater.from(parent.context).inflate(R.layout.item_loading, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.item_error, parent, false)
         )
     }
 }

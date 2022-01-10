@@ -1,5 +1,6 @@
 package ru.skillbranch.skillarticles.data.repositories
 
+import android.accounts.NetworkErrorException
 import android.util.Log
 import androidx.core.math.MathUtils.clamp
 import androidx.lifecycle.LiveData
@@ -100,6 +101,10 @@ class CommentsDataSource(
             val prevKey = if (pageKey>0) pageKey.minus(pageSize) else null
             val nextKey = if (comments.isNotEmpty()) pageKey.plus(pageSize) else null
 
+            (0..4).random().also {
+                if(it==3) throw NetworkErrorException("something wrong in network layer")
+            }
+
 
             Log.e(
                 "LOAD",
@@ -111,6 +116,7 @@ class CommentsDataSource(
                 nextKey = nextKey
             )
         } catch (t: Throwable) {
+            Log.e("ArticleRepository", "ERROR ${t.message}")
             LoadResult.Error(t)
         }
     }
