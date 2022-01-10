@@ -55,12 +55,11 @@ class ArticleRepository(
 class CommentsDataSource(
     val articleId: String,
     val network: NetworkDataHolder,
-    val totalComments :Int = 100
 ) : PagingSource<Int, CommentRes>() {
 
     override val jumpingSupported = true //default
 
-    /*    override fun getRefreshKey(state: PagingState<Int, CommentRes>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, CommentRes>): Int? {
         val anchorPosition = state.anchorPosition
             ?: return null //visible viewHolder position or null in initial load
         val anchorPage = state.closestPageToPosition(anchorPosition) ?: return null //loaded page
@@ -75,9 +74,10 @@ class CommentsDataSource(
             "anchorPosition$pageKey, offset:$pageKey prev:$prevKey, next$nextKey"
         )
         return pageKey
-    }*/
+    }
 
-    override fun getRefreshKey(state: PagingState<Int, CommentRes>): Int? {
+    //for placeholders
+/*    override fun getRefreshKey(state: PagingState<Int, CommentRes>): Int? {
         //if placeholders
         val anchorPosition = state.anchorPosition
             ?: return null //visible viewHolder position or null in initial load
@@ -89,7 +89,7 @@ class CommentsDataSource(
             "offset:$pageKey"
         )
         return pageKey
-    }
+    }*/
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CommentRes> {
         val pageKey = params.key ?: 0 //offset
@@ -99,19 +99,16 @@ class CommentsDataSource(
             val comments = network.loadComments(articleId, pageKey, pageSize)
             val prevKey = if (pageKey>0) pageKey.minus(pageSize) else null
             val nextKey = if (comments.isNotEmpty()) pageKey.plus(pageSize) else null
-            val itemsAfter = nextKey?.let {totalComments -it} ?: 0
-            val itemsBefore = pageKey
+
 
             Log.e(
                 "LOAD",
-                "load from network comments:${comments.size} offset:$pageKey limit:$pageSize prev:$prevKey next:$nextKey itemsAfter:$itemsAfter, itemsBefore:$itemsBefore"
+                "load from network comments:${comments.size} offset:$pageKey limit:$pageSize prev:$prevKey next:$nextKey"
             )
             LoadResult.Page(
                 data = comments,
                 prevKey = prevKey,
-                nextKey = nextKey,
-                itemsBefore = clamp(itemsBefore, 0, totalComments),
-                itemsAfter = clamp(itemsAfter, 0, totalComments)
+                nextKey = nextKey
             )
         } catch (t: Throwable) {
             LoadResult.Error(t)

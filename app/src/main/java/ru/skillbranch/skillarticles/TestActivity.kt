@@ -6,6 +6,7 @@ import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.skillbranch.skillarticles.databinding.ActivityTestBinding
 import ru.skillbranch.skillarticles.ui.article.CommentAdapter
+import ru.skillbranch.skillarticles.ui.article.LoadStateItemsAdapter
 
 class TestActivity : AppCompatActivity() {
     private val viewModel by viewModels<TestViewModel>()
@@ -18,7 +19,9 @@ class TestActivity : AppCompatActivity() {
         setContentView(viewBinding.root)
 
         with(viewBinding.rvTest) {
-            adapter = commentsAdapter
+            adapter = commentsAdapter.withLoadStateFooter(
+                footer = LoadStateItemsAdapter(commentsAdapter::retry)
+            )
             layoutManager = LinearLayoutManager(this@TestActivity)
 
         }

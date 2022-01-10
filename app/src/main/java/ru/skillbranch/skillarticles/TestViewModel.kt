@@ -13,8 +13,7 @@ class TestViewModel() : ViewModel() {
         config = PagingConfig(
             pageSize = 10,
             initialLoadSize = 10, //default
-            enablePlaceholders = true, //default
-            jumpThreshold = 10*2
+            enablePlaceholders = false, //default
         ),
         pagingSourceFactory = {
             repository.makeCommentDataSource("0")

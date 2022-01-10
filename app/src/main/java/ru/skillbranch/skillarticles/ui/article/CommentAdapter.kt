@@ -14,7 +14,7 @@ class CommentAdapter(
     override fun onBindViewHolder(holder: CommentVH, position: Int) {
         //if not use placeholder always not null
         //if use placeholder may be null
-        holder.bind(getItem(position), onClick, position)
+        holder.bind(getItem(position)!!, onClick)
 
     }
 
@@ -30,9 +30,9 @@ class CommentDiffCallback : DiffUtil.ItemCallback<CommentRes>() {
 }
 
 class CommentVH(convertView: View) : RecyclerView.ViewHolder(convertView) {
-    fun bind(item: CommentRes?, onClick: (CommentRes) -> Unit, position: Int) {
-        (itemView as CommentItemView).bind(item, position)
-        itemView.setOnClickListener { item?.let(onClick) }
+    fun bind(item: CommentRes, onClick: (CommentRes) -> Unit) {
+        (itemView as CommentItemView).bind(item)
+        itemView.setOnClickListener {onClick(item)}
     }
 
 }
