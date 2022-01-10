@@ -15,6 +15,7 @@ class TestViewModel() : ViewModel() {
             initialLoadSize = 10, //default
             enablePlaceholders = false, //default
         ),
+        initialKey = 50,
         pagingSourceFactory = {
             repository.makeCommentDataSource("0")
         }

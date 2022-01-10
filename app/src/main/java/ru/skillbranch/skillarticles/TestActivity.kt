@@ -19,7 +19,8 @@ class TestActivity : AppCompatActivity() {
         setContentView(viewBinding.root)
 
         with(viewBinding.rvTest) {
-            adapter = commentsAdapter.withLoadStateFooter(
+            adapter = commentsAdapter.withLoadStateHeaderAndFooter(
+                header = LoadStateItemsAdapter(commentsAdapter::retry),
                 footer = LoadStateItemsAdapter(commentsAdapter::retry)
             )
             layoutManager = LinearLayoutManager(this@TestActivity)
