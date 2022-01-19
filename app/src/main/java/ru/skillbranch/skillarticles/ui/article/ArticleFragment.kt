@@ -17,12 +17,14 @@ import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions.circleCropTransform
 import com.google.android.material.appbar.AppBarLayout
 import ru.skillbranch.skillarticles.R
+import ru.skillbranch.skillarticles.data.network.res.CommentRes
 import ru.skillbranch.skillarticles.databinding.FragmentArticleBinding
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
 import ru.skillbranch.skillarticles.extensions.format
@@ -45,6 +47,8 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
     private lateinit var bottombar: Bottombar
     private lateinit var submenu: ArticleSubmenu
     private lateinit var searchView: SearchView
+
+    private var commentsAdapter : CommentAdapter? = null
 
     private val logoSize: Int by lazy { dpToIntPx(40) }
     private val cornerRadius: Int by lazy { dpToIntPx(8) }
@@ -71,6 +75,18 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
             tvTitle.text = args.title
             tvAuthor.text = args.author
             tvDate.text =args.date.format()
+
+
+            with(rvComments){
+                CommentAdapter(::onSelectComment)
+                    .also { commentsAdapter = it }
+                    .run {
+                        adapter = withLoadStateFooter(
+                            footer = LoadStateItemsAdapter(::retry)
+                        )
+                        layoutManager = LinearLayoutManager(requireContext())
+                    }
+            }
         }
     }
 
@@ -139,16 +155,17 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
         super.onDestroyView()
         root.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
         root.viewBinding.navView.isVisible = true
-        toolbar.logo = null
-        toolbar.subtitle = null
         root.viewBinding.coordinatorContainer.removeView(bottombar)
         root.viewBinding.coordinatorContainer.removeView(submenu)
-
+        commentsAdapter = null
     }
 
     override fun observeViewModelData() {
         viewModel.observeSubState(this, ArticleState::toBottombarData, ::renderBottombar)
         viewModel.observeSubState(this, ArticleState::toSubmenuData, ::renderSubmenu)
+        viewModel.commentPager.observe(viewLifecycleOwner){
+            commentsAdapter?.submitData(viewLifecycleOwner.lifecycle, it)
+        }
     }
 
     override fun setupSubmenu() {
@@ -194,12 +211,14 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
         }
 
         if (data.isSearch) {
+            root.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
             showSearchBar(data.resultsCount, data.searchPosition)
             with(toolbar) {
                 (layoutParams as AppBarLayout.LayoutParams).scrollFlags =
                     AppBarLayout.LayoutParams.SCROLL_FLAG_NO_SCROLL
             }
         } else {
+            root.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
             hideSearchBar()
             with(toolbar) {
                 (layoutParams as AppBarLayout.LayoutParams).scrollFlags =
@@ -299,5 +318,9 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
 
     override fun onClickMessageSend() {
         // TODO implement me
+    }
+
+    override fun onSelectComment(comment: CommentRes) {
+        viewModel.answerTo(comment)
     }
 }

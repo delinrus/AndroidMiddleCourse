@@ -1,5 +1,6 @@
 package ru.skillbranch.skillarticles.ui.article
 
+import ru.skillbranch.skillarticles.data.network.res.CommentRes
 import ru.skillbranch.skillarticles.viewmodels.article.ArticleState
 import ru.skillbranch.skillarticles.viewmodels.article.BottombarData
 import ru.skillbranch.skillarticles.viewmodels.article.SubmenuData
@@ -18,4 +19,5 @@ interface IArticleView {
     fun hideSearchBar()
     fun setupCopyListener()
     fun onClickMessageSend()
+    fun onSelectComment(comment: CommentRes)
 }

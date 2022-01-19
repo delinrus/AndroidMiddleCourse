@@ -5,8 +5,14 @@ import android.util.Log
 import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
+import androidx.paging.liveData
 import ru.skillbranch.skillarticles.data.ArticleData
 import ru.skillbranch.skillarticles.data.ArticlePersonalInfo
+import ru.skillbranch.skillarticles.data.network.res.CommentRes
 import ru.skillbranch.skillarticles.data.repositories.ArticleRepository
 import ru.skillbranch.skillarticles.data.repositories.MarkdownElement
 import ru.skillbranch.skillarticles.extensions.*
@@ -25,6 +31,17 @@ class ArticleViewModel( savedStateHandle: SavedStateHandle) :
     private val articleId = args.articleId
 
     private var clearContent: String? = null
+
+    val commentPager = Pager(
+        config = PagingConfig(
+            pageSize = 10
+        ),
+        pagingSourceFactory = {
+            repository.makeCommentDataSource(articleId)
+        }
+    )
+        .liveData
+        .cachedIn(viewModelScope)
 
     init {
         //set custom saved state provider for non serializable or custom states
@@ -173,6 +190,10 @@ class ArticleViewModel( savedStateHandle: SavedStateHandle) :
 
     override fun handleSendMessage(message: String) {
         TODO("TODO implement me")
+    }
+
+    override fun answerTo(comment: CommentRes) {
+        TODO("Not yet implemented")
     }
 }
 
