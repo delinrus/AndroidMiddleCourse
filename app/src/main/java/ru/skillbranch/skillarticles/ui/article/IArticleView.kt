@@ -20,4 +20,5 @@ interface IArticleView {
     fun setupCopyListener()
     fun onClickMessageSend()
     fun onSelectComment(comment: CommentRes)
+    fun renderAnswerTo(answerName: String?)
 }

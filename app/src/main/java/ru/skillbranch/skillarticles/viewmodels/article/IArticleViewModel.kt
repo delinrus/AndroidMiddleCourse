@@ -103,5 +103,5 @@ interface IArticleViewModel {
      */
     fun handleSendMessage(message:String)
 
-    fun answerTo(comment: CommentRes)
+    fun answerTo(comment: CommentRes?)
 }

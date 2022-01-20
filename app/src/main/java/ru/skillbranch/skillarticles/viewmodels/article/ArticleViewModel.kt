@@ -189,11 +189,13 @@ class ArticleViewModel( savedStateHandle: SavedStateHandle) :
     }
 
     override fun handleSendMessage(message: String) {
-        TODO("TODO implement me")
+        updateState { state -> state.copy(message = message) }
+        //check auth this
+        updateState { state -> state.copy(answerName = null, answerId = null, message = null) }
     }
 
-    override fun answerTo(comment: CommentRes) {
-        TODO("Not yet implemented")
+    override fun answerTo(comment: CommentRes?) {
+        updateState { state -> state.copy(answerName = comment?.user?.name, answerId = comment?.id, message = comment?.id) }
     }
 }
 
@@ -219,7 +221,9 @@ data class ArticleState(
     val poster: String? = null, //обложка статьи
     val content: List<MarkdownElement> = emptyList(), //контент
     val reviews: List<Any> = emptyList(), //комментарии
-    val message: String? = null //сообщение пользователя
+    val message: String? = null, //сообщение пользователя
+    val answerName: String? = null, //ответ пользователю
+    val answerId: String? = null //ответ на сообщение (id)
 ) : VMState {
     override fun toBundle(): Bundle {
         val map = copy(content = emptyList(), isLoadingContent = true)

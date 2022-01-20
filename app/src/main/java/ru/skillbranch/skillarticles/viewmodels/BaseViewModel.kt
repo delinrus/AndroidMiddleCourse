@@ -78,7 +78,7 @@ abstract class BaseViewModel<T>(initState: T, private val savedStateHandle: Save
         state
             .map(transform) //трансыормируем весь стейт в необходимую модель substate
             .distinctUntilChanged() //отфильтровываем и пропускаем дальше только если значение измнилось
-            .observe(owner, Observer { onChanged(it!!) })
+            .observe(owner, Observer { onChanged(it) })
     }
 
     /***

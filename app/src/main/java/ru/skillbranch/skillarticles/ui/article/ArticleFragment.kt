@@ -1,12 +1,14 @@
 package ru.skillbranch.skillarticles.ui.article
 
+import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.graphics.Rect
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.WindowManager
+import android.view.*
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.AppCompatImageView
@@ -26,10 +28,7 @@ import com.google.android.material.appbar.AppBarLayout
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.data.network.res.CommentRes
 import ru.skillbranch.skillarticles.databinding.FragmentArticleBinding
-import ru.skillbranch.skillarticles.extensions.dpToIntPx
-import ru.skillbranch.skillarticles.extensions.format
-import ru.skillbranch.skillarticles.extensions.hideKeyboard
-import ru.skillbranch.skillarticles.extensions.setMarginOptionally
+import ru.skillbranch.skillarticles.extensions.*
 import ru.skillbranch.skillarticles.ui.BaseFragment
 import ru.skillbranch.skillarticles.ui.custom.ArticleSubmenu
 import ru.skillbranch.skillarticles.ui.custom.Bottombar
@@ -76,6 +75,25 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
             tvAuthor.text = args.author
             tvDate.text =args.date.format()
 
+            //send message if click on send button keyboard
+            etComment.setOnEditorActionListener{ _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_SEND) onClickMessageSend()
+                true
+            }
+
+            //show icon if focused
+            etComment.setOnFocusChangeListener{_, isFocused ->
+                wrapComments.isEndIconVisible = isFocused
+            }
+
+            wrapComments.isEndIconVisible = false
+            wrapComments.setEndIconOnClickListener {
+                //clear editText and wrapper
+                it.hideKeyboard()
+                etComment.setText("")
+                etComment.clearFocus()
+                viewModel.answerTo(null)
+            }
 
             with(rvComments){
                 CommentAdapter(::onSelectComment)
@@ -163,6 +181,9 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
     override fun observeViewModelData() {
         viewModel.observeSubState(this, ArticleState::toBottombarData, ::renderBottombar)
         viewModel.observeSubState(this, ArticleState::toSubmenuData, ::renderSubmenu)
+
+        viewModel.observeSubState(viewLifecycleOwner, {it.answerName}, ::renderAnswerTo)
+
         viewModel.commentPager.observe(viewLifecycleOwner){
             commentsAdapter?.submitData(viewLifecycleOwner.lifecycle, it)
         }
@@ -186,13 +207,13 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
 
             btnResultUp.setOnClickListener {
                 if (!viewBinding.tvTextContent.hasFocus()) viewBinding.tvTextContent.requestFocus()
-                requireContext().hideKeyboard(it)
+                it.hideKeyboard()
                 viewModel.handleUpResult()
             }
 
             btnResultDown.setOnClickListener {
                 if (!viewBinding.tvTextContent.hasFocus()) viewBinding.tvTextContent.requestFocus()
-                requireContext().hideKeyboard(it)
+                it.hideKeyboard()
                 viewModel.handleDownResult()
             }
 
@@ -317,10 +338,27 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
     }
 
     override fun onClickMessageSend() {
-        // TODO implement me
+        viewModel.handleSendMessage(viewBinding.etComment.text.toString())
     }
 
     override fun onSelectComment(comment: CommentRes) {
+
+        with(viewBinding.wrapComments){
+            //smooth scroll to edit text field for comment
+            requestRectangleOnScreen(Rect(0,0,width,height), false)
+
+            //after scroll show keyboard
+            postDelayed({
+                viewBinding.etComment.showKeyboard()
+            }, 300)
+        }
+
         viewModel.answerTo(comment)
+    }
+
+    override fun renderAnswerTo(answerName: String?) {
+        with(viewBinding.wrapComments){
+            hint = answerName?.let { "Answer to: $answerName" } ?: "Comment"
+        }
     }
 }
