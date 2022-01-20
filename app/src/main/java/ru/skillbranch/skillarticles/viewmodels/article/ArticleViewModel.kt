@@ -37,7 +37,9 @@ class ArticleViewModel( savedStateHandle: SavedStateHandle) :
 
     val commentPager = Pager(
         config = PagingConfig(
-            pageSize = 10
+            pageSize = 10,
+            initialLoadSize = 20,
+            prefetchDistance = 40
         ),
         pagingSourceFactory = {
             repository.makeCommentDataSource(articleId)
