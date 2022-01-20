@@ -15,6 +15,7 @@ import ru.skillbranch.skillarticles.data.ArticleData
 import ru.skillbranch.skillarticles.data.ArticlePersonalInfo
 import ru.skillbranch.skillarticles.data.network.res.CommentRes
 import ru.skillbranch.skillarticles.data.repositories.ArticleRepository
+import ru.skillbranch.skillarticles.data.repositories.CommentsDataSource
 import ru.skillbranch.skillarticles.data.repositories.MarkdownElement
 import ru.skillbranch.skillarticles.extensions.*
 import ru.skillbranch.skillarticles.data.repositories.clearContent
@@ -32,6 +33,7 @@ class ArticleViewModel( savedStateHandle: SavedStateHandle) :
     private val articleId = args.articleId
 
     private var clearContent: String? = null
+    private lateinit var dataSource: CommentsDataSource
 
     val commentPager = Pager(
         config = PagingConfig(
@@ -39,6 +41,7 @@ class ArticleViewModel( savedStateHandle: SavedStateHandle) :
         ),
         pagingSourceFactory = {
             repository.makeCommentDataSource(articleId)
+                .also { dataSource = it }
         }
     )
         .liveData
@@ -195,7 +198,7 @@ class ArticleViewModel( savedStateHandle: SavedStateHandle) :
 
         viewModelScope.launch {
             repository.sendMessage(articleId, message, currentState.answerId)
-            //TODO invalidate DataSource after send
+            dataSource.invalidate()
 
             updateState { state -> state.copy(answerName = null, answerId = null, message = null) }
         }

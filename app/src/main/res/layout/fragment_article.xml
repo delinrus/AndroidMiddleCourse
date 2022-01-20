@@ -123,6 +123,7 @@
             android:layout_height="wrap_content"
             android:paddingBottom="16dp"
             android:background="?attr/colorSurface"
+            android:nestedScrollingEnabled="true"
             app:layout_constraintTop_toBottomOf="@id/wrap_comments"
             app:layout_constraintBaseline_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

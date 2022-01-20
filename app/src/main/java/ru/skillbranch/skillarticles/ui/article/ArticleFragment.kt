@@ -96,6 +96,13 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
             }
 
             with(rvComments){
+
+                val maxHeight = screenHeight() - wrapComments.height
+                
+                layoutParams = layoutParams.apply {
+                    height = maxHeight
+                }
+
                 CommentAdapter(::onSelectComment)
                     .also { commentsAdapter = it }
                     .run {
