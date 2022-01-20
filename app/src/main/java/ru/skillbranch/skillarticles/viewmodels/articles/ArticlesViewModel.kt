@@ -4,11 +4,11 @@ import android.util.Log
 import androidx.core.os.bundleOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.NavDirections
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavOptions
+import androidx.paging.*
 import ru.skillbranch.skillarticles.R
 import ru.skillbranch.skillarticles.data.repositories.ArticlesRepository
-import ru.skillbranch.skillarticles.ui.articles.ArticlesFragmentDirections
 import ru.skillbranch.skillarticles.viewmodels.BaseViewModel
 import ru.skillbranch.skillarticles.viewmodels.NavCommand
 import ru.skillbranch.skillarticles.viewmodels.VMState
@@ -16,12 +16,26 @@ import ru.skillbranch.skillarticles.viewmodels.VMState
 class ArticlesViewModel(savedStateHandle: SavedStateHandle) :
     BaseViewModel<ArticlesState>(ArticlesState(), savedStateHandle), IArticlesViewModel {
     private val repository: ArticlesRepository = ArticlesRepository()
-    val articles: LiveData<List<ArticleItem>> = repository.findArticles()
 
     init {
         Log.e("ArticlesViewModel", "init viewmodel ${this::class.simpleName} ${this.hashCode()}")
     }
 
+    @ExperimentalPagingApi
+    val articlesPager: LiveData<PagingData<ArticleItem>> = Pager(
+        config = PagingConfig(
+            pageSize = 10,
+            initialLoadSize = 10,
+            prefetchDistance = 30,
+            enablePlaceholders = false
+        ),
+        remoteMediator = repository.makeArticlesMediator(),
+        pagingSourceFactory = {
+            repository.makeArticleDataStore()
+        }
+    )
+        .liveData
+        .cachedIn(viewModelScope)
 
     override fun navigateToArticle(articleItem: ArticleItem) {
         articleItem.run {

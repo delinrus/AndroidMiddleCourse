@@ -1,7 +1,7 @@
 package ru.skillbranch.skillarticles.ui.articles
 
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
+import androidx.paging.ExperimentalPagingApi
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.skillbranch.skillarticles.R
@@ -37,9 +37,10 @@ class ArticlesFragment :
         articlesAdapter = null
     }
 
+    @ExperimentalPagingApi
     override fun observeViewModelData() {
-        viewModel.articles.observe(viewLifecycleOwner){
-            articlesAdapter?.submitList(it)
+        viewModel.articlesPager.observe(viewLifecycleOwner){
+            articlesAdapter?.submitData(viewLifecycleOwner.lifecycle, it)
         }
     }
 

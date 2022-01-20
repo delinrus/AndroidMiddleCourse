@@ -78,7 +78,7 @@ class CommentsDataSource(
 
         Log.w(
             "GET_REFRESH_KEY",
-            "anchorPosition$pageKey, offset:$pageKey prev:$prevKey, next$nextKey"
+            "anchorPosition$anchorPosition, offset:$pageKey prev:$prevKey, next$nextKey"
         )
         return pageKey
     }
@@ -99,6 +99,7 @@ class CommentsDataSource(
     }*/
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CommentRes> {
+
         val pageKey = params.key ?: 0 //offset
         val pageSize = params.loadSize  //limit
 
@@ -107,12 +108,7 @@ class CommentsDataSource(
             val prevKey = if (pageKey > 0) pageKey.minus(pageSize) else null
             val nextKey = if (comments.isNotEmpty()) pageKey.plus(pageSize) else null
 
-            (0..4).random().also {
-                if (it == 3) throw NetworkErrorException("something wrong in network layer")
-            }
-
-
-            Log.e(
+            Log.w(
                 "LOAD",
                 "load from network comments:${comments.size} offset:$pageKey limit:$pageSize prev:$prevKey next:$nextKey"
             )

@@ -2,8 +2,8 @@ package ru.skillbranch.skillarticles.ui.articles
 
 import android.view.View
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.skillbranch.skillarticles.ui.custom.ArticleItemView
 import ru.skillbranch.skillarticles.viewmodels.articles.ArticleItem
@@ -11,13 +11,14 @@ import ru.skillbranch.skillarticles.viewmodels.articles.ArticleItem
 class ArticlesAdapter(
     private val onClick : (ArticleItem) -> Unit,
     private val onToggleBookmark: (ArticleItem, Boolean) -> Unit
-) : ListAdapter<ArticleItem, ArticleVH>(ArticleDiffCallback()){
+) : PagingDataAdapter<ArticleItem, ArticleVH>(ArticleDiffCallback()){
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleVH {
         return ArticleVH(ArticleItemView(parent.context))
     }
 
     override fun onBindViewHolder(holder: ArticleVH, position: Int) {
-        holder.bind(getItem(position), onClick, onToggleBookmark)
+        //dont use placeholders, always not null
+        holder.bind(getItem(position)!!, onClick, onToggleBookmark)
     }
 
 }
