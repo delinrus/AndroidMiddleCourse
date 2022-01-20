@@ -10,6 +10,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
 import androidx.paging.liveData
+import kotlinx.coroutines.launch
 import ru.skillbranch.skillarticles.data.ArticleData
 import ru.skillbranch.skillarticles.data.ArticlePersonalInfo
 import ru.skillbranch.skillarticles.data.network.res.CommentRes
@@ -190,8 +191,14 @@ class ArticleViewModel( savedStateHandle: SavedStateHandle) :
 
     override fun handleSendMessage(message: String) {
         updateState { state -> state.copy(message = message) }
-        //check auth this
-        updateState { state -> state.copy(answerName = null, answerId = null, message = null) }
+        //TODO check auth this
+
+        viewModelScope.launch {
+            repository.sendMessage(articleId, message, currentState.answerId)
+            //TODO invalidate DataSource after send
+
+            updateState { state -> state.copy(answerName = null, answerId = null, message = null) }
+        }
     }
 
     override fun answerTo(comment: CommentRes?) {

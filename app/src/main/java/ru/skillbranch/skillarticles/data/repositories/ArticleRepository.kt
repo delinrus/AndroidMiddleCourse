@@ -2,11 +2,11 @@ package ru.skillbranch.skillarticles.data.repositories
 
 import android.accounts.NetworkErrorException
 import android.util.Log
-import androidx.core.math.MathUtils.clamp
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import kotlinx.coroutines.delay
 import ru.skillbranch.skillarticles.data.*
 import ru.skillbranch.skillarticles.data.network.res.CommentRes
 
@@ -18,6 +18,7 @@ interface IArticleRepository {
     fun updateSettings(appSettings: AppSettings)
     fun updateArticlePersonalInfo(info: ArticlePersonalInfo)
     fun makeCommentDataSource(articleId: String): CommentsDataSource
+    suspend fun sendMessage(articleId: String, message: String, answerId: String?)
 }
 
 class ArticleRepository(
@@ -51,6 +52,11 @@ class ArticleRepository(
     }
 
     override fun makeCommentDataSource(articleId: String) = CommentsDataSource(articleId, network)
+
+    override suspend fun sendMessage(articleId: String, message: String, answerId: String?) {
+        delay(1000)
+        network.sendMessage(articleId, message, answerId)
+    }
 }
 
 class CommentsDataSource(
@@ -98,11 +104,11 @@ class CommentsDataSource(
 
         return try {
             val comments = network.loadComments(articleId, pageKey, pageSize)
-            val prevKey = if (pageKey>0) pageKey.minus(pageSize) else null
+            val prevKey = if (pageKey > 0) pageKey.minus(pageSize) else null
             val nextKey = if (comments.isNotEmpty()) pageKey.plus(pageSize) else null
 
             (0..4).random().also {
-                if(it==3) throw NetworkErrorException("something wrong in network layer")
+                if (it == 3) throw NetworkErrorException("something wrong in network layer")
             }
 
 

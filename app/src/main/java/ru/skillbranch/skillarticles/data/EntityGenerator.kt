@@ -16,7 +16,7 @@ object EntityGenerator {
             .mapIndexed { index, article ->
                 article.copy(
                     id = "$index",
-                    commentCount = 100,
+                    commentCount = (10..30).random(),
                     readDuration = (2..10).random(),
                     likeCount = (15..100).random(),
                     date = Date().add(-index.toLong(), TimeUnit.DAYS)

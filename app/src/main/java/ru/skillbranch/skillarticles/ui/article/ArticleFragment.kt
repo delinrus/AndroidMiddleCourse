@@ -338,7 +338,12 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
     }
 
     override fun onClickMessageSend() {
-        viewModel.handleSendMessage(viewBinding.etComment.text.toString())
+        with(viewBinding.etComment){
+            hideKeyboard()
+            clearFocus()
+            viewModel.handleSendMessage(text.toString())
+            setText("")
+        }
     }
 
     override fun onSelectComment(comment: CommentRes) {
