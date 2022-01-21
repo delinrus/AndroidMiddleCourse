@@ -2,9 +2,6 @@ package ru.skillbranch.skillarticles.data.repositories
 
 import android.util.Log
 import androidx.paging.*
-import android.accounts.NetworkErrorException
-import androidx.lifecycle.LiveData
-import kotlinx.coroutines.delay
 import ru.skillbranch.skillarticles.data.LocalDataHolder
 import ru.skillbranch.skillarticles.data.NetworkDataHolder
 import ru.skillbranch.skillarticles.extensions.toArticleItem
@@ -14,7 +11,6 @@ class ArticlesRepository(
     private val local: LocalDataHolder = LocalDataHolder,
     private val network: NetworkDataHolder = NetworkDataHolder
 ) {
-    fun findArticles(): LiveData<List<ArticleItem>> = local.findArticles()
     fun makeArticleDataStore() = ArticlesDataSource(local = local)
 
     @ExperimentalPagingApi
@@ -28,19 +24,12 @@ class ArticlesMediator(
     val local: LocalDataHolder
 ) : RemoteMediator<Int, ArticleItem>() {
 
-    var isNeedThrow = true
-
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, ArticleItem>
-    ): RemoteMediator.MediatorResult {
+    ): MediatorResult {
 
         return try {
-            delay(5000)
-            if(isNeedThrow){
-                throw NetworkErrorException("something wrong in network layer")
-            }
-
             when (loadType) {
                 LoadType.REFRESH -> {
 
@@ -51,10 +40,10 @@ class ArticlesMediator(
                         "ArticlesRepository",
                         "initial load from network ${articles.size}"
                     )
-                    RemoteMediator.MediatorResult.Success(endOfPaginationReached = false)
+                    MediatorResult.Success(endOfPaginationReached = false)
                 }
                 LoadType.PREPEND -> {
-                    RemoteMediator.MediatorResult.Success(endOfPaginationReached = true)
+                    MediatorResult.Success(endOfPaginationReached = true)
                 }
                 LoadType.APPEND -> {
 
@@ -66,15 +55,17 @@ class ArticlesMediator(
                         "ArticlesRepository",
                         "APPEND load from network ${articles.size}"
                     )
-                    RemoteMediator.MediatorResult.Success(endOfPaginationReached = articles.isEmpty())
+                    MediatorResult.Success(endOfPaginationReached = articles.isEmpty())
                 }
             }
         } catch (t: Throwable) {
             Log.e("ArticlesRepository", "ERROR ${t.message}")
-            isNeedThrow = false
             MediatorResult.Error(t)
         }
+
+
     }
+
 }
 
 class ArticlesDataSource(val local: LocalDataHolder) : PagingSource<Int, ArticleItem>() {
@@ -85,7 +76,7 @@ class ArticlesDataSource(val local: LocalDataHolder) : PagingSource<Int, Article
 
     override fun getRefreshKey(state: PagingState<Int, ArticleItem>): Int? {
         val anchorPosition = state.anchorPosition
-            ?: return null //visible viewHolder position or null in initial load
+            ?: return null //visible viewHolder position or null if initial load
         val anchorPage = state.closestPageToPosition(anchorPosition) ?: return null //loaded page
         val size = state.config.pageSize
 
@@ -95,15 +86,14 @@ class ArticlesDataSource(val local: LocalDataHolder) : PagingSource<Int, Article
 
         Log.w(
             "GET_REFRESH_KEY",
-            "anchorPosition$anchorPosition, offset:$pageKey prev:$prevKey, next$nextKey"
+            "offset:$pageKey prev:$prevKey, next:$nextKey"
         )
         return pageKey
     }
 
-
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ArticleItem> {
-        val pageKey = params.key ?: 0 //offset
-        val pageSize = params.loadSize  //limit
+        val pageKey = params.key ?: 0  //offset
+        val pageSize = params.loadSize //limit
 
         return try {
 
