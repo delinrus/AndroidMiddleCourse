@@ -1,8 +1,10 @@
 package ru.skillbranch.skillarticles.data.repositories
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.paging.*
+import android.accounts.NetworkErrorException
+import androidx.lifecycle.LiveData
+import kotlinx.coroutines.delay
 import ru.skillbranch.skillarticles.data.LocalDataHolder
 import ru.skillbranch.skillarticles.data.NetworkDataHolder
 import ru.skillbranch.skillarticles.extensions.toArticleItem
@@ -25,12 +27,20 @@ class ArticlesMediator(
     val network: NetworkDataHolder,
     val local: LocalDataHolder
 ) : RemoteMediator<Int, ArticleItem>() {
+
+    var isNeedThrow = true
+
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, ArticleItem>
-    ): MediatorResult {
+    ): RemoteMediator.MediatorResult {
 
         return try {
+            delay(5000)
+            if(isNeedThrow){
+                throw NetworkErrorException("something wrong in network layer")
+            }
+
             when (loadType) {
                 LoadType.REFRESH -> {
 
@@ -41,10 +51,10 @@ class ArticlesMediator(
                         "ArticlesRepository",
                         "initial load from network ${articles.size}"
                     )
-                    MediatorResult.Success(endOfPaginationReached = false)
+                    RemoteMediator.MediatorResult.Success(endOfPaginationReached = false)
                 }
                 LoadType.PREPEND -> {
-                    MediatorResult.Success(endOfPaginationReached = true)
+                    RemoteMediator.MediatorResult.Success(endOfPaginationReached = true)
                 }
                 LoadType.APPEND -> {
 
@@ -56,10 +66,12 @@ class ArticlesMediator(
                         "ArticlesRepository",
                         "APPEND load from network ${articles.size}"
                     )
-                    MediatorResult.Success(endOfPaginationReached = articles.isEmpty())
+                    RemoteMediator.MediatorResult.Success(endOfPaginationReached = articles.isEmpty())
                 }
             }
         } catch (t: Throwable) {
+            Log.e("ArticlesRepository", "ERROR ${t.message}")
+            isNeedThrow = false
             MediatorResult.Error(t)
         }
     }
