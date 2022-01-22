@@ -1,6 +1,5 @@
 package ru.skillbranch.skillarticles.data.repositories
 
-import android.accounts.NetworkErrorException
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
@@ -17,7 +16,7 @@ interface IArticleRepository {
     fun getAppSettings(): LiveData<AppSettings>
     fun updateSettings(appSettings: AppSettings)
     fun updateArticlePersonalInfo(info: ArticlePersonalInfo)
-    fun makeCommentDataSource(articleId: String): CommentsDataSource
+    fun makeCommentsDataSource(articleId: String): CommentsDataSource
     suspend fun sendMessage(articleId: String, message: String, answerId: String?)
 }
 
@@ -28,8 +27,8 @@ class ArticleRepository(
 ) : IArticleRepository {
 
     override fun loadArticleContent(articleId: String): LiveData<List<MarkdownElement>?> {
-        return network.loadArticleContent(articleId) //5s delay from network
-            .map { str -> str?.let { MarkdownParser.parse(it) } } //Transformation.map extension for LiveData
+        return network.loadArticleContent(articleId)
+            .map { str -> str?.let { MarkdownParser.parse(it) } } //Transformations.map extension for LiveData
     }
 
     override fun getArticle(articleId: String): LiveData<ArticleData?> {
@@ -51,7 +50,7 @@ class ArticleRepository(
         local.updateArticlePersonalInfo(info)
     }
 
-    override fun makeCommentDataSource(articleId: String) = CommentsDataSource(articleId, network)
+    override fun makeCommentsDataSource(articleId: String) = CommentsDataSource(articleId, network)
 
     override suspend fun sendMessage(articleId: String, message: String, answerId: String?) {
         delay(1000)
@@ -59,51 +58,53 @@ class ArticleRepository(
     }
 }
 
+
 class CommentsDataSource(
     val articleId: String,
-    val network: NetworkDataHolder,
+    val network: NetworkDataHolder
 ) : PagingSource<Int, CommentRes>() {
 
-    override val jumpingSupported = true //default
+    override val jumpingSupported = true //default false
 
     override fun getRefreshKey(state: PagingState<Int, CommentRes>): Int? {
         val anchorPosition = state.anchorPosition
-            ?: return null //visible viewHolder position or null in initial load
+            ?: return null //visible viewHolder position or null if initial load
         val anchorPage = state.closestPageToPosition(anchorPosition) ?: return null //loaded page
         val size = state.config.pageSize
 
         val nextKey = anchorPage.nextKey
         val prevKey = anchorPage.prevKey
-        val pageKey = prevKey?.plus(size) ?: nextKey?.minus(size) //if prev ==null -> initial load
+        val pageKey = prevKey?.plus(size) ?: nextKey?.minus(size) //if prev == null -> initial load
 
         Log.w(
             "GET_REFRESH_KEY",
-            "anchorPosition$anchorPosition, offset:$pageKey prev:$prevKey, next$nextKey"
+            "anchorPosition:$anchorPosition, offset:$pageKey prev:$prevKey, next:$nextKey"
         )
         return pageKey
     }
 
     //for placeholders
-/*    override fun getRefreshKey(state: PagingState<Int, CommentRes>): Int? {
+    /*override fun getRefreshKey(state: PagingState<Int, CommentRes>): Int? {
         //if placeholders
         val anchorPosition = state.anchorPosition
-            ?: return null //visible viewHolder position or null in initial load
+            ?: return null //visible viewHolder position or null if initial load
 
         val pageKey = clamp(anchorPosition, 0, totalComments)
 
         Log.w(
             "GET_REFRESH_KEY",
-            "offset:$pageKey"
+            "offset:$pageKey,"
         )
         return pageKey
     }*/
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CommentRes> {
 
-        val pageKey = params.key ?: 0 //offset
-        val pageSize = params.loadSize  //limit
+        val pageKey = params.key ?: 0  //offset
+        val pageSize = params.loadSize //limit
 
         return try {
+
             val comments = network.loadComments(articleId, pageKey, pageSize)
             val prevKey = if (pageKey > 0) pageKey.minus(pageSize) else null
             val nextKey = if (comments.isNotEmpty()) pageKey.plus(pageSize) else null
@@ -122,4 +123,5 @@ class CommentsDataSource(
             LoadResult.Error(t)
         }
     }
+
 }

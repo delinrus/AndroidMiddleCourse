@@ -15,7 +15,6 @@ class CommentAdapter(
         //if not use placeholder always not null
         //if use placeholder may be null
         holder.bind(getItem(position)!!, onClick)
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -27,12 +26,12 @@ class CommentDiffCallback : DiffUtil.ItemCallback<CommentRes>() {
         oldItem.id == newItem.id
 
     override fun areContentsTheSame(oldItem: CommentRes, newItem: CommentRes) = oldItem == newItem
+
 }
 
 class CommentVH(convertView: View) : RecyclerView.ViewHolder(convertView) {
     fun bind(item: CommentRes, onClick: (CommentRes) -> Unit) {
         (itemView as CommentItemView).bind(item)
-        itemView.setOnClickListener {onClick(item)}
+        itemView.setOnClickListener {onClick(item) }
     }
-
 }

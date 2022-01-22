@@ -2,6 +2,7 @@ package ru.skillbranch.skillarticles.ui.articles
 
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.paging.CombinedLoadStates
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
@@ -48,17 +49,19 @@ class ArticlesFragment :
                     }
             }
 
-            btnRetry.setOnClickListener{
+            btnRetry.setOnClickListener {
                 articlesAdapter?.retry()
             }
+
         }
     }
 
     fun loadStateListener(state: CombinedLoadStates){
         with(viewBinding){
-            val isLoading = state.refresh is LoadState.Loading //if loading data from network initial refresh
+            val  isLoading = state.refresh is LoadState.Loading //if loading data from network initial refresh
             val isError = state.refresh is LoadState.Error //network error initial loading
             val isSuccessfulLoad = !isLoading && !isError
+
 
             rvArticles.isVisible = isSuccessfulLoad
             progress.isVisible = isLoading

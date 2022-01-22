@@ -42,7 +42,7 @@ class ArticleViewModel( savedStateHandle: SavedStateHandle) :
             prefetchDistance = 40
         ),
         pagingSourceFactory = {
-            repository.makeCommentDataSource(articleId)
+            repository.makeCommentsDataSource(articleId)
                 .also { dataSource = it }
         }
     )

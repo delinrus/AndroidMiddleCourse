@@ -6,6 +6,7 @@ import android.graphics.Typeface
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.setPadding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -14,7 +15,6 @@ import ru.skillbranch.skillarticles.extensions.attrValue
 import ru.skillbranch.skillarticles.extensions.dpToIntPx
 import ru.skillbranch.skillarticles.extensions.shortFormat
 import ru.skillbranch.skillarticles.viewmodels.articles.ArticleItem
-import androidx.core.view.setPadding
 import kotlin.math.max
 
 class ArticleItemView constructor(
@@ -42,6 +42,7 @@ class ArticleItemView constructor(
     private val grayColor = context.getColor(R.color.color_gray)
     private val primaryColor = attrValue(R.attr.colorPrimary)
 
+
     init {
         setPadding(defaultPadding)
         tvDate = TextView(baseContext).apply {
@@ -67,6 +68,7 @@ class ArticleItemView constructor(
         }
 
         addView(tvTitle)
+
         ivPoster = ImageView(baseContext).apply {
             id = R.id.iv_poster
             layoutParams = LayoutParams(posterSize, posterSize)
@@ -102,6 +104,7 @@ class ArticleItemView constructor(
         }
         addView(tvLikesCount)
 
+
         ivComments = ImageView(baseContext).apply {
             imageTintList = ColorStateList.valueOf(grayColor)
             setImageResource(R.drawable.ic_insert_comment_black_24dp)
@@ -132,6 +135,7 @@ class ArticleItemView constructor(
         addView(ivBookmark)
     }
 
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         var usedHeight = paddingTop
         val width = getDefaultSize(suggestedMinimumWidth, widthMeasureSpec)
@@ -141,6 +145,7 @@ class ArticleItemView constructor(
         measureChild(tvAuthor, widthMeasureSpec, heightMeasureSpec)
         usedHeight += tvAuthor.measuredHeight
 
+        //title row
         val rh = posterSize + categorySize / 2
         tvTitle.maxWidth = width - (rh + 2 * paddingLeft + defaultSpace)
         measureChild(tvTitle, widthMeasureSpec, heightMeasureSpec)
@@ -150,7 +155,7 @@ class ArticleItemView constructor(
         measureChild(tvDescription, widthMeasureSpec, heightMeasureSpec)
         usedHeight += tvDescription.measuredHeight + defaultSpace
 
-        //Likes row
+        //icon row
         measureChild(tvLikesCount, widthMeasureSpec, heightMeasureSpec)
         measureChild(tvCommentsCount, widthMeasureSpec, heightMeasureSpec)
         measureChild(tvReadDuration, widthMeasureSpec, heightMeasureSpec)
@@ -158,6 +163,7 @@ class ArticleItemView constructor(
         usedHeight += iconSize + paddingBottom
         setMeasuredDimension(width, usedHeight)
     }
+
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         var usedHeight = paddingTop
@@ -175,14 +181,14 @@ class ArticleItemView constructor(
             left,
             usedHeight,
             left + tvAuthor.measuredWidth,
-            usedHeight + tvAuthor.measuredWidth
+            usedHeight + tvAuthor.measuredHeight
         )
         usedHeight += tvAuthor.measuredHeight + defaultSpace
         left = paddingLeft
 
         val rh = posterSize + categorySize / 2
-        val leftTop = if(rh > tvTitle.measuredHeight) (rh - tvTitle.measuredHeight) / 2 else 0
-        val rightTop = if(rh > tvTitle.measuredHeight) (tvTitle.measuredHeight - rh) / 2 else 0
+        val leftTop = if (rh > tvTitle.measuredHeight) (rh - tvTitle.measuredHeight) / 2 else 0
+        val rightTop = if (rh < tvTitle.measuredHeight) (tvTitle.measuredHeight - rh) / 2 else 0
 
         tvTitle.layout(
             left,
@@ -190,21 +196,18 @@ class ArticleItemView constructor(
             left + tvTitle.measuredWidth,
             usedHeight + leftTop + tvTitle.measuredHeight
         )
-
         ivPoster.layout(
             left + bodyWidth - posterSize,
             usedHeight + rightTop,
             left + bodyWidth,
             usedHeight + rightTop + posterSize
         )
-
         ivCategory.layout(
             ivPoster.left - categorySize / 2,
             ivPoster.bottom - categorySize / 2,
             ivPoster.left + categorySize / 2,
             ivPoster.bottom + categorySize / 2
         )
-
         usedHeight += if (rh > tvTitle.measuredHeight) rh else tvTitle.measuredHeight
         usedHeight += defaultSpace
 
@@ -214,7 +217,6 @@ class ArticleItemView constructor(
             left + bodyWidth,
             usedHeight + tvDescription.measuredHeight
         )
-
         usedHeight += tvDescription.measuredHeight + defaultSpace
 
         val fontDiff = iconSize - tvLikesCount.measuredHeight
@@ -264,7 +266,8 @@ class ArticleItemView constructor(
         )
     }
 
-    fun bind(item: ArticleItem, onClick: (ArticleItem) -> Unit, onToggleBookmark: (ArticleItem, Boolean) -> Unit) {
+    fun bind(item: ArticleItem, onClick: (ArticleItem) -> Unit, onToggleBookmark:(ArticleItem, Boolean) -> Unit) {
+
         tvDate.text = item.date.shortFormat()
         tvAuthor.text = item.author
         tvTitle.text = item.title

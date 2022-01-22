@@ -1,14 +1,14 @@
 package ru.skillbranch.skillarticles.ui.article
 
-import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.graphics.Rect
 import android.os.Bundle
-import android.view.*
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.AppCompatImageView
@@ -33,10 +33,12 @@ import ru.skillbranch.skillarticles.ui.BaseFragment
 import ru.skillbranch.skillarticles.ui.custom.ArticleSubmenu
 import ru.skillbranch.skillarticles.ui.custom.Bottombar
 import ru.skillbranch.skillarticles.ui.delegates.viewBinding
+import ru.skillbranch.skillarticles.viewmodels.*
 import ru.skillbranch.skillarticles.viewmodels.article.*
 
 
-class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArticleBinding>(R.layout.fragment_article),
+class ArticleFragment :
+    BaseFragment<ArticleState, ArticleViewModel, FragmentArticleBinding>(R.layout.fragment_article),
     IArticleView {
 
     override val viewModel: ArticleViewModel by viewModels()
@@ -47,17 +49,17 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
     private lateinit var submenu: ArticleSubmenu
     private lateinit var searchView: SearchView
 
-    private var commentsAdapter : CommentAdapter? = null
+    private var commentsAdapter: CommentAdapter? = null
 
     private val logoSize: Int by lazy { dpToIntPx(40) }
     private val cornerRadius: Int by lazy { dpToIntPx(8) }
 
-    private val args : ArticleFragmentArgs by navArgs()
+    private val args: ArticleFragmentArgs by navArgs()
 
     override fun setupViews() {
         setupCopyListener()
 
-        with(viewBinding){
+        with(viewBinding) {
             Glide.with(this@ArticleFragment)
                 .load(args.authorAvatar)
                 .placeholder(R.drawable.logo_placeholder)
@@ -73,10 +75,10 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
 
             tvTitle.text = args.title
             tvAuthor.text = args.author
-            tvDate.text =args.date.format()
+            tvDate.text = args.date.format()
 
             //send message if click on send button keyboard
-            etComment.setOnEditorActionListener{ _, actionId, _ ->
+            etComment.setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_SEND) onClickMessageSend()
                 true
             }
@@ -85,6 +87,7 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
             etComment.setOnFocusChangeListener{_, isFocused ->
                 wrapComments.isEndIconVisible = isFocused
             }
+
 
             wrapComments.isEndIconVisible = false
             wrapComments.setEndIconOnClickListener {
@@ -95,10 +98,11 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
                 viewModel.answerTo(null)
             }
 
-            with(rvComments){
+
+            with(rvComments) {
 
                 val maxHeight = screenHeight() - wrapComments.height
-                
+
                 layoutParams = layoutParams.apply {
                     height = maxHeight
                 }
@@ -120,7 +124,7 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
         setHasOptionsMenu(true)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater:MenuInflater) {
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_search, menu)
         val menuItem = menu.findItem(R.id.action_search)
         searchView = (menuItem.actionView as SearchView)
@@ -164,7 +168,6 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
     }
 
     override fun setupActivityViews() {
-        root.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         root.viewBinding.navView.isVisible = false
         toolbar = root.viewBinding.toolbar
         bottombar = Bottombar(requireContext())
@@ -183,6 +186,7 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
         root.viewBinding.coordinatorContainer.removeView(bottombar)
         root.viewBinding.coordinatorContainer.removeView(submenu)
         commentsAdapter = null
+
     }
 
     override fun observeViewModelData() {
@@ -191,7 +195,7 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
 
         viewModel.observeSubState(viewLifecycleOwner, {it.answerName}, ::renderAnswerTo)
 
-        viewModel.commentPager.observe(viewLifecycleOwner){
+        viewModel.commentPager.observe(viewLifecycleOwner) {
             commentsAdapter?.submitData(viewLifecycleOwner.lifecycle, it)
         }
     }
@@ -335,7 +339,7 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
         viewBinding.scroll.setMarginOptionally(bottom = dpToIntPx(0))
     }
 
-    override fun setupCopyListener(){
+    override fun setupCopyListener() {
         viewBinding.tvTextContent.setCopyListener { copy ->
             val clipboard = getSystemService(requireContext(), ClipboardManager::class.java)
             val clip = ClipData.newPlainText("Copied code", copy)
@@ -355,9 +359,9 @@ class ArticleFragment : BaseFragment<ArticleState, ArticleViewModel, FragmentArt
 
     override fun onSelectComment(comment: CommentRes) {
 
-        with(viewBinding.wrapComments){
+        with(viewBinding.wrapComments) {
             //smooth scroll to edit text field for comment
-            requestRectangleOnScreen(Rect(0,0,width,height), false)
+            requestRectangleOnScreen(Rect(0, 0, width, height), false)
 
             //after scroll show keyboard
             postDelayed({
